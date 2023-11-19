@@ -95,15 +95,15 @@ esbuild
 								try {
 									copyFileSync(
 										"styles.css",
-										"../../vault/.obsidian/plugins/cmdr/styles.css"
+										"../../vault/.obsidian/plugins/obsidian-slash-commander/styles.css"
 									);
 									copyFileSync(
 										"main.js",
-										"../../vault/.obsidian/plugins/cmdr/main.js"
+										"../../vault/.obsidian/plugins/obsidian-slash-commander/main.js"
 									);
 									copyFileSync(
 										"manifest.json",
-										"../../vault/.obsidian/plugins/cmdr/manifest.json"
+										"../../vault/.obsidian/plugins/obsidian-slash-commander/manifest.json"
 									);
 								} catch (error) {
 									console.error(error);
