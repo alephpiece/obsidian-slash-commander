@@ -1,8 +1,8 @@
 import { CommandIconPair } from "./types";
 import CommanderPlugin from "./main";
 import jstyle from "./styles/jstyle";
+import Fuse from 'fuse.js';
 import {
-  App,
   Editor,
   EditorPosition,
   EditorSuggest,
@@ -11,8 +11,6 @@ import {
   setIcon,
   TFile,
 } from "obsidian";
-
-const Fuse = require('fuse.js');
 
 const fuseOptions = {
 	// isCaseSensitive: false,
@@ -31,7 +29,7 @@ const fuseOptions = {
 	keys: ["name"]
 };
 
-export default function searchSlashCommand(pattern: string, commands: CommandIconPair[]) {
+export default function searchSlashCommand(pattern: string, commands: CommandIconPair[]): CommandIconPair[] {
     const fuse = new Fuse(commands, fuseOptions);
     return pattern == ""? commands : fuse.search(pattern).map(({ item } : { item: any }) => item);
 }
@@ -74,7 +72,7 @@ const styles = jstyle.create({
   },
 });
 
-function buildQueryPattern(commandTrigger: string) {
+function buildQueryPattern(commandTrigger: string): RegExp {
   const escapedPrompt = commandTrigger.replace(
     /[.*+?^${}()|[\]\\]/g,
     "\\$&",
@@ -87,7 +85,7 @@ function buildQueryPattern(commandTrigger: string) {
 export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   private plugin: CommanderPlugin;
 
-  constructor(plugin: CommanderPlugin) {
+  public constructor(plugin: CommanderPlugin) {
     super(plugin.app);
     this.plugin = plugin;
   }
@@ -117,7 +115,7 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   }
 
   public getSuggestions(context: EditorSuggestContext): CommandIconPair[] {
-    const commands = Object.values(this.plugin.settings.slashPanel)
+    const commands = Object.values(this.plugin.settings.slashPanel);
     return searchSlashCommand(context.query, commands);
   }
 

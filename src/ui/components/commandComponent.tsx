@@ -139,8 +139,8 @@ export default function CommandComponent({
 							)}{" "}
 							{isChecked
 								? t(
-										"Warning: This is a checked Command, meaning it might not run under every circumstance."
-								  )
+									"Warning: This is a checked Command, meaning it might not run under every circumstance."
+								)
 								: ""}
 						</div>
 					</div>

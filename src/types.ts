@@ -1,12 +1,5 @@
 import { h } from "preact";
 
-export enum Action {
-	COMMAND,
-	DELAY,
-	EDITOR,
-	LOOP,
-}
-
 export interface CommanderSettings {
 	confirmDeletion: boolean;
 	showAddCommand: boolean;
@@ -32,10 +25,6 @@ export interface CommandIconPair {
 
 /* eslint-disable no-unused-vars */
 declare module "obsidian" {
-	interface MenuItem {
-		dom: HTMLElement;
-	}
-
 	interface App {
 		commands: {
 			commands: {
@@ -60,29 +49,5 @@ declare module "obsidian" {
 				containerEl: HTMLElement;
 			};
 		};
-	}
-
-	interface WorkspaceRibbon {
-		orderedRibbonActions: {
-			icon: string;
-			title: string;
-			callback: () => void;
-		}[];
-		collapseButtonEl: HTMLElement;
-		ribbonItemsEl: HTMLElement;
-		addRibbonItemButton: (
-			icon: string,
-			name: string,
-			callback: (event: MouseEvent) => void
-		) => void;
-		makeRibbonItemButton: (
-			icon: string,
-			name: string,
-			callback: (event: MouseEvent) => void
-		) => HTMLElement;
-	}
-
-	interface WorkspaceLeaf {
-		containerEl: HTMLElement;
 	}
 }

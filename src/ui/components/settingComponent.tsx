@@ -56,8 +56,6 @@ export function ToggleComponent(props: SettingProps<boolean>): h.JSX.Element {
 }
 
 export function TextBoxComponent(props: SettingProps<string>): h.JSX.Element {
-	const [val, setVal] = useState(props.value);
-
 	return (
 		<BaseComponent
 			description={props.description}
@@ -66,10 +64,10 @@ export function TextBoxComponent(props: SettingProps<string>): h.JSX.Element {
 		>
 			<input
 				type="text"
-				value={val}
+				value={props.value}
 				onChange={({ target }): void => {
 					{/*@ts-expect-error*/ }
-					if (val !== target.value) {
+					if (props.value !== target.value) {
 						{/*@ts-expect-error*/ }
 						props.changeHandler(target.value);
 					}

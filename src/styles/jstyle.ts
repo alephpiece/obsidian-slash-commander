@@ -20,15 +20,6 @@ jss.setup(presets());
 
 export default function jstyle<Name extends string | number | symbol>(
   jstyleClass: JStyleClasses<Name>[Name],
-): Classes<Name>[Name];
-
-export default function jstyle<Name extends string | number | symbol>(
-  jstyleClass: JStyleClasses<Name>[Name],
-  data: Record<string, unknown>,
-): Classes<Name>[Name];
-
-export default function jstyle<Name extends string | number | symbol>(
-  jstyleClass: JStyleClasses<Name>[Name],
   data?: Record<string, unknown>,
 ): Classes<Name>[Name] {
   const {ruleName, className, __rawStyleSheet: sheet} = jstyleClass;
