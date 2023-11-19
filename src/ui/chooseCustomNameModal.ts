@@ -1,11 +1,12 @@
 import { SuggestModal } from "obsidian";
 import t from "src/l10n";
+import SlashCommanderPlugin from "src/main";
 
 export default class ChooseCustomNameModal extends SuggestModal<string> {
 	// This is used in onOpen, not sure why eslint doesn't recognize it
 	// eslint-disable-next-line no-unused-vars
-	public constructor(private defaultName: string) {
-		super(app);
+	public constructor(plugin: SlashCommanderPlugin, private defaultName: string) {
+		super(plugin.app);
 		this.setPlaceholder(t("Use a custom name"));
 		this.resultContainerEl.style.display = "none";
 

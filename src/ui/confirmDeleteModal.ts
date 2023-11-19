@@ -1,7 +1,7 @@
 import { Modal } from "obsidian";
 import { h, render, VNode } from "preact";
 import t from "src/l10n";
-import CommanderPlugin from "src/main";
+import SlashCommanderPlugin from "src/main";
 import { confirmDeleteComponent } from "./components/confirmDeleteComponent";
 
 export default class ConfirmDeleteModal extends Modal {
@@ -9,8 +9,8 @@ export default class ConfirmDeleteModal extends Modal {
 	public remove: boolean;
 
 	// eslint-disable-next-line no-unused-vars
-	public constructor(public plugin: CommanderPlugin) {
-		super(app);
+	public constructor(public plugin: SlashCommanderPlugin) {
+		super(plugin.app);
 	}
 
 	public async onOpen(): Promise<void> {

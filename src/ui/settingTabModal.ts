@@ -1,13 +1,13 @@
 import { Modal, Platform } from "obsidian";
 import { h, render } from "preact";
-import CommanderPlugin from "src/main";
+import SlashCommanderPlugin from "src/main";
 import settingTabComponent from "./components/settingTabComponent";
 
 export default class SettingTabModal extends Modal {
-	private plugin: CommanderPlugin;
+	private plugin: SlashCommanderPlugin;
 
-	public constructor(plugin: CommanderPlugin) {
-		super(app);
+	public constructor(plugin: SlashCommanderPlugin) {
+		super(plugin.app);
 		this.plugin = plugin;
 		this.containerEl.addClass("cmdr-setting-modal");
 	}

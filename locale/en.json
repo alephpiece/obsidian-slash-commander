@@ -35,6 +35,8 @@
 	"Enable console output.": "Enable console output.",
 	"General": "General",
 	"Slash Commands": "Slash Commands",
+	"Command trigger": "Command trigger",
+	"Characters to trigger slash commands.": "Characters to trigger slash commands.",
 	"No commands here!": "No commands here!",
 	"Would you like to add one now?": "Would you like to add one now?",
 	"Hide Commands": "Hide Commands",

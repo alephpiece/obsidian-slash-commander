@@ -1,12 +1,14 @@
 import { Notice, Platform } from "obsidian";
 import { Fragment, h } from "preact";
 import t from "src/l10n";
+import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
 import { getCommandFromId, ObsidianIcon } from "src/util";
 import MobileModifyModal from "../mobileModifyModal";
 import ChangeableText from "./ChangeableText";
 
 interface CommandViewerProps {
+	plugin: SlashCommanderPlugin;
 	pair: CommandIconPair;
 	handleRemove: () => void;
 	handleUp: () => void;
@@ -18,6 +20,7 @@ interface CommandViewerProps {
 }
 
 export default function CommandComponent({
+	plugin,
 	pair,
 	handleRemove,
 	handleDown,
@@ -27,7 +30,7 @@ export default function CommandComponent({
 	handleModeChange,
 	sortable = true,
 }: CommandViewerProps): h.JSX.Element {
-	const cmd = getCommandFromId(pair.id);
+	const cmd = getCommandFromId(plugin, pair.id);
 	if (!cmd) {
 		return (
 			<Fragment>
@@ -92,7 +95,7 @@ export default function CommandComponent({
 	}
 	const owningPluginID = cmd.id.split(":").first();
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	const owningPlugin = app.plugins.manifests[owningPluginID!];
+	const owningPlugin = plugin.app.plugins.manifests[owningPluginID!];
 	const isInternal = !owningPlugin;
 	const isChecked =
 		cmd.hasOwnProperty("checkCallback") ||
@@ -199,6 +202,7 @@ export default function CommandComponent({
 							size={22}
 							onClick={(): void => {
 								new MobileModifyModal(
+									plugin,
 									pair,
 									handleRename,
 									handleNewIcon,
@@ -211,6 +215,7 @@ export default function CommandComponent({
 						className="mobile-option-setting-item-name"
 						onClick={(): void => {
 							new MobileModifyModal(
+								plugin,
 								pair,
 								handleRename,
 								handleNewIcon,
@@ -245,6 +250,7 @@ export default function CommandComponent({
 							className="clickable-icon"
 							onClick={(): void => {
 								new MobileModifyModal(
+									plugin,
 									pair,
 									handleRename,
 									handleNewIcon,

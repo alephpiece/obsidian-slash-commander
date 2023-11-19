@@ -1,5 +1,5 @@
 import { CommandIconPair } from "./types";
-import CommanderPlugin from "./main";
+import SlashCommanderPlugin from "./main";
 import AddCommandModal from "./ui/addCommandModal";
 import ChooseIconModal from "./ui/chooseIconModal";
 import { Command, setIcon } from "obsidian";
@@ -10,11 +10,11 @@ import { useRef, useLayoutEffect } from "preact/hooks";
 /**
  * It creates a modal, waits for the user to select a command, and then creates another modal to wait
  * for the user to select an icon
- * @param {CommanderPlugin} plugin - The plugin that is calling the modal.
+ * @param {SlashCommanderPlugin} plugin - The plugin that is calling the modal.
  * @returns {CommandIconPair}
  */
 export async function chooseNewCommand(
-	plugin: CommanderPlugin
+	plugin: SlashCommanderPlugin
 ): Promise<CommandIconPair> {
 	const command = await new AddCommandModal(plugin).awaitSelection();
 
@@ -23,7 +23,7 @@ export async function chooseNewCommand(
 		icon = await new ChooseIconModal(plugin).awaitSelection();
 	}
 
-	const name = await new ChooseCustomNameModal(command.name).awaitSelection();
+	const name = await new ChooseCustomNameModal(plugin, command.name).awaitSelection();
 
 	return {
 		id: command.id,
@@ -35,8 +35,8 @@ export async function chooseNewCommand(
 	};
 }
 
-export function getCommandFromId(id: string): Command | null {
-	return app.commands.commands[id] ?? null;
+export function getCommandFromId(plugin: SlashCommanderPlugin, id: string): Command | null {
+	return plugin.app.commands.commands[id] ?? null;
 }
 
 interface ObsidianIconProps extends ComponentProps<"div"> {
@@ -58,8 +58,8 @@ export function ObsidianIcon({
 	return <div ref={iconEl} {...props} />;
 }
 
-export function isModeActive(mode: string): boolean {
-	const { isMobile, appId } = app;
+export function isModeActive(plugin: SlashCommanderPlugin, mode: string): boolean {
+	const { isMobile, appId } = plugin.app;
 	return (
 		mode === "any" ||
 		mode === appId ||

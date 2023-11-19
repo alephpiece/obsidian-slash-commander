@@ -1,13 +1,13 @@
 import { Platform, PluginSettingTab } from "obsidian";
 import { h, render } from "preact";
-import CommanderPlugin from "../main";
+import SlashCommanderPlugin from "../main";
 import settingTabComponent from "./components/settingTabComponent";
 
 export default class CommanderSettingTab extends PluginSettingTab {
-	private plugin: CommanderPlugin;
+	private plugin: SlashCommanderPlugin;
 
-	public constructor(plugin: CommanderPlugin) {
-		super(app, plugin);
+	public constructor(plugin: SlashCommanderPlugin) {
+		super(plugin.app, plugin);
 		this.plugin = plugin;
 	}
 

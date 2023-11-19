@@ -1,15 +1,13 @@
 import { Command, setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
 import t from "src/l10n";
-import CommanderPlugin from "src/main";
+import SlashCommanderPlugin from "src/main";
 
 export default class AddCommandModal extends FuzzySuggestModal<Command> {
-	private plugin: CommanderPlugin;
 	private commands: Command[];
 
-	public constructor(plugin: CommanderPlugin) {
-		super(app);
-		this.plugin = plugin;
-		this.commands = Object.values(app.commands.commands);
+	public constructor(plugin: SlashCommanderPlugin) {
+		super(plugin.app);
+		this.commands = Object.values(plugin.app.commands.commands);
 		this.setPlaceholder(t("Choose a Command to add"));
 
 		this.setInstructions([

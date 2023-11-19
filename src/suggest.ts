@@ -1,5 +1,5 @@
 import { CommandIconPair } from "./types";
-import CommanderPlugin from "./main";
+import SlashCommanderPlugin from "./main";
 import jstyle from "./styles/jstyle";
 import Fuse from 'fuse.js';
 import {
@@ -83,9 +83,9 @@ function buildQueryPattern(commandTrigger: string): RegExp {
 }
 
 export class SlashSuggester extends EditorSuggest<CommandIconPair> {
-  private plugin: CommanderPlugin;
+  private plugin: SlashCommanderPlugin;
 
-  public constructor(plugin: CommanderPlugin) {
+  public constructor(plugin: SlashCommanderPlugin) {
     super(plugin.app);
     this.plugin = plugin;
   }

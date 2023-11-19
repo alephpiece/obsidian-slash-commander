@@ -10,7 +10,7 @@ import { SlashSuggester } from "./suggest";
 import "./styles/styles.scss";
 import registerCustomIcons from "./ui/icons";
 
-export default class CommanderPlugin extends Plugin {
+export default class SlashCommanderPlugin extends Plugin {
 	public settings: CommanderSettings;
 	public manager: CommandManager;
 

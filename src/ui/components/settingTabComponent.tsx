@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import t from "src/l10n";
 import { Tab } from "src/types";
 import { ObsidianIcon } from "src/util";
-import CommanderPlugin from "../../main";
+import SlashCommanderPlugin from "../../main";
 import CommandViewer from "./commandViewerComponent";
 import {
 	ToggleComponent,
@@ -15,7 +15,7 @@ export default function settingTabComponent({
 	plugin,
 	mobileMode,
 }: {
-	plugin: CommanderPlugin;
+	plugin: SlashCommanderPlugin;
 	mobileMode: boolean;
 }): h.JSX.Element {
 	const [activeTab, setActiveTab] = useState(0);
@@ -65,7 +65,7 @@ export default function settingTabComponent({
 		} else {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			el.parentElement!.lastChild!.textContent = "Commander";
-			el.onclick = (): void => app.setting.closeActiveTab();
+			el.onclick = (): void => plugin.app.setting.closeActiveTab();
 		}
 	}, [open]);
 
@@ -77,8 +77,8 @@ export default function settingTabComponent({
 					<Fragment>
 						<TextBoxComponent
 							value={plugin.settings.trigger}
-							name={"Command trigger"}
-							description={"Characters to trigger slash commands."}
+							name={t("Command trigger")}
+							description={t("Characters to trigger slash commands.")}
 							changeHandler={async (value): Promise<void> => {
 								plugin.settings.trigger = value;
 								await plugin.saveSettings();

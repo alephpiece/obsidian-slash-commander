@@ -61,7 +61,7 @@ export default function MobileModifyComponent({
 					<option value="desktop">
 						{t("Add command only to desktop devices")}
 					</option>
-					<option value={app.appId}>
+					<option value={controller.plugin.app.appId}>
 						{t("Add command only to this device")}
 					</option>
 				</select>

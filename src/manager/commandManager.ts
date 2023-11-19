@@ -1,26 +1,18 @@
-import CommanderPlugin from "src/main";
+import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
 import { isModeActive } from "src/util";
 
 export default class CommandManager {
 	public pairs: CommandIconPair[];
-	protected plugin: CommanderPlugin;
+	protected plugin: SlashCommanderPlugin;
 
-	public constructor(plugin: CommanderPlugin) {
+	public constructor(plugin: SlashCommanderPlugin) {
 		this.plugin = plugin;
 		this.pairs = plugin.settings.slashPanel;
 
 		this.plugin.settings.slashPanel.forEach((pair) =>
 			this.addCommand(pair, false)
 		);
-
-		app.workspace.onLayoutReady(() => {
-			// if (this.plugin.settings.showAddCommand) {
-			// 	this.plugin.addRibbonIcon("plus", t("Add new"), async () =>
-			// 		this.addCommand(await chooseNewCommand(plugin))
-			// 	);
-			// }
-		});
 	}
 
 	public async addCommand(
@@ -31,7 +23,7 @@ export default class CommandManager {
 			this.plugin.settings.slashPanel.push(pair);
 			await this.plugin.saveSettings();
 		}
-		if (isModeActive(pair.mode)) {
+		if (isModeActive(this.plugin, pair.mode)) {
 			this.plugin.register(() => this.removeCommand(pair, false));
 		}
 	}

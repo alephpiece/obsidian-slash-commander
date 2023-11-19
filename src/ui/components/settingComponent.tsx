@@ -30,9 +30,6 @@ interface SettingProps<T> {
 	// eslint-disable-next-line no-unused-vars
 	changeHandler: (value: T) => void;
 	value: T;
-	min?: number;
-	max?: number;
-	step?: number;
 }
 
 export function ToggleComponent(props: SettingProps<boolean>): h.JSX.Element {
