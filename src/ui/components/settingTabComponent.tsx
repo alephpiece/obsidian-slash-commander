@@ -114,12 +114,6 @@ export default function settingTabComponent({
 
 	return (
 		<Fragment>
-			{Platform.isDesktop && (
-				<div className="cmdr-setting-title">
-					<h1>{plugin.manifest.name}</h1>
-				</div>
-			)}
-
 			{(Platform.isDesktop || open) && (
 				<TabHeader
 					tabs={tabs}
