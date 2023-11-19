@@ -1,3 +1,5 @@
+# Obsidian Slash Commander
+
 Customizable slash commands for [Obsidian](https://obsidian.md).
 
 ## Features
@@ -5,9 +7,13 @@ Customizable slash commands for [Obsidian](https://obsidian.md).
 - customized slash command trigger (defaults to `/`)
 - add/remove/edit slash commands
 
-## Usage
+## How to install
 
-Make sure the core plugin *Slash commands* is off.
+1. Install this plugin using BRAT.
+   - Go to "Community plugins" and install "Obsidian42 - BRAT". 
+   - Add https://github.com/alephpiece/obsidian-slash-commander to BRAT.
+2. Make sure the core plugin "Slash commands" is off.
+3. Enable this plugin.
 
 ## Credits
 
