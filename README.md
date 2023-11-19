@@ -12,8 +12,10 @@ Customizable slash commands for [Obsidian](https://obsidian.md).
 1. Install this plugin using BRAT.
    - Go to "Community plugins" and install "Obsidian42 - BRAT". 
    - Add https://github.com/alephpiece/obsidian-slash-commander to BRAT.
-2. Make sure the core plugin "Slash commands" is off.
-3. Enable this plugin.
+2. Enable this plugin.
+3. If the plugin doesn't work, please try to
+   - disable the core plugin "Slash commands" or
+   - pick another trigger for this plugin.
 
 ## How to use
 
