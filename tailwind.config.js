@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-	prefix: "cmdr-",
+	prefix: "slash-commander-",
 	content: ["./src/**/*.{ts,tsx}"],
 	theme: {
 		extend: {},
