@@ -1,7 +1,7 @@
 {
-	"id": "obsidian-slash-commander",
+	"id": "slash-commander",
 	"name": "Slash Commander",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"minAppVersion": "1.4.5",
 	"description": "Customizable slash commands for Obsidian.md",
 	"author": "alephpiece",
