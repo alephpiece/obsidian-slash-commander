@@ -25,7 +25,7 @@ https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/2cca6c5b-
 
 - **Add a new slash command.**
 
-https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/aec44650-7b03-461b-8792-df7caaad017b
+https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/59ff0efc-3471-47fe-9983-fd5d958a600a
 
 - **Change the trigger to whatever you like.**
 
