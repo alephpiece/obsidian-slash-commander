@@ -1,10 +1,10 @@
 {
 	"id": "slash-commander",
 	"name": "Slash Commander",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"minAppVersion": "1.4.5",
 	"description": "Customizable slash commands for Obsidian.md",
 	"author": "alephpiece",
-	"authorUrl": "https://github.com/alephpiece/obsidian-slash-commander",
+	"authorUrl": "https://github.com/alephpiece",
 	"isDesktopOnly": false
 }
