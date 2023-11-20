@@ -100,7 +100,7 @@ export default function settingTabComponent({
 				),
 			},
 			{
-				name: t("Slash Commands"),
+				name: t("Slash commands"),
 				tab: (
 					<CommandViewer
 						manager={plugin.manager}

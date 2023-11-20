@@ -169,7 +169,7 @@ export default function CommandComponent({
 							className="setting-editor-extra-setting-button clickable-icon"
 							onClick={(): void => handleModeChange()}
 							aria-label={t(
-								"Change Mode (Currently: {{current_mode}})"
+								"Change mode (Currently: {{current_mode}})"
 							).replace("{{current_mode}}", modeName)}
 						/>
 						<button

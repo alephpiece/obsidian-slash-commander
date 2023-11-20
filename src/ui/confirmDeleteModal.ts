@@ -14,7 +14,7 @@ export default class ConfirmDeleteModal extends Modal {
 	}
 
 	public async onOpen(): Promise<void> {
-		this.titleEl.innerText = t("Remove Command");
+		this.titleEl.innerText = t("Remove command");
 		this.containerEl.style.zIndex = "99";
 		this.reactComponent = h(confirmDeleteComponent, { modal: this });
 		render(this.reactComponent, this.contentEl);
