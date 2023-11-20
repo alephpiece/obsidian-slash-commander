@@ -97,9 +97,9 @@ export default function CommandComponent({
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const owningPlugin = plugin.app.plugins.manifests[owningPluginID!];
 	const isInternal = !owningPlugin;
-	const isChecked =
-		cmd.hasOwnProperty("checkCallback") ||
-		cmd.hasOwnProperty("editorCheckCallback");
+	// const isChecked =
+	// 	cmd.hasOwnProperty("checkCallback") ||
+	// 	cmd.hasOwnProperty("editorCheckCallback");
 
 	const modeIcon = getModeIcon(pair.mode);
 	const modeName = pair.mode.match(/desktop|mobile|any/)
