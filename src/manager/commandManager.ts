@@ -1,3 +1,4 @@
+import { DEFAULT_SETTINGS } from "src/constants";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
 import { isModeActive } from "src/util";
@@ -10,7 +11,7 @@ export default class CommandManager {
 		this.plugin = plugin;
 		this.pairs = plugin.settings.slashPanel;
 
-		this.plugin.settings.slashPanel.forEach((pair) =>
+		this.pairs.forEach((pair) =>
 			this.addCommand(pair, false)
 		);
 	}
@@ -20,7 +21,7 @@ export default class CommandManager {
 		newlyAdded = true
 	): Promise<void> {
 		if (newlyAdded) {
-			this.plugin.settings.slashPanel.push(pair);
+			this.pairs.push(pair);
 			await this.plugin.saveSettings();
 		}
 		if (isModeActive(this.plugin, pair.mode)) {
@@ -33,16 +34,22 @@ export default class CommandManager {
 		remove = true
 	): Promise<void> {
 		if (remove) {
-			this.plugin.settings.slashPanel.remove(pair);
+			this.pairs.remove(pair);
 			await this.plugin.saveSettings();
 		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	public reorder(): void {
-		this.plugin.settings.slashPanel.forEach((pair) => {
+		this.pairs.forEach((pair) => {
 			this.removeCommand(pair, false);
 			this.addCommand(pair, false);
 		});
+	}
+
+	public async restoreDefault(): Promise<void> {
+		this.pairs = Object.assign([], DEFAULT_SETTINGS.slashPanel);
+		this.plugin.settings.slashPanel = this.pairs;
+		await this.plugin.saveSettings();
 	}
 }

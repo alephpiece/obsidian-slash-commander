@@ -53,5 +53,6 @@
 	"This Command is not available on this device.": "这一命令在当前设备不可用。",
 	"Show": "显示",
 	"Hide": "隐藏",
-	"Double click to enter custom value": "双击以添加自定义值"
+	"Double click to enter custom value": "双击以添加自定义值",
+	"Restore default": "恢复默认值"
 }

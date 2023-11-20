@@ -2,7 +2,7 @@ import { createContext, Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import CommandComponent from "./commandComponent";
 import CommandManager from "src/manager/commandManager";
-import { chooseNewCommand, isModeActive } from "src/util";
+import { chooseNewCommand, isModeActive, ObsidianIcon } from "src/util";
 import { arrayMoveMutable } from "array-move";
 import ChooseIconModal from "../chooseIconModal";
 import ConfirmDeleteModal from "../confirmDeleteModal";
@@ -142,6 +142,17 @@ export default function CommandViewer({
                     >
                         {t("Add command")}
                     </button>
+                    <ObsidianIcon
+                        className="cmdr-icon clickable-icon"
+                        icon="rotate-ccw"
+                        size={20}
+                        aria-label={t("Restore default")}
+                        onClick={async (): Promise<void> => {
+                            manager.restoreDefault();
+                            manager.reorder();
+                            this.forceUpdate();
+                        }}
+                    />
                 </div>
             </ManagerContext.Provider>
 
