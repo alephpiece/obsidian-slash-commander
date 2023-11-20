@@ -1,6 +1,6 @@
 {
 	"name": "slash-commander",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "Customizable slash commands for Obsidian.md",
 	"main": "main.js",
 	"scripts": {
