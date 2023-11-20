@@ -6,6 +6,7 @@ import CommanderSettingTab from "./ui/settingTab";
 import SettingTabModal from "./ui/settingTabModal";
 import CommandManager from "./manager/commandManager";
 import { SlashSuggester } from "./suggest";
+import { buildQueryPattern } from "./util";
 
 import "./styles/styles.scss";
 import registerCustomIcons from "./ui/icons";
@@ -39,6 +40,7 @@ export default class SlashCommanderPlugin extends Plugin {
 	private async loadSettings(): Promise<void> {
 		const data = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 		this.settings = data;
+		this.settings.queryPattern = buildQueryPattern(this.settings.trigger);
 	}
 
 	public async saveSettings(): Promise<void> {
