@@ -40,7 +40,7 @@ export default function MobileModifyComponent({
 						controller.handleRename(currentTarget.value)
 					}
 					type="text"
-					placeholder={t("Custom Name")}
+					placeholder={t("Custom name")}
 					value={controller.pair.name}
 				/>
 			</div>

@@ -45,7 +45,7 @@ export default function CommandComponent({
 							<div className="setting-item-name">{pair.name}</div>
 							<div className="setting-item-description">
 								{t(
-									"This Command is not available on this device."
+									"This command is not available on this device."
 								)}
 							</div>
 						</div>
@@ -67,7 +67,7 @@ export default function CommandComponent({
 						onClick={(): void => {
 							new Notice(
 								t(
-									"This Command is not available on this device."
+									"This command is not available on this device."
 								)
 							);
 						}}

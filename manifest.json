@@ -3,7 +3,7 @@
 	"name": "Slash Commander",
 	"version": "0.1.10",
 	"minAppVersion": "1.4.5",
-	"description": "Customizable slash commands for Obsidian.md",
+	"description": "Customize the slash command list, assign each command an icon.",
 	"author": "alephpiece",
 	"authorUrl": "https://github.com/alephpiece",
 	"isDesktopOnly": false

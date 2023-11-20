@@ -13,7 +13,7 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 		this.setInstructions([
 			{
 				command: "",
-				purpose: t("Choose a custom Name for your new Command"),
+				purpose: t("Choose a custom name for your new command"),
 			},
 			{
 				command: "↵",

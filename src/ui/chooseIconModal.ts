@@ -7,7 +7,7 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
-		this.setPlaceholder(t("Choose a Icon for your new Command"));
+		this.setPlaceholder(t("Choose an icon for your new command"));
 
 		this.setInstructions([
 			{

@@ -88,7 +88,7 @@ export default function settingTabComponent({
 						<ToggleComponent
 							name={t("Always ask before removing?")}
 							description={t(
-								"Always show a Popup to confirm deletion of a Command."
+								"Always show a popup to confirm deletion of a command."
 							)}
 							value={plugin.settings.confirmDeletion}
 							changeHandler={async (value): Promise<void> => {
