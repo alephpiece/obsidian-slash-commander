@@ -26,6 +26,12 @@ export const DEFAULT_COMMANDS = [
 		mode: "any"
 	},
 	{
+		name: "Canvas",
+		id: "canvas:new-file",
+		icon: "layout-dashboard",
+		mode: "any"
+	},
+	{
 		name: "Admonition",
 		id: "obsidian-admonition:insert-admonition",
 		icon: "indent",
@@ -39,9 +45,9 @@ export const DEFAULT_COMMANDS = [
 		mode: "any"
 	},
 	{
-		name: "Canvas",
-		id: "canvas:new-file",
-		icon: "layout-dashboard",
+		name: "Task",
+		id: "obsidian-tasks-plugin:edit-task",
+		icon: "check-circle",
 		mode: "any"
 	},
 	{
