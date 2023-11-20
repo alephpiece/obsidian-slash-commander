@@ -5,6 +5,7 @@ export interface CommanderSettings {
 	showAddCommand: boolean;
 	debug: boolean;
 	trigger: string;
+	queryPattern: RegExp;
 	slashPanel: CommandIconPair[];
 }
 

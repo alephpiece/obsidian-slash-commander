@@ -67,3 +67,26 @@ export function isModeActive(plugin: SlashCommanderPlugin, mode: string): boolea
 		(mode === "desktop" && !isMobile)
 	);
 }
+
+export type SlashCommandMatch = RegExpMatchArray & {
+	indices: {
+		groups: {
+			commandQuery: [number, number];
+			fullQuery: [number, number];
+		};
+	};
+	groups: {
+		commandQuery: string;
+		fullQuery: string;
+	};
+};
+
+export function buildQueryPattern(commandTrigger: string): RegExp {
+	const escapedPrompt = commandTrigger.replace(
+		/[.*+?^${}()|[\]\\]/g,
+		"\\$&",
+	);
+
+	const temp = `^(?<fullQuery>${escapedPrompt}(?<commandQuery>.*))`;
+	return new RegExp(temp, 'd');
+}

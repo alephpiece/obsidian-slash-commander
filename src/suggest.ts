@@ -11,7 +11,7 @@ import {
   setIcon,
   TFile,
 } from "obsidian";
-import { getCommandFromId } from "./util";
+import { getCommandFromId, SlashCommandMatch } from "./util";
 
 const fuseOptions = {
   // isCaseSensitive: false,
@@ -34,19 +34,6 @@ export default function searchSlashCommand(pattern: string, commands: CommandIco
   const fuse = new Fuse(commands, fuseOptions);
   return pattern == "" ? commands : fuse.search(pattern).map(({ item }: { item: any }) => item);
 }
-
-type RegExpMatch = RegExpMatchArray & {
-  indices: {
-    groups: {
-      commandQuery: [number, number];
-      fullQuery: [number, number];
-    };
-  };
-  groups: {
-    commandQuery: string;
-    fullQuery: string;
-  };
-};
 
 const styles = jstyle.create({
   menuItem: {
@@ -73,16 +60,6 @@ const styles = jstyle.create({
   },
 });
 
-function buildQueryPattern(commandTrigger: string): RegExp {
-  const escapedPrompt = commandTrigger.replace(
-    /[.*+?^${}()|[\]\\]/g,
-    "\\$&",
-  );
-
-  const temp = `^(?<fullQuery>${escapedPrompt}(?<commandQuery>.*))`;
-  return new RegExp(temp, 'd');
-}
-
 export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   private plugin: SlashCommanderPlugin;
 
@@ -96,9 +73,8 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
     editor: Editor,
     _file: TFile,
   ): EditorSuggestTriggerInfo | null {
-    const triggerLineRegex = buildQueryPattern(this.plugin.settings.trigger);
     const currentLine = editor.getLine(cursor.line).slice(0, cursor.ch);
-    const matchRes = currentLine.match(triggerLineRegex) as RegExpMatch | null;
+    const matchRes = currentLine.match(this.plugin.settings.queryPattern) as SlashCommandMatch | null;
     if (matchRes === null) {
       return null;
     }

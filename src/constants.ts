@@ -57,6 +57,7 @@ export const DEFAULT_SETTINGS: CommanderSettings = {
 	showAddCommand: true,
 	debug: false,
 	trigger: "/",
+	queryPattern: new RegExp("^(?<fullQuery>/(?<commandQuery>.*))", "d"),
 	slashPanel: DEFAULT_COMMANDS,
 };
 

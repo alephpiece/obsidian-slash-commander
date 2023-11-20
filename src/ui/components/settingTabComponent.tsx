@@ -3,7 +3,7 @@ import { Fragment, h } from "preact";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import t from "src/l10n";
 import { Tab } from "src/types";
-import { ObsidianIcon } from "src/util";
+import { ObsidianIcon, buildQueryPattern } from "src/util";
 import SlashCommanderPlugin from "../../main";
 import CommandViewer from "./commandViewerComponent";
 import {
@@ -81,6 +81,7 @@ export default function settingTabComponent({
 							description={t("Characters to trigger slash commands.")}
 							changeHandler={async (value): Promise<void> => {
 								plugin.settings.trigger = value;
+								plugin.settings.queryPattern = buildQueryPattern(value);
 								await plugin.saveSettings();
 							}}
 						/>
