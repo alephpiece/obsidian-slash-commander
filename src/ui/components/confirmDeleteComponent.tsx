@@ -9,7 +9,7 @@ export function confirmDeleteComponent({
 }): h.JSX.Element {
 	return (
 		<Fragment>
-			<p>{t("Are you sure you want to delete the Command?")}</p>
+			<p>{t("Are you sure you want to delete the command?")}</p>
 			<div className="modal-button-container">
 				<button
 					className="mod-warning"

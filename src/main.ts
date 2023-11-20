@@ -25,8 +25,8 @@ export default class SlashCommanderPlugin extends Plugin {
 		this.addSettingTab(new CommanderSettingTab(this));
 
 		this.addCommand({
-			name: t("Open Commander Settings"),
-			id: "open-commander-settings",
+			name: t("Open settings"),
+			id: "open-settings",
 			callback: () => new SettingTabModal(this).open(),
 		});
 

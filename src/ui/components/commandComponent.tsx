@@ -134,17 +134,18 @@ export default function CommandComponent({
 							)}
 						</div>
 						<div className="setting-item-description">
-							{t(
+							{
 								"Added by {{plugin_name}}.".replace(
 									"{{plugin_name}}",
 									isInternal ? "Obsidian" : owningPlugin.name
 								)
-							)}{" "}
-							{isChecked
+							}
+							{/* {" "} */}
+							{/* {isChecked
 								? t(
-									"Warning: This is a checked Command, meaning it might not run under every circumstance."
+									"Warning: This command might not run under every circumstance."
 								)
-								: ""}
+								: ""} */}
 						</div>
 					</div>
 					<div className="setting-item-control">
