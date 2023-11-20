@@ -11,27 +11,28 @@ import {
   setIcon,
   TFile,
 } from "obsidian";
+import { getCommandFromId } from "./util";
 
 const fuseOptions = {
-	// isCaseSensitive: false,
-	// includeScore: false,
-	// shouldSort: true,
-	// includeMatches: false,
-	// findAllMatches: false,
-	// minMatchCharLength: 1,
-	// location: 0,
-	threshold: 0.5,
-	// distance: 100,
-	// useExtendedSearch: false,
-	// ignoreLocation: false,
-	// ignoreFieldNorm: false,
-	// fieldNormWeight: 1,
-	keys: ["name"]
+  // isCaseSensitive: false,
+  // includeScore: false,
+  // shouldSort: true,
+  // includeMatches: false,
+  // findAllMatches: false,
+  // minMatchCharLength: 1,
+  // location: 0,
+  threshold: 0.5,
+  // distance: 100,
+  // useExtendedSearch: false,
+  // ignoreLocation: false,
+  // ignoreFieldNorm: false,
+  // fieldNormWeight: 1,
+  keys: ["name"]
 };
 
 export default function searchSlashCommand(pattern: string, commands: CommandIconPair[]): CommandIconPair[] {
-    const fuse = new Fuse(commands, fuseOptions);
-    return pattern == ""? commands : fuse.search(pattern).map(({ item } : { item: any }) => item);
+  const fuse = new Fuse(commands, fuseOptions);
+  return pattern == "" ? commands : fuse.search(pattern).map(({ item }: { item: any }) => item);
 }
 
 type RegExpMatch = RegExpMatchArray & {
@@ -116,7 +117,8 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
 
   public getSuggestions(context: EditorSuggestContext): CommandIconPair[] {
     const commands = Object.values(this.plugin.settings.slashPanel);
-    return searchSlashCommand(context.query, commands);
+    return searchSlashCommand(context.query, commands)
+      .filter((cmd) => getCommandFromId(this.plugin, cmd.id));
   }
 
   public renderSuggestion(command: CommandIconPair, el: HTMLElement): void {
