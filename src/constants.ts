@@ -8,6 +8,12 @@ export const DEFAULT_COMMANDS = [
 		mode: "any"
 	},
 	{
+		name: "Table",
+		id: "editor:insert-table",
+		icon: "table",
+		mode: "any"
+	},
+	{
 		name: "Code",
 		id: "editor:insert-codeblock",
 		icon: "terminal",
