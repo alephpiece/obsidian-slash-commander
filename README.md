@@ -1,5 +1,7 @@
 # Obsidian Slash Commander
 
+![Static Badge](https://img.shields.io/badge/obsidian-1.5.0-a88bfa?logo=obsidian) [![GitHub all releases](https://img.shields.io/github/downloads/alephpiece/obsidian-slash-commander/total?logo=GitHub)](https://github.com/alephpiece/obsidian-slash-commander/releases) ![GitHub Repo stars](https://img.shields.io/github/stars/alephpiece/obsidian-slash-commander?logo=githubsponsors&logoColor=f5f5f5)
+
 Customizable slash commands for [Obsidian](https://obsidian.md).
 
 ## Features
