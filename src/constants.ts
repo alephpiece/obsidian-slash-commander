@@ -20,9 +20,21 @@ export const DEFAULT_COMMANDS = [
 		mode: "any"
 	},
 	{
+		name: "Embed",
+		id: "editor:insert-embed",
+		icon: "sticky-note",
+		mode: "any"
+	},
+	{
 		name: "Attachment",
 		id: "editor:attach-file",
 		icon: "paperclip",
+		mode: "any"
+	},
+	{
+		name: "Property",
+		id: "markdown:add-metadata-property",
+		icon: "plus-circle",
 		mode: "any"
 	},
 	{
@@ -55,6 +67,12 @@ export const DEFAULT_COMMANDS = [
 		id: "zotlit:insert-markdown-citation",
 		icon: "book-marked",
 		mode: "desktop"
+	},
+	{
+		name: "Date",
+		id: "insert-current-date",
+		icon: "calendar-days",
+		mode: "any"
 	}
 ];
 
