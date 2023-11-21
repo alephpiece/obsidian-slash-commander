@@ -85,6 +85,7 @@ export const DEFAULT_COMMANDS = [
 export const DEFAULT_SETTINGS: CommanderSettings = {
 	confirmDeletion: true,
 	showAddCommand: true,
+	hideDescriptions: true,
 	debug: false,
 	trigger: "/",
 	queryPattern: new RegExp("^(?<fullQuery>/(?<commandQuery>.*))", "d"),

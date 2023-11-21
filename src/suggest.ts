@@ -1,6 +1,5 @@
 import { CommandIconPair } from "./types";
 import SlashCommanderPlugin from "./main";
-import jstyle from "./styles/jstyle";
 import Fuse from 'fuse.js';
 import {
   Editor,
@@ -8,10 +7,11 @@ import {
   EditorSuggest,
   EditorSuggestContext,
   EditorSuggestTriggerInfo,
-  setIcon,
   TFile,
 } from "obsidian";
 import { getCommandFromId, SlashCommandMatch } from "./util";
+import { h, render } from "preact";
+import SuggestionComponent from "./ui/components/suggestionComponent";
 
 const fuseOptions = {
   // isCaseSensitive: false,
@@ -34,31 +34,6 @@ export default function searchSlashCommand(pattern: string, commands: CommandIco
   const fuse = new Fuse(commands, fuseOptions);
   return pattern == "" ? commands : fuse.search(pattern).map(({ item }: { item: any }) => item);
 }
-
-const styles = jstyle.create({
-  menuItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-
-  menuItemIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    '& svg': {
-      width: '1rem',
-      height: '1rem',
-    },
-  },
-
-  menuItemName: {
-    flex: '1 1 auto',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-});
 
 export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   private plugin: SlashCommanderPlugin;
@@ -92,33 +67,23 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   }
 
   public getSuggestions(context: EditorSuggestContext): CommandIconPair[] {
-    const commands = Object.values(this.plugin.settings.slashPanel);
-    return searchSlashCommand(context.query, commands)
+    const pairs = Object.values(this.plugin.settings.slashPanel);
+    return searchSlashCommand(context.query, pairs)
       .filter((cmd) => getCommandFromId(this.plugin, cmd.id));
   }
 
-  public renderSuggestion(command: CommandIconPair, el: HTMLElement): void {
-    el.createDiv(
-      {
-        cls: jstyle(styles.menuItem),
-        attr: {
-          role: 'button',
-        },
-      },
-      div => {
-        const iconContainer = div.createDiv(jstyle(styles.menuItemIcon));
-        setIcon(iconContainer, command.icon);
-
-        div.createDiv(jstyle(styles.menuItemName)).setText(command.name);
-      },
-    );
+  public renderSuggestion(pair: CommandIconPair, el: HTMLElement): void {
+		render(
+			h(SuggestionComponent, {plugin: this.plugin, pair: pair }),
+      el
+		);
   }
 
-  public selectSuggestion(command: CommandIconPair, _evt: MouseEvent | KeyboardEvent,): void {
+  public selectSuggestion(pair: CommandIconPair, _evt: MouseEvent | KeyboardEvent,): void {
     // Delete the trigger and command query.
     this.context?.editor.replaceRange('', this.context.start, this.context.end);
-    if (command.id) {
-      this.plugin.app.commands.executeCommandById(command.id);
+    if (pair.id) {
+      this.plugin.app.commands.executeCommandById(pair.id);
     }
     this.close();
   }

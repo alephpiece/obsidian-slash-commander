@@ -86,13 +86,24 @@ export default function settingTabComponent({
 							}}
 						/>
 						<ToggleComponent
-							name={t("Always ask before removing?")}
+							name={t("Ask before removing")}
 							description={t(
 								"Always show a popup to confirm deletion of a command."
 							)}
 							value={plugin.settings.confirmDeletion}
 							changeHandler={async (value): Promise<void> => {
 								plugin.settings.confirmDeletion = !value;
+								await plugin.saveSettings();
+							}}
+						/>
+						<ToggleComponent
+							name={t("Hide command descriptions")}
+							description={t(
+								"Never show command descriptions in editor suggestions."
+							)}
+							value={plugin.settings.hideDescriptions}
+							changeHandler={async (value): Promise<void> => {
+								plugin.settings.hideDescriptions = !value;
 								await plugin.saveSettings();
 							}}
 						/>
