@@ -127,18 +127,17 @@ export default function CommandComponent({
 								}}
 								value={pair.name}
 							/>
-							{pair.name !== cmd.name && (
-								<span style="margin-left: .8ex">
-									({cmd.name})
-								</span>
-							)}
 						</div>
 						<div className="setting-item-description">
 							{
-								"Added by {{plugin_name}}.".replace(
+								"From {{plugin_name}}".replace(
 									"{{plugin_name}}",
 									isInternal ? "Obsidian" : owningPlugin.name
 								)
+							}
+							{
+								pair.name !== cmd.name ?
+									` "${cmd.name}"` : "."
 							}
 							{/* {" "} */}
 							{/* {isChecked
