@@ -3,7 +3,7 @@ import { h } from "preact";
 export interface CommanderSettings {
 	confirmDeletion: boolean;
 	showAddCommand: boolean;
-	hideDescriptions: boolean;
+	showDescriptions: boolean;
 	debug: boolean;
 	trigger: string;
 	queryPattern: RegExp;

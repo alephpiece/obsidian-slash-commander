@@ -591,8 +591,8 @@
 .cmdr-suggest-item {
 	display: flex;
 	align-items: center;
-	gap: 0.825em;
-	max-width: 30em;
+	gap: 0.8em;
+	max-width: 25em;
 }
 
 .cmdr-suggest-item-icon {
@@ -603,6 +603,18 @@
 	svg {
 		width: 1.2em;
 		height: 1.2em;
+	}
+}
+
+.cmdr-suggest-item-icon-large {
+	display: flex;
+	align-self: start;
+	justify-content: center;
+	padding-top: 2px;
+
+	svg {
+		width: 1.5em;
+		height: 1.5em;
 	}
 }
 

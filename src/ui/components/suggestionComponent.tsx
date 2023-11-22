@@ -22,15 +22,21 @@ export default function SuggestionComponent({
 				<ObsidianIcon
 					icon={pair.icon}
 					size={20}
-					className="cmdr-suggest-item-icon"
+					className=
+					{
+						plugin.settings.showDescriptions ?
+							"cmdr-suggest-item-icon-large" :
+							"cmdr-suggest-item-icon"
+					}
 				/>
 				<div className="cmdr-suggest-item-name">
 					<div>{pair.name}</div>
-					{!plugin.settings.hideDescriptions && (
-						<div className="cmdr-suggest-item-description">
-							{cmd.name}
-						</div>
-					)}
+					{
+						plugin.settings.showDescriptions && (
+							<div className="cmdr-suggest-item-description">
+								{cmd.name}
+							</div>
+						)}
 				</div>
 			</div>
 		</Fragment>);

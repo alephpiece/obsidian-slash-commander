@@ -97,13 +97,13 @@ export default function settingTabComponent({
 							}}
 						/>
 						<ToggleComponent
-							name={t("Hide command descriptions")}
+							name={t("Show command descriptions")}
 							description={t(
-								"Never show command descriptions in editor suggestions."
+								"Always show command descriptions in editor suggestions."
 							)}
-							value={plugin.settings.hideDescriptions}
+							value={plugin.settings.showDescriptions}
 							changeHandler={async (value): Promise<void> => {
-								plugin.settings.hideDescriptions = !value;
+								plugin.settings.showDescriptions = !value;
 								await plugin.saveSettings();
 							}}
 						/>
