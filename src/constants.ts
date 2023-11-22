@@ -2,15 +2,15 @@ import { CommanderSettings } from "./types";
 
 export const DEFAULT_COMMANDS = [
 	{
-		name: "Callout",
-		id: "editor:insert-callout",
-		icon: "indent",
+		name: "Table",
+		id: "editor:insert-table",
+		icon: "table-2",
 		mode: "any"
 	},
 	{
-		name: "Table",
-		id: "editor:insert-table",
-		icon: "table",
+		name: "Callout",
+		id: "editor:insert-callout",
+		icon: "indent",
 		mode: "any"
 	},
 	{
