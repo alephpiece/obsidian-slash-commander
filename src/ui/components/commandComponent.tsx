@@ -208,25 +208,20 @@ export default function CommandComponent({
 							}}
 						/>
 					</span>
-					<div className="setting-item-info">
-						<span
-							className="mobile-option-setting-item-name"
-							onClick={(): void => {
-								new MobileModifyModal(
-									plugin,
-									pair,
-									handleRename,
-									handleNewIcon,
-									handleModeChange
-								).open();
-							}}
-						>
-							{pair.name}
-						</span>
-						<span className="setting-item-description">
-							{pair.name !== cmd.name ? cmd.name : ""}
-						</span>
-					</div>
+					<span
+						className="mobile-option-setting-item-name"
+						onClick={(): void => {
+							new MobileModifyModal(
+								plugin,
+								pair,
+								handleRename,
+								handleNewIcon,
+								handleModeChange
+							).open();
+						}}
+					>
+						{pair.name}
+					</span>
 					<span className="mobile-option-setting-item-option-icon">
 						{sortable && (
 							<>
