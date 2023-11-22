@@ -95,7 +95,7 @@ export const DEFAULT_SETTINGS: CommanderSettings = {
 	debug: false,
 	trigger: "/",
 	queryPattern: new RegExp("^(?<fullQuery>/(?<commandQuery>.*))", "d"),
-	slashPanel: DEFAULT_COMMANDS,
+	bindings: DEFAULT_COMMANDS,
 };
 
 export const ICON_LIST = [

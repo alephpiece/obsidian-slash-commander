@@ -7,7 +7,7 @@ export interface CommanderSettings {
 	debug: boolean;
 	trigger: string;
 	queryPattern: RegExp;
-	slashPanel: CommandIconPair[];
+	bindings: CommandIconPair[];
 }
 
 export interface Tab {

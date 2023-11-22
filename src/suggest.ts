@@ -67,7 +67,7 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   }
 
   public getSuggestions(context: EditorSuggestContext): CommandIconPair[] {
-    const pairs = Object.values(this.plugin.settings.slashPanel);
+    const pairs = Object.values(this.plugin.settings.bindings);
     return searchSlashCommand(context.query, pairs)
       .filter((cmd) => getCommandFromId(this.plugin, cmd.id));
   }

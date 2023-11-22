@@ -9,7 +9,7 @@ export default class CommandManager {
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		this.plugin = plugin;
-		this.pairs = plugin.settings.slashPanel;
+		this.pairs = plugin.settings.bindings;
 
 		this.pairs.forEach((pair) =>
 			this.addCommand(pair, false)
@@ -48,8 +48,8 @@ export default class CommandManager {
 	}
 
 	public async restoreDefault(): Promise<void> {
-		this.pairs = Object.assign([], DEFAULT_SETTINGS.slashPanel);
-		this.plugin.settings.slashPanel = this.pairs;
+		this.pairs = Object.assign([], DEFAULT_SETTINGS.bindings);
+		this.plugin.settings.bindings = this.pairs;
 		await this.plugin.saveSettings();
 	}
 }

@@ -103,9 +103,10 @@ export function getCommandSourceName(
 
 export function isCommandNameUnique(
 	plugin: SlashCommanderPlugin,
-	name: string
+	commandName: string
 ): boolean {
-	const pairNames = plugin.settings.slashPanel.map(({ name }) => name);
-	const matches = pairNames.filter((x) => x == name);
+	const matches = plugin.settings.bindings.filter(
+		({ name }) => name == commandName
+	);
 	return matches.length == 1;
 }
