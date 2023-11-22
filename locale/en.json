@@ -33,7 +33,7 @@
 	"Show command sources": "Show command sources",
 	"Show command sources in editor suggestions for duplicated command names.": "Show command sources in editor suggestions for duplicated command names.",
 	"General": "General",
-	"Slash commands": "Slash commands",
+	"Bindings": "Bindings",
 	"Command trigger": "Command trigger",
 	"Characters to trigger slash commands.": "Characters to trigger slash commands.",
 	"No commands here!": "No commands here!",

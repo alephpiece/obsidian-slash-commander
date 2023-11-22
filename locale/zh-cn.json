@@ -33,7 +33,7 @@
 	"Show command sources": "显示命令来源",
 	"Show command sources in editor suggestions for duplicated command names.": "为相同名字的命令显示来源。",
 	"General": "通用",
-	"Slash commands": "斜杠命令",
+	"Bindings": "绑定命令",
 	"Command trigger": "命令触发",
 	"Characters to trigger slash commands.": "用于触发斜杠命令的字符。",
 	"No commands here!": "还没有任何命令。",
