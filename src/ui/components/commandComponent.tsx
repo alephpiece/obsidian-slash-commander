@@ -3,7 +3,7 @@ import { Fragment, h } from "preact";
 import t from "src/l10n";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, ObsidianIcon, getCommandSourceName} from "src/util";
+import { getCommandFromId, ObsidianIcon, getCommandSourceName } from "src/util";
 import MobileModifyModal from "../mobileModifyModal";
 import ChangeableText from "./ChangeableText";
 
@@ -208,25 +208,25 @@ export default function CommandComponent({
 							}}
 						/>
 					</span>
-					<span
-						className="mobile-option-setting-item-name"
-						onClick={(): void => {
-							new MobileModifyModal(
-								plugin,
-								pair,
-								handleRename,
-								handleNewIcon,
-								handleModeChange
-							).open();
-						}}
-					>
-						{pair.name}
-						{pair.name !== cmd.name && (
-							<span className="cmdr-option-setting-name">
-								({cmd.name})
-							</span>
-						)}
-					</span>
+					<div className="setting-item-info">
+						<span
+							className="mobile-option-setting-item-name"
+							onClick={(): void => {
+								new MobileModifyModal(
+									plugin,
+									pair,
+									handleRename,
+									handleNewIcon,
+									handleModeChange
+								).open();
+							}}
+						>
+							{pair.name}
+						</span>
+						<span className="setting-item-description">
+							{pair.name !== cmd.name ? cmd.name : ""}
+						</span>
+					</div>
 					<span className="mobile-option-setting-item-option-icon">
 						{sortable && (
 							<>
