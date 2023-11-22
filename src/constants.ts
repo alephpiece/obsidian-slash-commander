@@ -68,24 +68,30 @@ export const DEFAULT_COMMANDS = [
 		icon: "check-circle",
 		mode: "any"
 	},
-	{
-		name: "ZotLit Citation",
-		id: "zotlit:insert-markdown-citation",
-		icon: "book-marked",
-		mode: "desktop"
-	},
+    {
+      name: "Template",
+      id: "templater-obsidian:insert-templater",
+      icon: "book-copy",
+      mode: "any"
+    },
 	{
 		name: "Date",
 		id: "insert-current-date",
 		icon: "calendar-days",
 		mode: "any"
+	},
+	{
+		name: "Citation",
+		id: "zotlit:insert-markdown-citation",
+		icon: "book-marked",
+		mode: "desktop"
 	}
 ];
 
 export const DEFAULT_SETTINGS: CommanderSettings = {
 	confirmDeletion: true,
-	showAddCommand: true,
 	showDescriptions: false,
+	showSourcesForDuplicates: true,
 	debug: false,
 	trigger: "/",
 	queryPattern: new RegExp("^(?<fullQuery>/(?<commandQuery>.*))", "d"),

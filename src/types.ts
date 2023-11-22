@@ -2,8 +2,8 @@ import { h } from "preact";
 
 export interface CommanderSettings {
 	confirmDeletion: boolean;
-	showAddCommand: boolean;
 	showDescriptions: boolean;
+	showSourcesForDuplicates: boolean;
 	debug: boolean;
 	trigger: string;
 	queryPattern: RegExp;

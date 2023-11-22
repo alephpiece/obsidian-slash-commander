@@ -90,3 +90,22 @@ export function buildQueryPattern(commandTrigger: string): RegExp {
 	const temp = `^(?<fullQuery>${escapedPrompt}(?<commandQuery>.*))`;
 	return new RegExp(temp, 'd');
 }
+
+export function getCommandSourceName(
+	plugin: SlashCommanderPlugin,
+	cmd: Command
+): string {
+	const owningPluginID = cmd.id.split(":").first();
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const owningPlugin = plugin.app.plugins.manifests[owningPluginID!];
+	return owningPlugin ? owningPlugin.name : "Obsidian";
+}
+
+export function isCommandNameUnique(
+	plugin: SlashCommanderPlugin,
+	name: string
+): boolean {
+	const pairNames = plugin.settings.slashPanel.map(({ name }) => name);
+	const matches = pairNames.filter((x) => x == name);
+	return matches.length == 1;
+}

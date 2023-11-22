@@ -30,6 +30,8 @@
 	"Always show a popup to confirm deletion of a command.": "Always show a popup to confirm deletion of a command.",
 	"Show command descriptions": "Show command descriptions",
 	"Always show command descriptions in editor suggestions.": "Always show command descriptions in editor suggestions.",
+	"Show command sources": "Show command sources",
+	"Show command sources in editor suggestions for duplicated command names.": "Show command sources in editor suggestions for duplicated command names.",
 	"General": "General",
 	"Slash commands": "Slash commands",
 	"Command trigger": "Command trigger",

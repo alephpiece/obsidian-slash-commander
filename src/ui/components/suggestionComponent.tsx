@@ -1,7 +1,7 @@
 import { Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, ObsidianIcon } from "src/util";
+import { getCommandFromId, getCommandSourceName, isCommandNameUnique, ObsidianIcon } from "src/util";
 
 interface SuggestionProps {
 	plugin: SlashCommanderPlugin;
@@ -30,7 +30,16 @@ export default function SuggestionComponent({
 					}
 				/>
 				<div className="cmdr-suggest-item-name">
-					<div>{pair.name}</div>
+					<div>
+						{pair.name}
+						{
+							plugin.settings.showSourcesForDuplicates &&
+							!isCommandNameUnique(plugin, pair.name) && (
+								<span className="cmdr-suggest-item-source">
+									{` ${getCommandSourceName(plugin, cmd)}`}
+								</span>
+							)}
+					</div>
 					{
 						plugin.settings.showDescriptions && (
 							<div className="cmdr-suggest-item-description">

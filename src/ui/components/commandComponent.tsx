@@ -3,7 +3,7 @@ import { Fragment, h } from "preact";
 import t from "src/l10n";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, ObsidianIcon } from "src/util";
+import { getCommandFromId, ObsidianIcon, getCommandSourceName} from "src/util";
 import MobileModifyModal from "../mobileModifyModal";
 import ChangeableText from "./ChangeableText";
 
@@ -93,10 +93,7 @@ export default function CommandComponent({
 			</Fragment>
 		);
 	}
-	const owningPluginID = cmd.id.split(":").first();
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	const owningPlugin = plugin.app.plugins.manifests[owningPluginID!];
-	const isInternal = !owningPlugin;
+
 	// const isChecked =
 	// 	cmd.hasOwnProperty("checkCallback") ||
 	// 	cmd.hasOwnProperty("editorCheckCallback");
@@ -132,7 +129,7 @@ export default function CommandComponent({
 							{
 								"From {{plugin_name}}".replace(
 									"{{plugin_name}}",
-									isInternal ? "Obsidian" : owningPlugin.name
+									getCommandSourceName(plugin, cmd)
 								)
 							}
 							{

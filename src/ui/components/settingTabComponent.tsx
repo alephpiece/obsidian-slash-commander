@@ -107,6 +107,17 @@ export default function settingTabComponent({
 								await plugin.saveSettings();
 							}}
 						/>
+						<ToggleComponent
+							name={t("Show command sources")}
+							description={t(
+								"Show command sources in editor suggestions for duplicated command names."
+							)}
+							value={plugin.settings.showSourcesForDuplicates}
+							changeHandler={async (value): Promise<void> => {
+								plugin.settings.showSourcesForDuplicates = !value;
+								await plugin.saveSettings();
+							}}
+						/>
 					</Fragment>
 				),
 			},
