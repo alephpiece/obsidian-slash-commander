@@ -132,10 +132,10 @@
 	}
 }
 
-.cmdr-accordion {
+.cmdr-setting-collapser {
 	margin-bottom: 16px;
 
-	.cmdr-accordion-chevron {
+	.cmdr-setting-collapser-icon {
 		margin-left: 0;
 		margin-right: 4px;
 		height: 24px;
@@ -145,8 +145,7 @@
 		}
 	}
 
-	.cmdr-accordion-content {
-		max-height: 1000px;
+	.cmdr-setting-collapser-content {
 		transition: all 0.3s ease-in-out;
 		overflow: hidden;
 		margin-left: 14px;
@@ -158,17 +157,17 @@
 	}
 
 	&[aria-expanded="false"] {
-		.cmdr-accordion-chevron>svg {
+		.cmdr-setting-collapser-icon>svg {
 			transform: rotate(-90deg);
 		}
 
-		.cmdr-accordion-content {
+		.cmdr-setting-collapser-content {
 			max-height: 0 !important;
 			transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
 		}
 	}
 
-	.cmdr-accordion-header {
+	.cmdr-setting-collapser-header {
 		display: flex;
 		cursor: var(--cursor);
 

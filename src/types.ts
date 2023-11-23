@@ -1,5 +1,3 @@
-import { h } from "preact";
-
 export interface CommanderSettings {
 	confirmDeletion: boolean;
 	showDescriptions: boolean;
@@ -8,11 +6,6 @@ export interface CommanderSettings {
 	trigger: string;
 	queryPattern: RegExp;
 	bindings: CommandIconPair[];
-}
-
-export interface Tab {
-	name: string;
-	tab: h.JSX.Element;
 }
 
 export type Mode = "desktop" | "any" | "mobile" | string;
