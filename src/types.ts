@@ -27,8 +27,6 @@ export interface CommandIconPair {
 
 interface InternalPlugin {
 	enabled: boolean;
-	enable: (b: boolean) => void;
-	disable: (b: boolean) => void;
 }
 
 interface InternalPlugins {
