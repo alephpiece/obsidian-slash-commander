@@ -21,7 +21,10 @@ export default function settingTabComponent({
 			<Fragment>
 				<h2>{t("General")}</h2>
 				{isTriggerInConflicts(plugin) && (
-					<div className="setting-item">
+					<div
+						className="setting-item"
+						style="border: thin solid crimson; padding-left: 1em"
+					>
 						<ObsidianIcon
 							icon="alert-triangle"
 							size={20}
@@ -30,7 +33,7 @@ export default function settingTabComponent({
 						<div className="setting-item-info">
 							<div
 								className="setting-item-name"
-								style="font-weight: bold; color: red"
+								style="font-weight: bold; color: crimson"
 							>
 								{t("Command trigger conflicts with the 'Slash commands' plugin.")}
 							</div>
