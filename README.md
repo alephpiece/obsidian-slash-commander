@@ -1,12 +1,12 @@
 # Obsidian Slash Commander
 
-![Static Badge](https://img.shields.io/badge/obsidian-1.5.0-a88bfa?logo=obsidian) [![GitHub all releases](https://img.shields.io/github/downloads/alephpiece/obsidian-slash-commander/total?logo=GitHub)](https://github.com/alephpiece/obsidian-slash-commander/releases) ![GitHub Repo stars](https://img.shields.io/github/stars/alephpiece/obsidian-slash-commander?logo=githubsponsors&logoColor=f5f5f5)
+![Static Badge](https://img.shields.io/badge/obsidian-1.5.0-a88bfa?logo=obsidian) [![GitHub all releases](https://img.shields.io/github/downloads/alephpiece/obsidian-slash-commander/total?logo=GitHub)](https://github.com/alephpiece/obsidian-slash-commander/releases) ![GitHub Repo stars](https://custom-icon-badges.demolab.com/github/stars/alephpiece/obsidian-slash-commander?logo=star)
 
-Customizable slash commands for [Obsidian](https://obsidian.md).
+Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ## Features
 
-- customized slash command trigger (defaults to `/`)
+- customize slash command trigger (defaults to `/`)
 - add/remove/edit slash commands
 
 ## How to install
@@ -15,23 +15,20 @@ Customizable slash commands for [Obsidian](https://obsidian.md).
    - Go to "Community plugins" and install "Obsidian42 - BRAT". 
    - Add https://github.com/alephpiece/obsidian-slash-commander to BRAT.
 2. Enable this plugin.
-3. If the plugin doesn't work, please try to
-   - disable the core plugin "Slash commands" or
-   - pick another trigger for this plugin.
 
 ## How to use
 
-- **Show the command list.**
+### Simple usage
 
-https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/2cca6c5b-6df0-4dc3-bd7d-1a83fb4fda7d
+![slash-commander-usage](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/7f50a564-0e42-4af9-830c-4a66400f20b8)
 
-- **Add a new slash command.**
+### Add a new slash command
 
-https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/59ff0efc-3471-47fe-9983-fd5d958a600a
+![slash-commander-add](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/ebb0bca2-42c8-4bc2-82c9-8b2acffff293)
 
-- **Change the trigger to whatever you like.**
+### Define your own trigger
 
-https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/3bcdc3fe-40df-4876-957c-005a654b54c6
+![slash-commander-trigger](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/02767279-90b5-45b9-9f87-16aea567f7fb)
 
 ## Credits
 
