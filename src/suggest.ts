@@ -13,25 +13,14 @@ import { getCommandFromId, SlashCommandMatch } from "./util";
 import { h, render } from "preact";
 import SuggestionComponent from "./ui/components/suggestionComponent";
 
-const fuseOptions = {
-  // isCaseSensitive: false,
-  // includeScore: false,
-  // shouldSort: true,
-  // includeMatches: false,
-  // findAllMatches: false,
-  // minMatchCharLength: 1,
-  // location: 0,
-  threshold: 0.5,
-  // distance: 100,
-  // useExtendedSearch: false,
-  // ignoreLocation: false,
-  // ignoreFieldNorm: false,
-  // fieldNormWeight: 1,
-  keys: ["name"]
-};
-
 export default function searchSlashCommand(pattern: string, commands: CommandIconPair[]): CommandIconPair[] {
+  const fuseOptions = {
+    minMatchCharLength: pattern.length,
+    threshold: 0.4,
+    keys: ["name"]
+  };
   const fuse = new Fuse(commands, fuseOptions);
+
   return pattern == "" ? commands : fuse.search(pattern).map(({ item }: { item: any }) => item);
 }
 
@@ -73,10 +62,10 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   }
 
   public renderSuggestion(pair: CommandIconPair, el: HTMLElement): void {
-		render(
-			h(SuggestionComponent, {plugin: this.plugin, pair: pair }),
+    render(
+      h(SuggestionComponent, { plugin: this.plugin, pair: pair }),
       el
-		);
+    );
   }
 
   public selectSuggestion(pair: CommandIconPair, _evt: MouseEvent | KeyboardEvent,): void {
