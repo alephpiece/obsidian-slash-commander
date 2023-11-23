@@ -110,3 +110,10 @@ export function isCommandNameUnique(
 	);
 	return matches.length == 1;
 }
+
+export function isTriggerInConflicts(
+	plugin: SlashCommanderPlugin
+): boolean {
+	return plugin.app.internalPlugins.plugins["slash-command"].enabled
+		&& (plugin.settings.trigger == "/");
+}

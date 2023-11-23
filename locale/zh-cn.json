@@ -27,14 +27,14 @@
 	"Remove": "移除",
 	"Cancel": "取消",
 	"Ask before removing": "移除之前询问",
-	"Always show a popup to confirm deletion of a command.": "在确认移除命令前总是弹窗。",
+	"Always show a popup to confirm deletion of a command.": "移除命令前总是弹窗确认。",
 	"Show command descriptions": "显示命令说明",
 	"Always show command descriptions in editor suggestions.": "在编辑器的建议命令中显示说明。",
 	"Show command sources": "显示命令来源",
 	"Show command sources in editor suggestions for duplicated command names.": "为相同名字的命令显示来源。",
 	"General": "通用",
 	"Bindings": "绑定命令",
-	"Command trigger": "命令触发",
+	"Command trigger": "命令触发符",
 	"Characters to trigger slash commands.": "用于触发斜杠命令的字符。",
 	"No commands here!": "还没有任何命令。",
 	"Would you like to add one now?": "现在添加命令？",
@@ -50,5 +50,7 @@
 	"Save": "保存",
 	"This command is not available on this device.": "该命令在当前设备不可用。",
 	"Double click to enter custom value": "双击以添加自定义值",
-	"Restore default": "恢复默认值"
+	"Restore default": "恢复默认值",
+	"Command trigger conflicts with the 'Slash commands' plugin.": "命令触发符和插件 Slash commands 冲突。",
+	"Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.": "请更换命令触发符或关闭上述插件，随后重新加载该设置页面以消除警告信息。"
 }

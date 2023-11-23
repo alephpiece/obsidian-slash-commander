@@ -3,7 +3,7 @@ import { Fragment, h } from "preact";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import t from "src/l10n";
 import { Tab } from "src/types";
-import { ObsidianIcon, buildQueryPattern } from "src/util";
+import { ObsidianIcon, buildQueryPattern, isTriggerInConflicts } from "src/util";
 import SlashCommanderPlugin from "../../main";
 import CommandViewer from "./commandViewerComponent";
 import {
@@ -75,6 +75,23 @@ export default function settingTabComponent({
 				name: t("General"),
 				tab: (
 					<Fragment>
+						{isTriggerInConflicts(plugin) && (
+							<div className="setting-item">
+								<ObsidianIcon
+									icon="alert-triangle"
+									size={20}
+									className="cmdr-suggest-item-icon-large mod-warning"
+								/>
+								<div className="setting-item-info">
+									<div style="font-weight: bold; color: red">
+										{t("Command trigger conflicts with the 'Slash commands' plugin.")}
+									</div>
+									<div className="setting-item-description">
+										{t("Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.")}
+									</div>
+								</div>
+							</div>
+						)}
 						<TextBoxComponent
 							value={plugin.settings.trigger}
 							name={t("Command trigger")}
