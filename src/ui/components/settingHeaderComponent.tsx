@@ -1,6 +1,5 @@
 import { ComponentProps, h } from "preact";
 import { useState } from "preact/hooks";
-import { ObsidianIcon } from "src/util";
 
 interface SettingCollapserProps extends ComponentProps<"details"> {
     title: string;
@@ -18,20 +17,13 @@ export default function SettingCollapser({
 
     return (
         <div className="cmdr-setting-collapser" aria-expanded={open}>
-            <div
+            <h2
                 className="cmdr-setting-collapser-header"
                 onClick={toggleHandler}
             >
-                <ObsidianIcon
-                    className="cmdr-setting-collapser-icon clickable-icon"
-                    icon="chevron-down"
-                    size={24}
-                />
-                <span>{title}</span>
-            </div>
-            <div
-                className="cmdr-setting-collapser-content"
-            >
+                {title}
+            </h2>
+            <div className="cmdr-setting-collapser-content">
                 {children}
             </div>
         </div>

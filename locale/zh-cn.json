@@ -49,7 +49,6 @@
 	"Done": "完成",
 	"Save": "保存",
 	"This command is not available on this device.": "该命令在当前设备不可用。",
-	"Double click to enter custom value": "双击以添加自定义值",
 	"Restore default": "恢复默认值",
 	"Command trigger conflicts with the 'Slash commands' plugin.": "命令触发符和插件 Slash commands 冲突。",
 	"Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.": "请更换命令触发符或关闭上述插件，随后重新加载该设置页面以消除警告信息。"

@@ -49,7 +49,6 @@
 	"Done": "Done",
 	"Save": "Save",
 	"This command is not available on this device.": "This command is not available on this device.",
-	"Double click to enter custom value": "Double click to enter custom value",
 	"Restore default": "Restore default",
 	"Command trigger conflicts with the 'Slash commands' plugin.": "Command trigger conflicts with the 'Slash commands' plugin.",
 	"Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.": "Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning."

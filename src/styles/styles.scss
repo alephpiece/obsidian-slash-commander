@@ -133,23 +133,9 @@
 }
 
 .cmdr-setting-collapser {
-	margin-bottom: 16px;
-
-	.cmdr-setting-collapser-icon {
-		margin-left: 0;
-		margin-right: 4px;
-		height: 24px;
-
-		>svg {
-			transition: all 0.25s ease;
-		}
-	}
-
 	.cmdr-setting-collapser-content {
 		transition: all 0.3s ease-in-out;
 		overflow: hidden;
-		margin-left: 14px;
-		padding-left: 14px;
 
 		.setting-item {
 			padding-top: 12px;
@@ -157,10 +143,6 @@
 	}
 
 	&[aria-expanded="false"] {
-		.cmdr-setting-collapser-icon>svg {
-			transform: rotate(-90deg);
-		}
-
 		.cmdr-setting-collapser-content {
 			max-height: 0 !important;
 			transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
@@ -169,7 +151,7 @@
 
 	.cmdr-setting-collapser-header {
 		display: flex;
-		cursor: var(--cursor);
+		cursor: pointer;
 
 		span {
 			font-weight: 600;
