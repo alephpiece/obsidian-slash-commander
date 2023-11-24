@@ -54,13 +54,13 @@ export default function settingTabComponent({
 					}}
 				/>
 				<ToggleComponent
-					name={t("Ask before removing")}
+					name={t("Only on new line")}
 					description={t(
-						"Always show a popup to confirm deletion of a command."
+						"Show slash commands only if the trigger is at the beginning of a line."
 					)}
-					value={plugin.settings.confirmDeletion}
+					value={plugin.settings.triggerOnlyOnNewLine}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.confirmDeletion = !value;
+						plugin.settings.triggerOnlyOnNewLine = !value;
 						await plugin.saveSettings();
 					}}
 				/>
@@ -83,6 +83,17 @@ export default function settingTabComponent({
 					value={plugin.settings.showSourcesForDuplicates}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.showSourcesForDuplicates = !value;
+						await plugin.saveSettings();
+					}}
+				/>
+				<ToggleComponent
+					name={t("Ask before removing")}
+					description={t(
+						"Always show a popup to confirm deletion of a command."
+					)}
+					value={plugin.settings.confirmDeletion}
+					changeHandler={async (value): Promise<void> => {
+						plugin.settings.confirmDeletion = !value;
 						await plugin.saveSettings();
 					}}
 				/>

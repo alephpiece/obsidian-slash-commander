@@ -44,12 +44,6 @@ export const DEFAULT_COMMANDS = [
 		mode: "any"
 	},
 	{
-		name: "Canvas",
-		id: "canvas:new-file",
-		icon: "layout-dashboard",
-		mode: "any"
-	},
-	{
 		name: "Admonition",
 		id: "obsidian-admonition:insert-admonition",
 		icon: "indent",
@@ -75,12 +69,6 @@ export const DEFAULT_COMMANDS = [
       mode: "any"
     },
 	{
-		name: "Date",
-		id: "insert-current-date",
-		icon: "calendar-days",
-		mode: "any"
-	},
-	{
 		name: "Citation",
 		id: "zotlit:insert-markdown-citation",
 		icon: "book-marked",
@@ -94,6 +82,7 @@ export const DEFAULT_SETTINGS: CommanderSettings = {
 	showSourcesForDuplicates: true,
 	debug: false,
 	trigger: "/",
+	triggerOnlyOnNewLine: false,
 	queryPattern: new RegExp("^(?<fullQuery>/(?<commandQuery>.*))", "d"),
 	bindings: DEFAULT_COMMANDS,
 };

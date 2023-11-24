@@ -82,13 +82,17 @@ export type SlashCommandMatch = RegExpMatchArray & {
 };
 
 export function buildQueryPattern(commandTrigger: string): RegExp {
-	const escapedPrompt = commandTrigger.replace(
+	const escapedTrigger = commandTrigger.replace(
 		/[.*+?^${}()|[\]\\]/g,
 		"\\$&",
 	);
 
-	const temp = `^(?<fullQuery>${escapedPrompt}(?<commandQuery>.*))`;
-	return new RegExp(temp, 'd');
+	// Always matching from the beginning of the line.
+	// The trigger mode is tweaked by passing in different parts of the line.
+	return new RegExp(
+		`^\\s*(?<fullQuery>${escapedTrigger}(?<commandQuery>.*))`,
+		"d"
+	);
 }
 
 export function getCommandSourceName(

@@ -50,6 +50,8 @@
 	"Save": "保存",
 	"This command is not available on this device.": "该命令在当前设备不可用。",
 	"Restore default": "恢复默认值",
-	"Command trigger conflicts with the 'Slash commands' plugin.": "命令触发符和插件 Slash commands 冲突。",
-	"Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.": "请更换命令触发符或关闭上述插件，随后重新加载该设置页面以消除警告信息。"
+	"Command trigger conflicts with the 'Slash commands' plugin.": "命令触发符和插件“斜杠命令”冲突。",
+	"Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.": "请更换命令触发符或关闭上述插件，随后重新加载该设置页面以消除警告信息。",
+	"Only on new line": "仅用于新行",
+	"Show slash commands only if the trigger is at the beginning of a line.": "仅当命令触发符位于行首才会触发斜杠命令。"
 }

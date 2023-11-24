@@ -37,8 +37,19 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
     editor: Editor,
     _file: TFile,
   ): EditorSuggestTriggerInfo | null {
+    const queryPattern = this.plugin.settings.queryPattern;
     const currentLine = editor.getLine(cursor.line).slice(0, cursor.ch);
-    const matchRes = currentLine.match(this.plugin.settings.queryPattern) as SlashCommandMatch | null;
+    let lastWordIndex = 0;
+    let lastWord = currentLine;
+
+    if (!this.plugin.settings.triggerOnlyOnNewLine) {
+      // Only the last word of the line will trigger slash commands.
+      lastWordIndex = currentLine.lastIndexOf(" ") + 1;
+      lastWord = currentLine.slice(lastWordIndex, cursor.ch);
+    }
+
+    const matchRes = lastWord.match(queryPattern) as SlashCommandMatch | null;
+
     if (matchRes === null) {
       return null;
     }
@@ -48,7 +59,7 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
       start: {
         ...cursor,
         // Starting ch of the prompt + command group
-        ch: matchRes.indices.groups.fullQuery[0],
+        ch: lastWordIndex + matchRes.indices.groups.fullQuery[0],
       },
       end: cursor,
       query: matchRes.groups.commandQuery,
