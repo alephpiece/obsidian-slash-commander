@@ -32,7 +32,5 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ## Credits
 
-This plugin is just a mix of
-
-- [Obsidian Commander](https://github.com/phibr0/obsidian-commander)
-- [Obsidian Better Slash Command](https://github.com/SPiCaRiA/obsidian-better-slash-commands)
+- Idea & logic: [Obsidian Better Slash Command](https://github.com/SPiCaRiA/obsidian-better-slash-commands)
+- UI design & data structures: based on [Obsidian Commander](https://github.com/phibr0/obsidian-commander)
