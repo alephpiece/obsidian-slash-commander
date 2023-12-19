@@ -38,7 +38,7 @@ export default class SlashCommanderPlugin extends Plugin {
 			id: "open-standalone-menu",
 			callback: () => {
 				this.standaloneMenu?.close();
-				this.standaloneMenu = new StandaloneMenu(this);
+				this.standaloneMenu = new StandaloneMenu(this, this.app.workspace.containerEl);
 				this.standaloneMenu.open();
 			},
 		});
