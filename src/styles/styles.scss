@@ -610,3 +610,17 @@
 	font-style: italic;
 	color: dimgray;
 }
+
+.cmdr-standalone-menu {
+	overflow: scroll;
+}
+
+.cmdr-standalone-menu-item {
+	&:hover {
+		background-color: var(--background-modifier-hover);
+	}
+}
+
+.cmdr-hide {
+	display: none;
+}

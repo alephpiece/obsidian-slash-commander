@@ -2,7 +2,7 @@ import { h } from "preact";
 import { useEffect } from "preact/hooks";
 import t from "src/l10n";
 import { ObsidianIcon } from "src/util";
-import MobileModifyModal from "../mobileModifyModal";
+import MobileModifyModal from "../ui/mobileModifyModal";
 
 export default function MobileModifyComponent({
 	modal: controller,

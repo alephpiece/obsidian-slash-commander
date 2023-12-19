@@ -1,7 +1,7 @@
 import { Modal, Platform } from "obsidian";
 import { h, render } from "preact";
 import SlashCommanderPlugin from "src/main";
-import settingTabComponent from "./components/settingTabComponent";
+import settingTabComponent from "../components/settingTabComponent";
 
 export default class SettingTabModal extends Modal {
 	private plugin: SlashCommanderPlugin;

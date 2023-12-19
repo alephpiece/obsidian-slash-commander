@@ -2,7 +2,7 @@
 import { CommandIconPair } from "src/types";
 import { Modal } from "obsidian";
 import { h, render, VNode } from "preact";
-import MobileModifyComponent from "./components/mobileModifyComponent";
+import MobileModifyComponent from "../components/mobileModifyComponent";
 import SlashCommanderPlugin from "src/main";
 
 export default class MobileModifyModal extends Modal {

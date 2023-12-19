@@ -1,5 +1,5 @@
-import { CommandIconPair } from "./types";
-import SlashCommanderPlugin from "./main";
+import { CommandIconPair } from "../types";
+import SlashCommanderPlugin from "../main";
 import Fuse from 'fuse.js';
 import {
   Editor,
@@ -9,9 +9,9 @@ import {
   EditorSuggestTriggerInfo,
   TFile,
 } from "obsidian";
-import { getCommandFromId, SlashCommandMatch } from "./util";
+import { getCommandFromId, SlashCommandMatch } from "../util";
 import { h, render } from "preact";
-import SuggestionComponent from "./ui/components/suggestionComponent";
+import SuggestionComponent from "../components/suggestionComponent";
 
 export default function searchSlashCommand(pattern: string, commands: CommandIconPair[]): CommandIconPair[] {
   const fuseOptions = {
