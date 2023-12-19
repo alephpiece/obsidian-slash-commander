@@ -1,6 +1,6 @@
 import { CommandIconPair } from "../types";
 import SlashCommanderPlugin from "../main";
-import Fuse from 'fuse.js';
+import { getFuzzySuggestions, SlashCommandMatch } from "../search";
 import {
   Editor,
   EditorPosition,
@@ -9,20 +9,8 @@ import {
   EditorSuggestTriggerInfo,
   TFile,
 } from "obsidian";
-import { getCommandFromId, SlashCommandMatch } from "../util";
 import { h, render } from "preact";
 import SuggestionComponent from "../components/suggestionComponent";
-
-export default function searchSlashCommand(pattern: string, commands: CommandIconPair[]): CommandIconPair[] {
-  const fuseOptions = {
-    minMatchCharLength: pattern.length,
-    threshold: 0.4,
-    keys: ["name"]
-  };
-  const fuse = new Fuse(commands, fuseOptions);
-
-  return pattern == "" ? commands : fuse.search(pattern).map(({ item }: { item: any }) => item);
-}
 
 export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   private plugin: SlashCommanderPlugin;
@@ -67,9 +55,7 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   }
 
   public getSuggestions(context: EditorSuggestContext): CommandIconPair[] {
-    const pairs = Object.values(this.plugin.settings.bindings);
-    return searchSlashCommand(context.query, pairs)
-      .filter((cmd) => getCommandFromId(this.plugin, cmd.id));
+    return getFuzzySuggestions(context.query, this.plugin);
   }
 
   public renderSuggestion(pair: CommandIconPair, el: HTMLElement): void {

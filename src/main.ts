@@ -1,4 +1,4 @@
-import { MarkdownView, Plugin } from "obsidian";
+import { Plugin } from "obsidian";
 import { DEFAULT_SETTINGS } from "./constants";
 import t from "./l10n";
 import { CommanderSettings } from "./types";
@@ -7,7 +7,7 @@ import SettingTabModal from "./ui/settingTabModal";
 import CommandManager from "./manager/commandManager";
 import { SlashSuggester } from "./suggester/suggest";
 import { StandaloneMenu } from "./suggester/suggestStandalone";
-import { buildQueryPattern } from "./util";
+import { buildQueryPattern } from "./search";
 
 import "./styles/styles.scss";
 import registerCustomIcons from "./ui/icons";

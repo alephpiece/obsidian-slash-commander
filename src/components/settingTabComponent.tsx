@@ -1,6 +1,7 @@
 import { Fragment, h } from "preact";
 import t from "src/l10n";
-import { ObsidianIcon, buildQueryPattern, isTriggerInConflicts } from "src/util";
+import { ObsidianIcon, isTriggerInConflicts } from "src/util";
+import { buildQueryPattern } from "src/search";
 import SlashCommanderPlugin from "../main";
 import CommandViewer from "./commandViewerComponent";
 import {

@@ -1,6 +1,7 @@
 import { PopoverSuggest } from "obsidian";
-import SlashCommanderPlugin from "../main";
 import { h, render } from "preact";
+import SlashCommanderPlugin from "../main";
+import { getFuzzySuggestions } from "../search";
 import { CommandIconPair } from "src/types";
 import SuggestionComponent from "src/components/suggestionComponent";
 
@@ -10,29 +11,30 @@ interface StandaloneMenuSelection {
 }
 
 export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
-    plugin: SlashCommanderPlugin;
-    menuElement: HTMLDivElement;
-    parentElement: HTMLElement;
-    registeredEvents: [string, any][] = [];
-    suggestions: StandaloneMenuSelection[];
-    selection?: StandaloneMenuSelection;
+    private plugin: SlashCommanderPlugin;
+    private menuElement: HTMLDivElement;
+    private parentElement: HTMLElement;
+    private registeredEvents: [string, any][] = [];
+    private suggestions: StandaloneMenuSelection[] = [];
+    private selection?: StandaloneMenuSelection;
 
-    constructor(plugin: SlashCommanderPlugin, parentElement: HTMLElement) {
+    public constructor(plugin: SlashCommanderPlugin, parentElement: HTMLElement) {
         super(plugin.app);
         this.plugin = plugin;
         this.parentElement = parentElement;
     }
 
-    public open() {
+    public open(): void {
         this.menuElement = this.app.workspace.containerEl.createDiv({
             cls: "suggestion-container cmdr-standalone-menu",
             attr: {
                 id: "standalone-menu",
                 style: "top:200px;left:100px"
             }
-        })
+        });
 
         for (const pair of this.getSuggestions()) {
+            console.warn(JSON.stringify(pair, null, " "));
             const element = this.menuElement.createDiv({
                 cls: "suggestion-item cmdr-standalone-menu-item",
             });
@@ -48,10 +50,11 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
             this.renderSuggestion(pair, element);
         }
 
-        this.updateSelection(this.suggestions[0]);
+        if (this.suggestions.length != 0)
+            this.updateSelection(this.suggestions[0]);
 
         // Events for the parent
-        const keyDown = async (event: KeyboardEvent) => {
+        const keyDown = async (event: KeyboardEvent): Promise<void> => {
             if (event.key == "Enter" && this.selection) {
                 this.selectSuggestion(this.selection.pair, event);
             }
@@ -61,10 +64,10 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
                     (value) => value == this.selection
                 );
                 const direction = event.key == 'ArrowDown' ? 1 : -1;
-                index += direction;
-                if (index >= this.suggestions.length) index = 0;
-                if (index < 0) index = this.suggestions.length - 1;
+                index += direction + this.suggestions.length;
+                index = index % this.suggestions.length;
                 this.updateSelection(this.suggestions[index]);
+                event.preventDefault();
             }
         };
         this.parentElement.addEventListener("keydown", keyDown);
@@ -74,8 +77,8 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
     }
 
     public getSuggestions(): CommandIconPair[] {
-        // FIXME
-        return this.plugin.manager.pairs;
+        // FIXME: search all commands now
+        return getFuzzySuggestions("", this.plugin);
     }
 
     public renderSuggestion(pair: CommandIconPair, el: HTMLElement): void {
@@ -92,7 +95,7 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
         this.close();
     }
 
-    public updateSelection(newSelection: StandaloneMenuSelection) {
+    public updateSelection(newSelection: StandaloneMenuSelection): void {
         if (this.selection && this.selection.element) {
             this.selection.element.removeClass('is-selected');
         }
@@ -100,11 +103,11 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
         this.selection = newSelection;
     }
 
-    public close() {
+    public close(): void {
         this.menuElement.remove();
         this.selection = undefined;
         this.suggestions = [];
         for (const [name, handler] of this.registeredEvents)
             this.parentElement.removeEventListener(name, handler);
-    };
+    }
 }
