@@ -1,7 +1,7 @@
-import { CommandIconPair } from "./types";
-import { getCommandFromId } from "src/util";
+import { CommandIconPair } from "../types";
+import { getCommandFromId } from "src/utils/util";
 import Fuse from 'fuse.js';
-import SlashCommanderPlugin from "./main";
+import SlashCommanderPlugin from "../main";
 
 export function searchSlashCommand(
 	pattern: string,

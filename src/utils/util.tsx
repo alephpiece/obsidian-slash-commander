@@ -1,9 +1,9 @@
-import { CommandIconPair } from "./types";
-import SlashCommanderPlugin from "./main";
-import AddCommandModal from "./ui/addCommandModal";
-import ChooseIconModal from "./ui/chooseIconModal";
+import { CommandIconPair } from "../types";
+import SlashCommanderPlugin from "../main";
+import AddCommandModal from "../settings/addCommandModal";
+import ChooseIconModal from "../settings/chooseIconModal";
 import { Command, setIcon } from "obsidian";
-import ChooseCustomNameModal from "./ui/chooseCustomNameModal";
+import ChooseCustomNameModal from "../settings/chooseCustomNameModal";
 import { ComponentProps, h } from "preact";
 import { useRef, useLayoutEffect } from "preact/hooks";
 

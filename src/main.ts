@@ -2,21 +2,21 @@ import { Plugin } from "obsidian";
 import { DEFAULT_SETTINGS } from "./constants";
 import t from "./l10n";
 import { CommanderSettings } from "./types";
-import CommanderSettingTab from "./ui/settingTab";
-import SettingTabModal from "./ui/settingTabModal";
+import CommanderSettingTab from "./settings/settingTab";
+import SettingTabModal from "./settings/settingTabModal";
 import CommandManager from "./manager/commandManager";
-import { SlashSuggester } from "./suggester/suggest";
-import { StandaloneMenu } from "./suggester/suggestStandalone";
-import { buildQueryPattern } from "./search";
+import { SlashSuggester } from "./suggesters/suggest";
+import { MenuSuggest } from "./suggesters/menuSuggest";
+import { buildQueryPattern } from "./utils/search";
 
 import "./styles/styles.scss";
-import registerCustomIcons from "./ui/icons";
+import registerCustomIcons from "./assets/icons";
 
 export default class SlashCommanderPlugin extends Plugin {
 	public settings: CommanderSettings;
 	public manager: CommandManager;
 	public scrollArea?: Element;
-	public standaloneMenu?: StandaloneMenu;
+	public menuSuggest?: MenuSuggest;
 
 	public async onload(): Promise<void> {
 		await this.loadSettings();
@@ -37,22 +37,22 @@ export default class SlashCommanderPlugin extends Plugin {
 			name: t("Open standalone menu"),
 			id: "open-standalone-menu",
 			callback: () => {
-				this.standaloneMenu?.close();
-				this.standaloneMenu = new StandaloneMenu(this, this.app.workspace.containerEl);
-				this.standaloneMenu.open();
+				this.menuSuggest?.close();
+				this.menuSuggest = new MenuSuggest(this, this.app.workspace.containerEl);
+				this.menuSuggest.open();
 			},
 		});
 
 		this.registerEditorSuggest(new SlashSuggester(this));
 
 		this.registerDomEvent(document, "click", (evt: MouseEvent) => {
-			this.standaloneMenu?.close();
+			this.menuSuggest?.close();
 		});
 	}
 
 	public onunload(): void {
 		document.head.querySelector("style#cmdr")?.remove();
-		this.standaloneMenu?.close();
+		this.menuSuggest?.close();
 	}
 
 	private async loadSettings(): Promise<void> {

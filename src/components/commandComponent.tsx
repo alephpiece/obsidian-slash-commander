@@ -3,8 +3,8 @@ import { Fragment, h } from "preact";
 import t from "src/l10n";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, ObsidianIcon, getCommandSourceName } from "src/util";
-import MobileModifyModal from "../ui/mobileModifyModal";
+import { getCommandFromId, ObsidianIcon, getCommandSourceName } from "src/utils/util";
+import MobileModifyModal from "../settings/mobileModifyModal";
 import ChangeableText from "./changeableText";
 
 interface CommandProps {

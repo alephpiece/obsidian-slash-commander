@@ -1,22 +1,22 @@
 import { PopoverSuggest } from "obsidian";
 import { h, render } from "preact";
 import SlashCommanderPlugin from "../main";
-import { getFuzzySuggestions } from "../search";
+import { getFuzzySuggestions } from "../utils/search";
 import { CommandIconPair } from "src/types";
 import SuggestionComponent from "src/components/suggestionComponent";
 
-interface StandaloneMenuSelection {
+interface MenuSelection {
     pair: CommandIconPair;
     element: HTMLDivElement;
 }
 
-export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
+export class MenuSuggest extends PopoverSuggest<CommandIconPair> {
     private plugin: SlashCommanderPlugin;
     private menuElement: HTMLDivElement;
     private parentElement: HTMLElement;
     private registeredEvents: [string, any][] = [];
-    private suggestions: StandaloneMenuSelection[] = [];
-    private selection?: StandaloneMenuSelection;
+    private suggestions: MenuSelection[] = [];
+    private selection?: MenuSelection;
 
     public constructor(plugin: SlashCommanderPlugin, parentElement: HTMLElement) {
         super(plugin.app);
@@ -25,7 +25,7 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
     }
 
     public open(): void {
-        this.menuElement = this.app.workspace.containerEl.createDiv({
+        this.menuElement = this.parentElement.createDiv({
             cls: "suggestion-container cmdr-standalone-menu",
             attr: {
                 id: "standalone-menu",
@@ -34,7 +34,6 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
         });
 
         for (const pair of this.getSuggestions()) {
-            console.warn(JSON.stringify(pair, null, " "));
             const element = this.menuElement.createDiv({
                 cls: "suggestion-item cmdr-standalone-menu-item",
             });
@@ -95,7 +94,7 @@ export class StandaloneMenu extends PopoverSuggest<CommandIconPair> {
         this.close();
     }
 
-    public updateSelection(newSelection: StandaloneMenuSelection): void {
+    public updateSelection(newSelection: MenuSelection): void {
         if (this.selection && this.selection.element) {
             this.selection.element.removeClass('is-selected');
         }

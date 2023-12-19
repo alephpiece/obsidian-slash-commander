@@ -1,6 +1,6 @@
 import { CommandIconPair } from "../types";
 import SlashCommanderPlugin from "../main";
-import { getFuzzySuggestions, SlashCommandMatch } from "../search";
+import { getFuzzySuggestions, SlashCommandMatch } from "../utils/search";
 import {
   Editor,
   EditorPosition,

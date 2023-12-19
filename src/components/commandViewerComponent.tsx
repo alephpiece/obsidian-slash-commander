@@ -2,10 +2,10 @@ import { createContext, Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import CommandComponent from "./commandComponent";
 import CommandManager from "src/manager/commandManager";
-import { chooseNewCommand, isModeActive, ObsidianIcon } from "src/util";
+import { chooseNewCommand, isModeActive, ObsidianIcon } from "src/utils/util";
 import { arrayMoveMutable } from "array-move";
-import ChooseIconModal from "../ui/chooseIconModal";
-import ConfirmDeleteModal from "../ui/confirmDeleteModal";
+import ChooseIconModal from "../settings/chooseIconModal";
+import ConfirmDeleteModal from "../settings/confirmDeleteModal";
 import t from "src/l10n";
 import { Platform } from "obsidian";
 
