@@ -16,6 +16,7 @@
 	"keywords": [],
 	"author": "alephpiece",
 	"devDependencies": {
+		"@popperjs/core": "^2.9.2",
 		"@types/node": "^18.11.9",
 		"@types/react": "^18.0.25",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",

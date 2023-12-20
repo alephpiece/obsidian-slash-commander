@@ -595,7 +595,7 @@
 	}
 }
 
-.cmdr-suggest-item-name {
+.cmdr-suggest-content {
 	flex: 1 1 auto;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -620,8 +620,4 @@
 	&:hover {
 		background-color: var(--background-modifier-hover);
 	}
-}
-
-.cmdr-hide {
-	display: none;
 }

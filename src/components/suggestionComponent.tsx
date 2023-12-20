@@ -29,7 +29,7 @@ export default function SuggestionComponent({
 							"cmdr-suggest-item-icon"
 					}
 				/>
-				<div className="cmdr-suggest-item-name">
+				<div className="cmdr-suggest-content">
 					<div>
 						{pair.name}
 						{

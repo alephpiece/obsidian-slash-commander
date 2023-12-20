@@ -1,3 +1,5 @@
+import { CommandIconPair } from "./types";
+
 export interface CommanderSettings {
 	confirmDeletion: boolean;
 	showDescriptions: boolean;
@@ -58,4 +60,9 @@ declare module "obsidian" {
 			};
 		};
 	}
+}
+
+export interface MenuSuggestion {
+    pair: CommandIconPair;
+    element: HTMLDivElement;
 }

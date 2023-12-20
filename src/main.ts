@@ -5,7 +5,7 @@ import { CommanderSettings } from "./types";
 import CommanderSettingTab from "./settings/settingTab";
 import SettingTabModal from "./settings/settingTabModal";
 import CommandManager from "./manager/commandManager";
-import { SlashSuggester } from "./suggesters/suggest";
+import { SlashSuggester } from "./suggesters/slashSuggest";
 import { MenuSuggest } from "./suggesters/menuSuggest";
 import { buildQueryPattern } from "./utils/search";
 
