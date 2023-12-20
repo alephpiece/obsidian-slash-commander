@@ -1,7 +1,5 @@
 import { CommandIconPair } from "../types";
-import { getCommandFromId } from "src/utils/util";
 import Fuse from 'fuse.js';
-import SlashCommanderPlugin from "../main";
 
 export function searchSlashCommand(
 	pattern: string,
@@ -15,14 +13,6 @@ export function searchSlashCommand(
 	const fuse = new Fuse(commands, fuseOptions);
 
 	return pattern == "" ? commands : fuse.search(pattern).map(({ item }: { item: any }) => item);
-}
-
-export function getFuzzySuggestions(
-	query: string,
-	plugin: SlashCommanderPlugin
-): CommandIconPair[] {
-	return searchSlashCommand(query, plugin.manager.pairs)
-		.filter((cmd) => getCommandFromId(plugin, cmd.id));
 }
 
 export type SlashCommandMatch = RegExpMatchArray & {

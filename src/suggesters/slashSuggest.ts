@@ -1,6 +1,6 @@
 import { CommandIconPair } from "../types";
 import SlashCommanderPlugin from "../main";
-import { getFuzzySuggestions, SlashCommandMatch } from "../utils/search";
+import { searchSlashCommand, SlashCommandMatch } from "../utils/search";
 import {
   Editor,
   EditorPosition,
@@ -11,6 +11,7 @@ import {
 } from "obsidian";
 import { h, render } from "preact";
 import SuggestionComponent from "../components/suggestionComponent";
+import { getCommandFromId } from "src/utils/util";
 
 export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   private plugin: SlashCommanderPlugin;
@@ -55,7 +56,8 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
   }
 
   public getSuggestions(context: EditorSuggestContext): CommandIconPair[] {
-    return getFuzzySuggestions(context.query, this.plugin);
+    return searchSlashCommand(context.query, this.plugin.manager.pairs)
+      .filter((cmd) => getCommandFromId(this.plugin, cmd.id));
   }
 
   public renderSuggestion(pair: CommandIconPair, el: HTMLElement): void {
