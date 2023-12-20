@@ -1,7 +1,8 @@
 import { Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, getCommandSourceName, isCommandNameUnique, ObsidianIcon } from "src/utils/util";
+import { getCommandFromId, getCommandSourceName, isCommandNameUnique } from "src/utils/util";
+import ObsidianIcon from "src/components/obsidianIconComponent";
 
 interface SuggestionProps {
 	plugin: SlashCommanderPlugin;

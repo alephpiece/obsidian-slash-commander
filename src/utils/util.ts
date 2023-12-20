@@ -2,10 +2,8 @@ import { CommandIconPair } from "../types";
 import SlashCommanderPlugin from "../main";
 import AddCommandModal from "../settings/addCommandModal";
 import ChooseIconModal from "../settings/chooseIconModal";
-import { Command, setIcon } from "obsidian";
+import { Command } from "obsidian";
 import ChooseCustomNameModal from "../settings/chooseCustomNameModal";
-import { ComponentProps, h } from "preact";
-import { useRef, useLayoutEffect } from "preact/hooks";
 
 /**
  * It creates a modal, waits for the user to select a command, and then creates another modal to wait
@@ -37,25 +35,6 @@ export async function chooseNewCommand(
 
 export function getCommandFromId(plugin: SlashCommanderPlugin, id: string): Command | null {
 	return plugin.app.commands.commands[id] ?? null;
-}
-
-interface ObsidianIconProps extends ComponentProps<"div"> {
-	icon: string;
-	size?: number;
-}
-export function ObsidianIcon({
-	icon,
-	size,
-	...props
-}: ObsidianIconProps): h.JSX.Element {
-	const iconEl = useRef<HTMLDivElement>(null);
-
-	useLayoutEffect(() => {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		setIcon(iconEl.current!, icon);
-	}, [icon, size]);
-
-	return <div ref={iconEl} {...props} />;
 }
 
 export function isModeActive(plugin: SlashCommanderPlugin, mode: string): boolean {
