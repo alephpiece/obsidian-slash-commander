@@ -4,7 +4,6 @@ import {
     App,
     FuzzyMatch,
     FuzzySuggestModal,
-    Platform,
     Scope,
     SuggestModal,
     TextComponent
@@ -103,9 +102,9 @@ export default class Suggester<T> {
         if (currentValue) {
             this.owner.selectSuggestion(currentValue, event);
         }
-        if (Platform.isMobile) {
-            this.chooseSuggestion(event);
-        }
+        // if (Platform.isMobile) {
+        //     this.chooseSuggestion(event);
+        // }
     }
     wrap(value: number, size: number): number {
         return ((value % size) + size) % size;
