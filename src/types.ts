@@ -1,4 +1,4 @@
-import { CommandIconPair } from "./types";
+import { Editor } from "obsidian";
 
 export interface CommanderSettings {
 	confirmDeletion: boolean;
@@ -63,6 +63,23 @@ declare module "obsidian" {
 }
 
 export interface MenuSuggestion {
-    pair: CommandIconPair;
+	pair: CommandIconPair;
     element: HTMLDivElement;
+}
+
+// Credits go to https://github.com/chetachiezikeuzor/Highlightr-Plugin
+export type EnhancedEditor = Editor & {
+	cursorCoords: Function;
+	coordsAtPos: Function;
+	cm: CodeMirror.Editor & { coordsAtPos: Function };
+	hasFocus: Function;
+	getSelection: Function;
+};
+
+// Credits go to https://github.com/chetachiezikeuzor/Highlightr-Plugin
+export interface Coords {
+	top: number;
+	left: number;
+	right: number;
+	bottom: number;
 }

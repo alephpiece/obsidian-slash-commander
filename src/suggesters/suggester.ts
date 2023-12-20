@@ -1,4 +1,5 @@
-// See https://github.com/javalent/admonitions
+// Credits go to https://github.com/liamcain/obsidian-periodic-notes
+// and https://github.com/javalent/admonitions
 import {
     App,
     FuzzyMatch,
@@ -14,7 +15,6 @@ import { CommandIconPair } from "src/types";
 import SlashCommanderPlugin from "src/main";
 import { h, render } from "preact";
 import SuggestionComponent from "src/components/suggestionComponent";
-import { ObsidianIcon } from "src/utils/util";
 
 export default class Suggester<T> {
     owner: SuggestModal<T>;
@@ -195,12 +195,12 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
         this.popper = createPopper(this.inputEl, this.suggestEl, {
             placement: "bottom-start",
             modifiers: [
-                {
-                    name: "offset",
-                    options: {
-                        offset: [0, 10]
-                    }
-                },
+                // {
+                //     name: "offset",
+                //     options: {
+                //         offset: [0, 6]
+                //     }
+                // },
                 {
                     name: "flip",
                     options: {
@@ -209,9 +209,11 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
                 }
             ]
         });
-        this.inputEl.setCssStyles({
-            opacity: "0"
-        });
+
+        // FIXME: hide input box
+        // this.inputEl.setCssStyles({
+        //     maxWidth: "0"
+        // });
     }
 
     close(): void {

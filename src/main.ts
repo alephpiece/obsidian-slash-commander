@@ -1,7 +1,7 @@
-import { Plugin } from "obsidian";
+import { MarkdownView, Plugin } from "obsidian";
 import { DEFAULT_SETTINGS } from "./constants";
 import t from "./l10n";
-import { CommanderSettings } from "./types";
+import { CommanderSettings, EnhancedEditor } from "./types";
 import CommanderSettingTab from "./settings/settingTab";
 import SettingTabModal from "./settings/settingTabModal";
 import CommandManager from "./manager/commandManager";
@@ -15,7 +15,7 @@ import registerCustomIcons from "./assets/icons";
 export default class SlashCommanderPlugin extends Plugin {
 	public settings: CommanderSettings;
 	public manager: CommandManager;
-	public scrollArea?: Element;
+	public scrollArea?: Element | undefined;
 	public menuSuggest?: MenuSuggest;
 
 	public async onload(): Promise<void> {
@@ -36,11 +36,11 @@ export default class SlashCommanderPlugin extends Plugin {
 		this.addCommand({
 			name: t("Open standalone menu"),
 			id: "open-standalone-menu",
-			callback: () => {
+			editorCallback: (editor: EnhancedEditor) => {
 				this.menuSuggest?.close();
-				this.menuSuggest = new MenuSuggest(this, this.app.workspace.containerEl);
+				this.menuSuggest = new MenuSuggest(this, editor, this.scrollArea);
 				this.menuSuggest.open();
-			},
+			  },
 		});
 
 		this.registerEditorSuggest(new SlashSuggester(this));
@@ -48,6 +48,22 @@ export default class SlashCommanderPlugin extends Plugin {
 		this.registerDomEvent(document, "click", (evt: MouseEvent) => {
 			this.menuSuggest?.close();
 		});
+
+		const renderPlugin = () => {
+			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+			if (!view) return;
+			this.scrollArea =
+				view.containerEl.querySelector(".cm-scroller") ?? undefined;
+			if (!this.scrollArea) return;
+			const scrollArea = this.scrollArea;
+		};
+
+		/**Ensure that the plugin can be loaded and used immediately after it is turned on */
+		renderPlugin();
+
+		this.registerEvent(
+			this.app.workspace.on("active-leaf-change", renderPlugin)
+		);
 	}
 
 	public onunload(): void {
