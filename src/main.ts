@@ -40,7 +40,7 @@ export default class SlashCommanderPlugin extends Plugin {
 				this.menuSuggest?.close();
 				this.menuSuggest = new MenuSuggest(this, editor, this.scrollArea);
 				this.menuSuggest.open();
-			  },
+			},
 		});
 
 		this.registerEditorSuggest(new SlashSuggester(this));
@@ -49,13 +49,14 @@ export default class SlashCommanderPlugin extends Plugin {
 			this.menuSuggest?.close();
 		});
 
-		const renderPlugin = () => {
+		// Get the scroller area
+		// Credits go to https://github.com/Jambo2018/notion-assistant-plugin
+		const renderPlugin = (): void => {
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (!view) return;
 			this.scrollArea =
 				view.containerEl.querySelector(".cm-scroller") ?? undefined;
 			if (!this.scrollArea) return;
-			const scrollArea = this.scrollArea;
 		};
 
 		/**Ensure that the plugin can be loaded and used immediately after it is turned on */

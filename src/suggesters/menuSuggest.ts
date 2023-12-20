@@ -58,27 +58,26 @@ export class MenuSuggest {
 
         const scrollRect = this.scrollArea.getBoundingClientRect();
 
-        coords.top += this.scrollArea.scrollTop - scrollRect.top;
-        coords.right -= scrollRect.left;
+        let top = coords.top, left = coords.right;
+        top += this.scrollArea.scrollTop - scrollRect.top;
+        left -= scrollRect.left;
 
-        const rightDis = coords.right + menuWidth - scrollRect.width;
+        const rightDis = left + menuWidth - scrollRect.width;
 		if (rightDis > 0) {
-			coords.right -= rightDis;
+			left -= rightDis;
 		}
 
 		const upDis =
-			coords.top + menuHeight -
+			top + menuHeight -
 			this.scrollArea.scrollTop -
 			this.scrollArea.clientHeight;
 		if (upDis > 0) {
 			this.scrollArea.scrollTo(0, this.scrollArea.scrollTop + upDis);
 		}
 
-        console.log(coords);
-
         this.search.inputEl.setCssStyles({
-            top: `${coords.top}px`,
-            left: `${coords.right}px`,
+            top: `${top}px`,
+            left: `${left}px`,
             position: "absolute",
             opacity: "0"
         });

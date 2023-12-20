@@ -143,7 +143,8 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
 
         this.suggestEl = createDiv("suggestion-container");
 
-        this.suggestEl.style.width = `${inputEl.clientWidth*2}px`;
+        // this.suggestEl.style.width = `${inputEl.clientWidth*2}px`;
+        this.suggestEl.style.width = `unset`;
 
         this.contentEl = this.suggestEl.createDiv("suggestion");
 
@@ -182,7 +183,7 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
     onNoSuggestion() {
         this.empty();
         this.renderSuggestion(
-            null,
+            null as unknown as FuzzyMatch<T>,
             this.contentEl.createDiv("suggestion-item")
         );
     }
@@ -211,9 +212,10 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
         });
 
         // FIXME: hide input box
-        // this.inputEl.setCssStyles({
-        //     maxWidth: "0"
-        // });
+        this.inputEl.setCssStyles({
+            maxWidth: "0",
+            padding: "0 0 0 0",
+        });
     }
 
     close(): void {
@@ -298,6 +300,7 @@ export class MenuSuggestionModal extends SuggestionModal<CommandIconPair> {
             el
         );
 
+        // TODO: highlight matched text
         // render(h(ObsidianIcon, {icon: item.icon, size: 20}), content);
 
         // const matchElements = matches.matches.map((m) => {
