@@ -53,5 +53,6 @@
 	"Command trigger conflicts with the 'Slash commands' plugin.": "Command trigger conflicts with the 'Slash commands' plugin.",
 	"Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.": "Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.",
 	"Only on new line": "Only on new line",
-	"Show slash commands only if the trigger is at the beginning of a line.": "Show slash commands only if the trigger is at the beginning of a line."
+	"Show slash commands only if the trigger is at the beginning of a line.": "Show slash commands only if the trigger is at the beginning of a line.",
+	"Open standalone menu": "Open standalone menu"
 }

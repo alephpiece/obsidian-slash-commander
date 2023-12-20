@@ -12,6 +12,15 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ## How to install
 
+### Community plugins
+
+1. Open Obsidian settings and scroll to "Community plugins".
+2. Turn off the restricted mode.
+3. Browse community plugins, search `Slash Commander` and install it.
+4. Enable this plugin.
+
+### Using BRAT
+
 1. Install this plugin using BRAT.
    - Go to "Community plugins" and install "Obsidian42 - BRAT". 
    - Add https://github.com/alephpiece/obsidian-slash-commander to BRAT.
@@ -33,5 +42,9 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ## Credits
 
-- Idea & logic: [Obsidian Better Slash Command](https://github.com/SPiCaRiA/obsidian-better-slash-commands)
-- UI design & data structures: based on [Obsidian Commander](https://github.com/phibr0/obsidian-commander)
+- Idea & logic: [Better Slash Command](https://github.com/SPiCaRiA/obsidian-better-slash-commands)
+- UI design & data structures: based on [Commander](https://github.com/phibr0/obsidian-commander)
+- Standalone menu suggest:
+  - idea: [FelipeRearden](https://github.com/FelipeRearden)
+  - suggester: [Periodic Notes](https://github.com/liamcain/obsidian-periodic-notes) and [Admonitions](https://github.com/javalent/admonitions)
+  - positioning: [Highlightr](https://github.com/chetachiezikeuzor/Highlightr-Plugin) and [Typing Assistant](https://github.com/Jambo2018/notion-assistant-plugin)

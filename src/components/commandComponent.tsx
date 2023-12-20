@@ -3,11 +3,11 @@ import { Fragment, h } from "preact";
 import t from "src/l10n";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, ObsidianIcon, getCommandSourceName } from "src/util";
-import MobileModifyModal from "../mobileModifyModal";
-import ChangeableText from "./ChangeableText";
+import { getCommandFromId, ObsidianIcon, getCommandSourceName } from "src/utils/util";
+import MobileModifyModal from "../settings/mobileModifyModal";
+import ChangeableText from "./changeableText";
 
-interface CommandViewerProps {
+interface CommandProps {
 	plugin: SlashCommanderPlugin;
 	pair: CommandIconPair;
 	handleRemove: () => void;
@@ -29,7 +29,7 @@ export default function CommandComponent({
 	handleRename,
 	handleModeChange,
 	sortable = true,
-}: CommandViewerProps): h.JSX.Element {
+}: CommandProps): h.JSX.Element {
 	const cmd = getCommandFromId(plugin, pair.id);
 	if (!cmd) {
 		return (

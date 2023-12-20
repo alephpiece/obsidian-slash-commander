@@ -595,7 +595,7 @@
 	}
 }
 
-.cmdr-suggest-item-name {
+.cmdr-suggest-content {
 	flex: 1 1 auto;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -609,4 +609,15 @@
 .cmdr-suggest-item-source {
 	font-style: italic;
 	color: dimgray;
+}
+
+.cmdr-standalone-menu {
+	overflow: scroll;
+}
+
+.cmdr-standalone-menu-item {
+	margin-left: 6px;
+	&:hover {
+		background-color: var(--background-modifier-hover);
+	}
 }

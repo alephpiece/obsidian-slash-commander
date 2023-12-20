@@ -1,4 +1,4 @@
-import { ICON_LIST } from "./../constants";
+import { ICON_LIST } from "../constants";
 import { setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
 import SlashCommanderPlugin from "src/main";
 import t from "src/l10n";

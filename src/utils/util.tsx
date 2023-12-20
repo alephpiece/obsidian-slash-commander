@@ -1,9 +1,9 @@
-import { CommandIconPair } from "./types";
-import SlashCommanderPlugin from "./main";
-import AddCommandModal from "./ui/addCommandModal";
-import ChooseIconModal from "./ui/chooseIconModal";
+import { CommandIconPair } from "../types";
+import SlashCommanderPlugin from "../main";
+import AddCommandModal from "../settings/addCommandModal";
+import ChooseIconModal from "../settings/chooseIconModal";
 import { Command, setIcon } from "obsidian";
-import ChooseCustomNameModal from "./ui/chooseCustomNameModal";
+import ChooseCustomNameModal from "../settings/chooseCustomNameModal";
 import { ComponentProps, h } from "preact";
 import { useRef, useLayoutEffect } from "preact/hooks";
 
@@ -65,33 +65,6 @@ export function isModeActive(plugin: SlashCommanderPlugin, mode: string): boolea
 		mode === appId ||
 		(mode === "mobile" && isMobile) ||
 		(mode === "desktop" && !isMobile)
-	);
-}
-
-export type SlashCommandMatch = RegExpMatchArray & {
-	indices: {
-		groups: {
-			commandQuery: [number, number];
-			fullQuery: [number, number];
-		};
-	};
-	groups: {
-		commandQuery: string;
-		fullQuery: string;
-	};
-};
-
-export function buildQueryPattern(commandTrigger: string): RegExp {
-	const escapedTrigger = commandTrigger.replace(
-		/[.*+?^${}()|[\]\\]/g,
-		"\\$&",
-	);
-
-	// Always matching from the beginning of the line.
-	// The trigger mode is tweaked by passing in different parts of the line.
-	return new RegExp(
-		`^\\s*(?<fullQuery>${escapedTrigger}(?<commandQuery>.*))`,
-		"d"
 	);
 }
 
