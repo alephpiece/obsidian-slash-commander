@@ -1,17 +1,17 @@
-import { TextComponent } from "obsidian";
+import { MarkdownView, TextComponent } from "obsidian";
 import SlashCommanderPlugin from "../main";
 import { MenuSuggestionModal } from "./suggester";
 import { Coords, EnhancedEditor } from "src/types";
 
 export class MenuSuggest {
     private plugin: SlashCommanderPlugin;
-    private editor: EnhancedEditor;
+    private editor: EnhancedEditor | null;
     private scrollArea: HTMLDivElement | undefined;
     private search: TextComponent;
 
     public constructor(
         plugin: SlashCommanderPlugin,
-        editor: EnhancedEditor,
+        editor: EnhancedEditor | null,
         scrollArea: Element | undefined,
         ) {
         this.plugin = plugin;
@@ -26,9 +26,14 @@ export class MenuSuggest {
             return;
 
         this.search = new TextComponent(this.scrollArea);
+
+        // Additional events
+        this.search.inputEl.addEventListener("blur", this.returnFocus.bind(this));
         this.search.inputEl.addEventListener("keydown", (event) => {
-            if (event.key == "Escape")
+            if (event.key == "Escape") {
+                this.returnFocus();
                 this.close();
+            }
         });
 
         const modal = new MenuSuggestionModal(
@@ -88,5 +93,9 @@ export class MenuSuggest {
 
     public close(): void {
         this.search.inputEl.remove();
+    }
+
+    public returnFocus(): void {
+        this.editor?.focus();
     }
 }
