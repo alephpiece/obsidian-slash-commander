@@ -92,7 +92,7 @@ export class MenuSuggest {
     }
 
     public close(): void {
-        this.search.inputEl.remove();
+        this.search?.inputEl?.remove();
     }
 
     public returnFocus(): void {
