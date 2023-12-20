@@ -281,7 +281,7 @@ export class MenuSuggestionModal extends SuggestionModal<CommandIconPair> {
             this.plugin.app.commands.executeCommandById(item.id);
         }
         this.text.inputEl.remove();
-        this.onClose();
+        this.close();
     }
     renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement) {
         let { item, match: matches } = result || {};

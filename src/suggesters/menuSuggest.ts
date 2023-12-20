@@ -32,7 +32,7 @@ export class MenuSuggest {
         this.search.inputEl.addEventListener("keydown", (event) => {
             if (event.key == "Escape") {
                 this.returnFocus();
-                this.close();
+                // this.close();
             }
         });
 
