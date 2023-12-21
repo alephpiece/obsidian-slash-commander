@@ -284,42 +284,20 @@ export class MenuSuggestionModal extends SuggestionModal<CommandIconPair> {
         this.close();
     }
     renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement) {
-        let { item, match: matches } = result || {};
-        let content = el.createDiv({
-            cls: "suggestion-content icon"
-        });
+        let { item } = result || {};
         if (!item) {
+            let content = el.createDiv({
+                cls: "suggestion-content icon"
+            });
             content.setText(this.emptyStateText);
             content.parentElement?.addClass("is-selected");
             return;
         }
 
         render(
-            h(SuggestionComponent, { plugin: this.plugin, pair: item }),
+            h(SuggestionComponent, { plugin: this.plugin, result: result }),
             el
         );
-
-        // TODO: highlight matched text
-        // render(h(ObsidianIcon, {icon: item.icon, size: 20}), content);
-
-        // const matchElements = matches.matches.map((m) => {
-        //     return createSpan("suggestion-highlight");
-        // });
-        // for (let i = 0; i < item.name.length; i++) {
-        //     let match = matches.matches.find((m) => m[0] === i);
-        //     console.log(matches.matches);
-        //     console.log(match);
-        //     if (match) {
-        //         let element = matchElements[matches.matches.indexOf(match)];
-        //         content.appendChild(element);
-        //         element.appendText(item.name.substring(match[0], match[1]));
-
-        //         i += match[1] - match[0] - 1;
-        //         continue;
-        //     }
-
-        //     content.appendText(item.name[i]);
-        // }
     }
     getItems() {
         return this.pairs;

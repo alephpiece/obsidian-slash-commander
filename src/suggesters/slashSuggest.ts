@@ -81,7 +81,7 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<CommandIconPair>> {
 
   public renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement): void {
     render(
-      h(SuggestionComponent, { plugin: this.plugin, pair: result.item }),
+      h(SuggestionComponent, { plugin: this.plugin, result: result }),
       el
     );
   }
