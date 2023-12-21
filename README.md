@@ -1,4 +1,4 @@
-# Obsidian Slash Commander
+# Slash Commander
 
 [![Obsidian community plugin](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&query=%24%5B%22slash-commander%22%5D.downloads&logo=obsidian&label=downloads)](https://obsidian.md/plugins?id=slash-commander) [![GitHub all releases](https://img.shields.io/github/downloads/alephpiece/obsidian-slash-commander/total?logo=GitHub)](https://github.com/alephpiece/obsidian-slash-commander/releases) ![GitHub Repo stars](https://custom-icon-badges.demolab.com/github/stars/alephpiece/obsidian-slash-commander?logo=star)
 
@@ -50,7 +50,7 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ## Credits
 
-- Idea & logic: [Better Slash Command](https://github.com/SPiCaRiA/obsidian-better-slash-commands)
+- Idea & logic: [Better Slash Commands](https://github.com/SPiCaRiA/obsidian-better-slash-commands)
 - UI design & data structures: based on [Commander](https://github.com/phibr0/obsidian-commander)
 - Standalone menu suggest:
   - idea: [FelipeRearden](https://github.com/FelipeRearden)
