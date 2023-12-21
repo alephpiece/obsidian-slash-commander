@@ -30,15 +30,23 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ### Simple usage
 
-![slash-commander-usage](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/7f50a564-0e42-4af9-830c-4a66400f20b8)
+![slash-commander-usage](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/bf30296d-0588-48f0-852f-ef1deaf46e27)
 
 ### Add a new slash command
 
-![slash-commander-add](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/ebb0bca2-42c8-4bc2-82c9-8b2acffff293)
+![slash-commander-add](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/685ecd82-d741-493e-b0a4-81fe56cd4e2c)
 
 ### Define your own trigger
 
-![slash-commander-trigger](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/02767279-90b5-45b9-9f87-16aea567f7fb)
+![slash-commander-trigger](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/95c14d92-686f-4d2d-977b-be0f0dda4c23)
+
+### Triggering on new line
+
+![slash-commander-newline](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/1343483e-d889-496d-a05f-dd80bcad1797)
+
+### Show descriptions
+
+![slash-commander-description](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/9b1f3cf9-f04b-4d0b-96ac-b8520edb09e4)
 
 ## Credits
 
