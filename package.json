@@ -35,7 +35,6 @@
 	},
 	"dependencies": {
 		"array-move": "^4.0.0",
-		"fuse.js": "^7.0.0",
 		"jss": "^10.10.0",
 		"jss-preset-default": "^10.10.0",
 		"preact": "^10.11.3"
