@@ -1,19 +1,21 @@
 import { CommandIconPair } from "../types";
 import SlashCommanderPlugin from "../main";
-import { searchSlashCommand, SlashCommandMatch } from "../utils/search";
+import { SlashCommandMatch } from "../utils/search";
 import {
   Editor,
   EditorPosition,
   EditorSuggest,
   EditorSuggestContext,
   EditorSuggestTriggerInfo,
+  FuzzyMatch,
+  prepareFuzzySearch,
   TFile,
 } from "obsidian";
 import { h, render } from "preact";
 import SuggestionComponent from "../components/suggestionComponent";
 import { getCommandFromId } from "src/utils/util";
 
-export class SlashSuggester extends EditorSuggest<CommandIconPair> {
+export class SlashSuggester extends EditorSuggest<FuzzyMatch<CommandIconPair>> {
   private plugin: SlashCommanderPlugin;
 
   public constructor(plugin: SlashCommanderPlugin) {
@@ -55,23 +57,40 @@ export class SlashSuggester extends EditorSuggest<CommandIconPair> {
     };
   }
 
-  public getSuggestions(context: EditorSuggestContext): CommandIconPair[] {
-    return searchSlashCommand(context.query, this.plugin.manager.pairs)
-      .filter((cmd) => getCommandFromId(this.plugin, cmd.id));
+  public getSuggestions(context: EditorSuggestContext): FuzzyMatch<CommandIconPair>[] {
+    let results: FuzzyMatch<CommandIconPair>[];
+
+    const search = prepareFuzzySearch(context.query);
+
+    if (context.query == "") {
+      // Return the full list
+      results = this.plugin.manager.pairs.map((pair) => {
+        return { item: pair, match: null } as unknown as FuzzyMatch<CommandIconPair>;
+      });
+    } else {
+      // Return fuzzy search results
+      results = this.plugin.manager.pairs
+        .map((cmd) => {
+          return { item: cmd, match: search(cmd.name) } as FuzzyMatch<CommandIconPair>;
+        })
+        .filter(({ match }) => match);
+    }
+
+    return results.filter(({ item }) => getCommandFromId(this.plugin, item.id));
   }
 
-  public renderSuggestion(pair: CommandIconPair, el: HTMLElement): void {
+  public renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement): void {
     render(
-      h(SuggestionComponent, { plugin: this.plugin, pair: pair }),
+      h(SuggestionComponent, { plugin: this.plugin, result: result }),
       el
     );
   }
 
-  public selectSuggestion(pair: CommandIconPair, _evt: MouseEvent | KeyboardEvent,): void {
+  public selectSuggestion(result: FuzzyMatch<CommandIconPair>, _evt: MouseEvent | KeyboardEvent,): void {
     // Delete the trigger and command query.
     this.context?.editor.replaceRange('', this.context.start, this.context.end);
-    if (pair.id) {
-      this.plugin.app.commands.executeCommandById(pair.id);
+    if (result.item.id) {
+      this.plugin.app.commands.executeCommandById(result.item.id);
     }
     this.close();
   }

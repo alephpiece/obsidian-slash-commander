@@ -1,17 +1,20 @@
 import { Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, getCommandSourceName, isCommandNameUnique, ObsidianIcon } from "src/utils/util";
+import { getCommandFromId, getCommandSourceName, isCommandNameUnique } from "src/utils/util";
+import ObsidianIcon from "src/components/obsidianIconComponent";
+import { FuzzyMatch } from "obsidian";
 
 interface SuggestionProps {
 	plugin: SlashCommanderPlugin;
-	pair: CommandIconPair;
+	result: FuzzyMatch<CommandIconPair>;
 }
 
 export default function SuggestionComponent({
 	plugin,
-	pair,
+	result,
 }: SuggestionProps): h.JSX.Element | null {
+	const { item: pair } = result;
 	const cmd = getCommandFromId(plugin, pair.id);
 	if (!cmd) {
 		return null;
@@ -31,7 +34,7 @@ export default function SuggestionComponent({
 				/>
 				<div className="cmdr-suggest-content">
 					<div>
-						{pair.name}
+						{highlightMatch(result)}
 						{
 							plugin.settings.showSourcesForDuplicates &&
 							!isCommandNameUnique(plugin, pair.name) && (
@@ -49,4 +52,30 @@ export default function SuggestionComponent({
 				</div>
 			</div>
 		</Fragment>);
+}
+
+function highlightMatch(
+	result: FuzzyMatch<CommandIconPair>
+	): h.JSX.Element | h.JSX.Element[] {
+	const { item, match } = result;
+
+	// FIXME: this may be buggy
+	if (!match) return <span>{item.name}</span>;
+
+	const content: h.JSX.Element[] = [];
+
+	for (let i = 0; i < item.name.length; i++) {
+		const interval = match.matches.find((m) => m[0] === i);
+		if (interval) {
+			content.push(
+				<span className="suggestion-highlight">
+					{item.name.substring(interval[0], interval[1])}
+				</span>);
+			i += interval[1] - interval[0] - 1;
+			continue;
+		}
+
+		content.push(<span>{item.name[i]}</span>);
+	}
+	return content;
 }

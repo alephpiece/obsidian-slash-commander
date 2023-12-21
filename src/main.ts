@@ -45,7 +45,7 @@ export default class SlashCommanderPlugin extends Plugin {
 
 		this.registerEditorSuggest(new SlashSuggester(this));
 
-		this.registerDomEvent(document, "click", (evt: MouseEvent) => {
+		this.registerDomEvent(document, "click", () => {
 			this.menuSuggest?.close();
 		});
 
