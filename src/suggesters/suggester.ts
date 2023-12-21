@@ -16,12 +16,12 @@ import { h, render } from "preact";
 import SuggestionComponent from "src/components/suggestionComponent";
 
 export default class Suggester<T> {
-    owner: SuggestModal<T>;
-    items: T[];
-    suggestions: HTMLDivElement[];
-    selectedItem: number;
-    containerEl: HTMLElement;
-    constructor(
+    public owner: SuggestModal<T>;
+    public items: T[];
+    public suggestions: HTMLDivElement[];
+    public selectedItem: number;
+    public containerEl: HTMLElement;
+    public constructor(
         owner: SuggestModal<T>,
         containerEl: HTMLElement,
         scope: Scope
@@ -59,14 +59,14 @@ export default class Suggester<T> {
             return false;
         });
     }
-    chooseSuggestion(evt: KeyboardEvent | MouseEvent) {
+    public chooseSuggestion(evt: KeyboardEvent | MouseEvent): void {
         if (!this.items || !this.items.length) return;
         const currentValue = this.items[this.selectedItem];
         if (currentValue) {
             this.owner.selectSuggestion(currentValue, evt);
         }
     }
-    onSuggestionClick(event: MouseEvent, el: HTMLDivElement): void {
+    public onSuggestionClick(event: MouseEvent, el: HTMLDivElement): void {
         event.preventDefault();
         if (!this.suggestions || !this.suggestions.length) return;
 
@@ -75,15 +75,15 @@ export default class Suggester<T> {
         this.useSelectedItem(event);
     }
 
-    onSuggestionMouseover(event: MouseEvent, el: HTMLDivElement): void {
+    public onSuggestionMouseover(event: MouseEvent, el: HTMLDivElement): void {
         if (!this.suggestions || !this.suggestions.length) return;
         const item = this.suggestions.indexOf(el);
         this.setSelectedItem(item, false);
     }
-    empty() {
+    public empty(): void {
         this.containerEl.empty();
     }
-    setSuggestions(items: T[]) {
+    public setSuggestions(items: T[]): void {
         this.containerEl.empty();
         const els: HTMLDivElement[] = [];
 
@@ -96,7 +96,7 @@ export default class Suggester<T> {
         this.suggestions = els;
         this.setSelectedItem(0, false);
     }
-    useSelectedItem(event: MouseEvent | KeyboardEvent) {
+    public useSelectedItem(event: MouseEvent | KeyboardEvent): void {
         if (!this.items || !this.items.length) return;
         const currentValue = this.items[this.selectedItem];
         if (currentValue) {
@@ -106,10 +106,10 @@ export default class Suggester<T> {
         //     this.chooseSuggestion(event);
         // }
     }
-    wrap(value: number, size: number): number {
+    public wrap(value: number, size: number): number {
         return ((value % size) + size) % size;
     }
-    setSelectedItem(index: number, scroll: boolean) {
+    public setSelectedItem(index: number, scroll: boolean): void {
         const nIndex = this.wrap(index, this.suggestions.length);
         const prev = this.suggestions[this.selectedItem];
         const next = this.suggestions[nIndex];
@@ -126,16 +126,16 @@ export default class Suggester<T> {
 }
 
 export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
-    items: T[] = [];
-    suggestions: HTMLDivElement[];
-    popper: PopperInstance;
-    scope: Scope = new Scope();
-    suggester: Suggester<FuzzyMatch<T>>;
-    suggestEl: HTMLDivElement;
-    promptEl: HTMLDivElement;
-    emptyStateText: string = "No match found";
-    limit: number = 20;
-    constructor(app: App, inputEl: HTMLInputElement, items: T[]) {
+    public items: T[] = [];
+    public suggestions: HTMLDivElement[];
+    public popper: PopperInstance;
+    public scope: Scope = new Scope();
+    public suggester: Suggester<FuzzyMatch<T>>;
+    public suggestEl: HTMLDivElement;
+    public promptEl: HTMLDivElement;
+    public emptyStateText = "No match found";
+    public limit = 100;
+    public constructor(app: App, inputEl: HTMLInputElement, items: T[]) {
         super(app);
         this.inputEl = inputEl;
         this.items = items;
@@ -162,10 +162,10 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
             }
         );
     }
-    empty() {
+    public empty(): void {
         this.suggester.empty();
     }
-    onInputChanged(): void {
+    public onInputChanged(): void {
         const inputStr = this.modifyInput(this.inputEl.value);
         const suggestions = this.getSuggestions(inputStr);
         if (suggestions.length > 0) {
@@ -176,17 +176,17 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
         this.open();
     }
 
-    modifyInput(input: string): string {
+    public modifyInput(input: string): string {
         return input;
     }
-    onNoSuggestion() {
+    public onNoSuggestion(): void {
         this.empty();
         this.renderSuggestion(
             null as unknown as FuzzyMatch<T>,
             this.contentEl.createDiv("suggestion-item")
         );
     }
-    open(): void {
+    public open(): void {
         // TODO: Figure out a better way to do this. Idea from Periodic Notes plugin
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (<any>this.app).keymap.pushScope(this.scope);
@@ -217,7 +217,7 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
         });
     }
 
-    close(): void {
+    public close(): void {
         // TODO: Figure out a better way to do this. Idea from Periodic Notes plugin
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (<any>this.app).keymap.popScope(this.scope);
@@ -229,24 +229,24 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
 
         this.suggestEl.detach();
     }
-    createPrompt(prompts: HTMLSpanElement[]) {
+    public createPrompt(prompts: HTMLSpanElement[]): void {
         if (!this.promptEl)
             this.promptEl = this.suggestEl.createDiv("prompt-instructions");
-        let prompt = this.promptEl.createDiv("prompt-instruction");
-        for (let p of prompts) {
+        const prompt = this.promptEl.createDiv("prompt-instruction");
+        for (const p of prompts) {
             prompt.appendChild(p);
         }
     }
-    abstract onChooseItem(item: T, evt: MouseEvent | KeyboardEvent): void;
-    abstract getItemText(arg: T): string;
-    abstract getItems(): T[];
+    public abstract onChooseItem(item: T, evt: MouseEvent | KeyboardEvent): void;
+    public abstract getItemText(arg: T): string;
+    public abstract getItems(): T[];
 }
 
 export class MenuSuggestionModal extends SuggestionModal<CommandIconPair> {
-    pairs: CommandIconPair[];
-    pair: CommandIconPair | undefined;
-    text: TextComponent;
-    constructor(
+    public pairs: CommandIconPair[];
+    public pair: CommandIconPair | undefined;
+    public text: TextComponent;
+    public constructor(
         public plugin: SlashCommanderPlugin,
         input: TextComponent,
         items: CommandIconPair[]
@@ -259,8 +259,8 @@ export class MenuSuggestionModal extends SuggestionModal<CommandIconPair> {
 
         this.inputEl.addEventListener("input", this.getItem.bind(this));
     }
-    createPrompts() { }
-    getItem() {
+    public createPrompts(): void { }
+    public getItem(): void {
         const v = this.inputEl.value,
             pair = this.pairs.find(
                 (pair) => pair.name === v.trim()
@@ -269,24 +269,24 @@ export class MenuSuggestionModal extends SuggestionModal<CommandIconPair> {
         this.pair = pair;
         if (this.pairs) this.onInputChanged();
     }
-    getItemText(item: CommandIconPair) {
+    public getItemText(item: CommandIconPair): string {
         return item.name;
     }
-    onChooseItem(item: CommandIconPair) {
+    public onChooseItem(item: CommandIconPair): void {
         this.text.setValue(item.name);
         this.pair = item;
     }
-    selectSuggestion({ item }: FuzzyMatch<CommandIconPair>) {
+    public selectSuggestion({ item }: FuzzyMatch<CommandIconPair>): void {
         if (item.id) {
             this.plugin.app.commands.executeCommandById(item.id);
         }
         this.text.inputEl.remove();
         this.close();
     }
-    renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement) {
-        let { item } = result || {};
+    public renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement): void {
+        const { item } = result || {};
         if (!item) {
-            let content = el.createDiv({
+            const content = el.createDiv({
                 cls: "suggestion-content icon"
             });
             content.setText(this.emptyStateText);
@@ -299,7 +299,7 @@ export class MenuSuggestionModal extends SuggestionModal<CommandIconPair> {
             el
         );
     }
-    getItems() {
+    public getItems(): CommandIconPair[] {
         return this.pairs;
     }
 }

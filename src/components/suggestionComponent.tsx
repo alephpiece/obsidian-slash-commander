@@ -54,21 +54,23 @@ export default function SuggestionComponent({
 		</Fragment>);
 }
 
-function highlightMatch(result: FuzzyMatch<CommandIconPair>) {
-	let { item, match } = result;
+function highlightMatch(
+	result: FuzzyMatch<CommandIconPair>
+	): h.JSX.Element | h.JSX.Element[] {
+	const { item, match } = result;
 
 	// FIXME: this may be buggy
 	if (!match) return <span>{item.name}</span>;
 
-	let content: h.JSX.Element[] = [];
+	const content: h.JSX.Element[] = [];
 
 	for (let i = 0; i < item.name.length; i++) {
-		let interval = match.matches.find((m) => m[0] === i);
+		const interval = match.matches.find((m) => m[0] === i);
 		if (interval) {
 			content.push(
 				<span className="suggestion-highlight">
 					{item.name.substring(interval[0], interval[1])}
-				</span>)
+				</span>);
 			i += interval[1] - interval[0] - 1;
 			continue;
 		}

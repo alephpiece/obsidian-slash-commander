@@ -1,4 +1,4 @@
-import { MarkdownView, TextComponent } from "obsidian";
+import { TextComponent } from "obsidian";
 import SlashCommanderPlugin from "../main";
 import { MenuSuggestionModal } from "./suggester";
 import { Coords, EnhancedEditor } from "src/types";

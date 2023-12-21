@@ -65,13 +65,13 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<CommandIconPair>> {
     if (context.query == "") {
       // Return the full list
       results = this.plugin.manager.pairs.map((pair) => {
-        return { item: pair, match: null } as unknown as FuzzyMatch<CommandIconPair>
+        return { item: pair, match: null } as unknown as FuzzyMatch<CommandIconPair>;
       });
     } else {
       // Return fuzzy search results
       results = this.plugin.manager.pairs
         .map((cmd) => {
-          return { item: cmd, match: search(cmd.name) } as FuzzyMatch<CommandIconPair>
+          return { item: cmd, match: search(cmd.name) } as FuzzyMatch<CommandIconPair>;
         })
         .filter(({ match }) => match);
     }
