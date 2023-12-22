@@ -4,11 +4,12 @@ import CommandComponent from "./commandComponent";
 import CommandManager from "src/manager/commandManager";
 import { chooseNewCommand, isModeActive } from "src/utils/util";
 import ObsidianIcon from "src/components/obsidianIconComponent";
-import { arrayMoveMutable } from "array-move";
 import ChooseIconModal from "../settings/chooseIconModal";
 import ConfirmDeleteModal from "../settings/confirmDeleteModal";
 import t from "src/l10n";
 import { Platform } from "obsidian";
+import { useState } from "react";
+import { ReactSortable } from "react-sortablejs";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const ManagerContext = createContext<CommandManager>(null!);
@@ -17,106 +18,103 @@ interface CommandViewerProps {
     manager: CommandManager;
     plugin: SlashCommanderPlugin;
     children?: h.JSX.Element | h.JSX.Element[];
-    sortable?: boolean;
 }
+
 export default function CommandViewer({
     manager,
     plugin,
     children,
-    sortable = true,
 }: CommandViewerProps): h.JSX.Element {
+    const [state, setState] = useState(manager.pairs);
+
     return (
         <Fragment>
             <ManagerContext.Provider value={manager}>
                 <div className="cmdr-sep-con">
-                    {manager.pairs.map((cmd, idx) => {
-                        if (
-                            cmd.mode.match(/desktop|mobile|any/) ||
-                            cmd.mode === plugin.app.appId
-                        ) {
-                            return (
-                                <CommandComponent
-                                    plugin={plugin}
-                                    sortable={sortable}
-                                    key={cmd.id}
-                                    pair={cmd}
-                                    handleRemove={async (): Promise<void> => {
-                                        if (
-                                            !plugin.settings.confirmDeletion ||
-                                            (await new ConfirmDeleteModal(
-                                                plugin
-                                            ).didChooseRemove())
-                                        ) {
-                                            await manager.removeCommand(cmd);
-                                            this.forceUpdate();
-                                        }
-                                    }}
-                                    handleUp={(): void => {
-                                        arrayMoveMutable(
-                                            manager.pairs,
-                                            idx,
-                                            idx - 1
-                                        );
-                                        manager.reorder();
-                                        this.forceUpdate();
-                                    }}
-                                    handleDown={(): void => {
-                                        arrayMoveMutable(
-                                            manager.pairs,
-                                            idx,
-                                            idx + 1
-                                        );
-                                        manager.reorder();
-                                        this.forceUpdate();
-                                    }}
-                                    handleRename={async (
-                                        name
-                                    ): Promise<void> => {
-                                        cmd.name = name;
-                                        await plugin.saveSettings();
-                                        manager.reorder();
-                                        this.forceUpdate();
-                                    }}
-                                    handleNewIcon={async (): Promise<void> => {
-                                        const newIcon =
-                                            await new ChooseIconModal(
-                                                plugin
-                                            ).awaitSelection();
-                                        if (newIcon && newIcon !== cmd.icon) {
-                                            cmd.icon = newIcon;
+                    <ReactSortable
+                        list={state}
+                        setList={setState}
+                        delay={130}
+                        animation={200}
+                        forceFallback={true}
+                        fallbackClass="sortable-fallback"
+                        onSort={(pair): void => {
+                            const arrayResult = manager.pairs;
+                            const [removed] = arrayResult.splice(pair.oldIndex, 1);
+                            arrayResult.splice(pair.newIndex, 0, removed);
+                            plugin.saveSettings();
+                        }}
+                    >
+                        {state.map((cmd) => {
+                            if (
+                                cmd.mode.match(/desktop|mobile|any/) ||
+                                cmd.mode === plugin.app.appId
+                            ) {
+                                return (
+                                    <CommandComponent
+                                        plugin={plugin}
+                                        key={cmd.id}
+                                        pair={cmd}
+                                        handleRemove={async (): Promise<void> => {
+                                            if (
+                                                !plugin.settings.confirmDeletion ||
+                                                (await new ConfirmDeleteModal(
+                                                    plugin
+                                                ).didChooseRemove())
+                                            ) {
+                                                await manager.removeCommand(cmd);
+                                                setState(manager.pairs);
+                                            }
+                                        }}
+                                        handleRename={async (
+                                            name
+                                        ): Promise<void> => {
+                                            cmd.name = name;
                                             await plugin.saveSettings();
                                             manager.reorder();
-                                            this.forceUpdate();
-                                        }
-                                        dispatchEvent(
-                                            new Event("cmdr-icon-changed")
-                                        );
-                                    }}
-                                    handleModeChange={async (
-                                        mode?: string
-                                    ): Promise<void> => {
-                                        // This is the rotation
-                                        const modes = [
-                                            "any",
-                                            "desktop",
-                                            "mobile",
-                                            plugin.app.appId,
-                                        ];
-                                        let currentIdx = modes.indexOf(
-                                            cmd.mode
-                                        );
-                                        if (currentIdx === 3) currentIdx = -1;
+                                            setState(manager.pairs);
+                                        }}
+                                        handleNewIcon={async (): Promise<void> => {
+                                            const newIcon =
+                                                await new ChooseIconModal(
+                                                    plugin
+                                                ).awaitSelection();
+                                            if (newIcon && newIcon !== cmd.icon) {
+                                                cmd.icon = newIcon;
+                                                await plugin.saveSettings();
+                                                manager.reorder();
+                                                setState(manager.pairs);
+                                            }
+                                            dispatchEvent(
+                                                new Event("cmdr-icon-changed")
+                                            );
+                                        }}
+                                        handleModeChange={async (
+                                            mode?: string
+                                        ): Promise<void> => {
+                                            // This is the rotation
+                                            const modes = [
+                                                "any",
+                                                "desktop",
+                                                "mobile",
+                                                plugin.app.appId,
+                                            ];
+                                            let currentIdx = modes.indexOf(
+                                                cmd.mode
+                                            );
+                                            if (currentIdx === 3) currentIdx = -1;
 
-                                        cmd.mode =
-                                            mode || modes[currentIdx + 1];
-                                        await plugin.saveSettings();
-                                        manager.reorder();
-                                        this.forceUpdate();
-                                    }}
-                                />
-                            );
-                        }
-                    })}
+                                            cmd.mode =
+                                                mode || modes[currentIdx + 1];
+                                            await plugin.saveSettings();
+                                            manager.reorder();
+                                            setState(manager.pairs);
+                                        }}
+                                    />
+                                );
+                            }
+                        })}
+                    </ReactSortable>
                 </div>
                 {!manager.pairs.some(
                     (pre) =>
@@ -138,6 +136,7 @@ export default function CommandViewer({
                             const pair = await chooseNewCommand(plugin);
                             await manager.addCommand(pair);
                             manager.reorder();
+                            setState(manager.pairs);
                             this.forceUpdate();
                         }}
                     >
@@ -151,7 +150,7 @@ export default function CommandViewer({
                         onClick={async (): Promise<void> => {
                             manager.restoreDefault();
                             manager.reorder();
-                            this.forceUpdate();
+                            setState(manager.pairs);
                         }}
                     />
                 </div>

@@ -104,7 +104,6 @@ export default function settingTabComponent({
 				<CommandViewer
 					manager={plugin.manager}
 					plugin={plugin}
-					sortable={true}
 				/>
 			</SettingCollapser>
 		</Fragment>

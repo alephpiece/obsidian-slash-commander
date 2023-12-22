@@ -19,6 +19,7 @@
 		"@popperjs/core": "^2.9.2",
 		"@types/node": "^18.11.9",
 		"@types/react": "^18.0.25",
+		"@types/sortablejs": "^1.15.7",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"builtin-modules": "^3.3.0",
@@ -37,6 +38,10 @@
 		"array-move": "^4.0.0",
 		"jss": "^10.10.0",
 		"jss-preset-default": "^10.10.0",
-		"preact": "^10.11.3"
+		"preact": "^10.11.3",
+		"react": "npm:@preact/compat",
+		"react-dom": "npm:@preact/compat",
+		"react-sortablejs": "^6.1.4",
+		"sortablejs": "^1.15.1"
 	}
 }

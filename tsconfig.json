@@ -16,7 +16,12 @@
 		"jsxFactory": "h",
 		"jsxFragmentFactory": "Fragment",
 		"allowSyntheticDefaultImports": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"paths": {
+			"react": ["./node_modules/preact/compat/"],
+			"react-dom": ["./node_modules/preact/compat/"]
+		}
 	},
 	"include": ["**/*.ts", "**/*.tsx"]
 }

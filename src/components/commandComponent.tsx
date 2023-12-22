@@ -12,8 +12,6 @@ interface CommandProps {
 	plugin: SlashCommanderPlugin;
 	pair: CommandIconPair;
 	handleRemove: () => void;
-	handleUp: () => void;
-	handleDown: () => void;
 	handleNewIcon: () => void;
 	handleRename: (name: string) => void;
 	handleModeChange: (mode?: string) => void;
@@ -24,12 +22,9 @@ export default function CommandComponent({
 	plugin,
 	pair,
 	handleRemove,
-	handleDown,
-	handleUp,
 	handleNewIcon,
 	handleRename,
 	handleModeChange,
-	sortable = true,
 }: CommandProps): h.JSX.Element {
 	const cmd = getCommandFromId(plugin, pair.id);
 	if (!cmd) {
@@ -146,22 +141,6 @@ export default function CommandComponent({
 						</div>
 					</div>
 					<div className="setting-item-control">
-						{sortable && (
-							<>
-								<ObsidianIcon
-									icon="arrow-down"
-									className="setting-editor-extra-setting-button clickable-icon"
-									onClick={handleDown}
-									aria-label={t("Move down")}
-								/>
-								<ObsidianIcon
-									icon="arrow-up"
-									className="setting-editor-extra-setting-button clickable-icon"
-									onClick={handleUp}
-									aria-label={t("Move up")}
-								/>
-							</>
-						)}
 						<ObsidianIcon
 							icon={modeIcon}
 							className="setting-editor-extra-setting-button clickable-icon"
@@ -224,20 +203,6 @@ export default function CommandComponent({
 						{pair.name}
 					</span>
 					<span className="mobile-option-setting-item-option-icon">
-						{sortable && (
-							<>
-								<ObsidianIcon
-									icon="arrow-down"
-									className="clickable-icon"
-									onClick={handleDown}
-								/>
-								<ObsidianIcon
-									icon="arrow-up"
-									className="clickable-icon"
-									onClick={handleUp}
-								/>
-							</>
-						)}
 						<ObsidianIcon
 							icon="three-horizontal-bars"
 							className="clickable-icon"
