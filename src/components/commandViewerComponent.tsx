@@ -39,9 +39,11 @@ export default function CommandViewer({
                         fallbackClass="sortable-fallback"
                         onSort={(pair): void => {
                             const arrayResult = manager.pairs;
-                            const [removed] = arrayResult.splice(pair.oldIndex, 1);
-                            arrayResult.splice(pair.newIndex, 0, removed);
-                            plugin.saveSettings();
+                            if (pair.oldIndex && pair.newIndex) {
+                                const [removed] = arrayResult.splice(pair.oldIndex, 1);
+                                arrayResult.splice(pair.newIndex, 0, removed);
+                                plugin.saveSettings();
+                            }
                         }}
                     >
                         {state.map((cmd) => {
