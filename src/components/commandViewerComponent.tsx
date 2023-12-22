@@ -39,7 +39,8 @@ export default function CommandViewer({
                         fallbackClass="sortable-fallback"
                         onSort={(pair): void => {
                             const arrayResult = manager.pairs;
-                            if (pair.oldIndex && pair.newIndex) {
+                            if (typeof pair.oldIndex !== "undefined" &&
+                                typeof pair.newIndex !== "undefined") {
                                 const [removed] = arrayResult.splice(pair.oldIndex, 1);
                                 arrayResult.splice(pair.newIndex, 0, removed);
                                 plugin.saveSettings();
