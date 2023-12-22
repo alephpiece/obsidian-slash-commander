@@ -34,7 +34,7 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ### Add a new slash command
 
-![slash-commander-add](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/685ecd82-d741-493e-b0a4-81fe56cd4e2c)
+![slash-commander-add](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/95750d82-1846-4a29-af13-9e450cca4a65)
 
 ### Define your own trigger
 
