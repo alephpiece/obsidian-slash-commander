@@ -7,7 +7,7 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 ## Features
 
 - [x] Customizable slash command trigger (defaults to `/`)
-	- [ ] Additional triggers
+	- [x] Additional triggers
 - [x] Customizable slash command list
 	- [x] Drag-and-drop command setting items
  	- [ ] Command groups
