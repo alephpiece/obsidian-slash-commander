@@ -13,7 +13,7 @@ import {
 } from "obsidian";
 import { h, render } from "preact";
 import SuggestionComponent from "../components/suggestionComponent";
-import { getCommandFromId } from "src/utils/util";
+import { isValidPair } from "src/utils/util";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<CommandIconPair>> {
   private plugin: SlashCommanderPlugin;
@@ -76,7 +76,7 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<CommandIconPair>> {
         .filter(({ match }) => match);
     }
 
-    return results.filter(({ item }) => getCommandFromId(this.plugin, item.id));
+    return results.filter(({ item }) => isValidPair(item, this.plugin));
   }
 
   public renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement): void {

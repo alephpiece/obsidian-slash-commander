@@ -37,6 +37,13 @@ export function getCommandFromId(plugin: SlashCommanderPlugin, id: string): Comm
 	return plugin.app.commands.commands[id] ?? null;
 }
 
+export function isValidPair(
+	pair: CommandIconPair,
+	plugin: SlashCommanderPlugin
+): boolean {
+	return !!getCommandFromId(plugin, pair.id) || isCommandGroup(pair);
+}
+
 export function isModeActive(plugin: SlashCommanderPlugin, mode: string): boolean {
 	const { isMobile, appId } = plugin.app;
 	return (
@@ -74,4 +81,8 @@ export function isTriggerInConflicts(
 	return plugin.app.internalPlugins.plugins["slash-command"].enabled
 		&& (mainTrigger == "/"
 			|| (plugin.settings.useExtraTriggers && extraTriggers.includes("/")));
+}
+
+export function isCommandGroup(pair: CommandIconPair): boolean {
+	return pair.isGroup === true;
 }

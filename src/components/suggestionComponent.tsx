@@ -1,7 +1,7 @@
 import { Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, getCommandSourceName, isCommandNameUnique } from "src/utils/util";
+import { getCommandFromId, getCommandSourceName, isCommandGroup, isCommandNameUnique } from "src/utils/util";
 import ObsidianIcon from "src/components/obsidianIconComponent";
 import { FuzzyMatch } from "obsidian";
 
@@ -16,7 +16,7 @@ export default function SuggestionComponent({
 }: SuggestionProps): h.JSX.Element | null {
 	const { item: pair } = result;
 	const cmd = getCommandFromId(plugin, pair.id);
-	if (!cmd) {
+	if (!isCommandGroup(pair) && !cmd) {
 		return null;
 	}
 	return (
@@ -35,17 +35,21 @@ export default function SuggestionComponent({
 				<div className="cmdr-suggest-content">
 					<div>
 						{highlightMatch(result)}
-						{
+						{// Show sources for non-group commands
 							plugin.settings.showSourcesForDuplicates &&
+							!isCommandGroup(pair) &&
 							!isCommandNameUnique(plugin, pair.name) && (
 								<span className="cmdr-suggest-item-source">
+									{/*@ts-expect-error*/}
 									{` ${getCommandSourceName(plugin, cmd)}`}
 								</span>
 							)}
 					</div>
-					{
-						plugin.settings.showDescriptions && (
+					{// Show descriptions for non-group commands
+						plugin.settings.showDescriptions &&
+						!isCommandGroup(pair) && (
 							<div className="cmdr-suggest-item-description">
+								{/*@ts-expect-error*/}
 								{cmd.name}
 							</div>
 						)}
@@ -56,7 +60,7 @@ export default function SuggestionComponent({
 
 function highlightMatch(
 	result: FuzzyMatch<CommandIconPair>
-	): h.JSX.Element | h.JSX.Element[] {
+): h.JSX.Element | h.JSX.Element[] {
 	const { item, match } = result;
 
 	// FIXME: this may be buggy

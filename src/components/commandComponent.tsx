@@ -3,7 +3,7 @@ import { Fragment, h } from "preact";
 import t from "src/l10n";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { getCommandFromId, getCommandSourceName } from "src/utils/util";
+import { getCommandFromId, getCommandSourceName, isCommandGroup } from "src/utils/util";
 import ObsidianIcon from "src/components/obsidianIconComponent";
 import MobileModifyModal from "../settings/mobileModifyModal";
 import ChangeableText from "./changeableText";
@@ -27,7 +27,7 @@ export default function CommandComponent({
 	handleModeChange,
 }: CommandProps): h.JSX.Element {
 	const cmd = getCommandFromId(plugin, pair.id);
-	if (!cmd) {
+	if (!cmd && !isCommandGroup(pair)) {
 		return (
 			<Fragment>
 				{Platform.isDesktop && (
@@ -121,24 +121,27 @@ export default function CommandComponent({
 								value={pair.name}
 							/>
 						</div>
-						<div className="setting-item-description">
-							{
-								"From {{plugin_name}}".replace(
-									"{{plugin_name}}",
-									getCommandSourceName(plugin, cmd)
-								)
-							}
-							{
-								pair.name !== cmd.name ?
-									` "${cmd.name}"` : "."
-							}
-							{/* {" "} */}
-							{/* {isChecked
+						{!isCommandGroup(pair) &&
+							<div className="setting-item-description">
+								{
+									"From {{plugin_name}}".replace(
+										"{{plugin_name}}",
+										/* @ts-expect-error */
+										getCommandSourceName(plugin, cmd)
+									)
+								}
+								{
+									/* @ts-expect-error */
+									pair.name !== cmd.name ? ` "${cmd.name}"` : "."
+								}
+								{/* {" "} */}
+								{/* {isChecked
 								? t(
 									"Warning: This command might not run under every circumstance."
 								)
 								: ""} */}
-						</div>
+							</div>
+						}
 					</div>
 					<div className="setting-item-control">
 						<ObsidianIcon

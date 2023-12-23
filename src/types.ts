@@ -21,6 +21,8 @@ export interface CommandIconPair {
 	name: string;
 	mode: Mode;
 	color?: string;
+	isGroup?: boolean;
+	children?: CommandIconPair[];
 }
 
 interface InternalPlugin {

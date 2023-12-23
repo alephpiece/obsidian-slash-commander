@@ -1,7 +1,7 @@
 import { DEFAULT_SETTINGS } from "src/constants";
 import SlashCommanderPlugin from "src/main";
 import { CommandIconPair } from "src/types";
-import { isModeActive } from "src/utils/util";
+import { isModeActive, isValidPair } from "src/utils/util";
 
 export default class CommandManager {
 	public pairs: CommandIconPair[];
@@ -13,6 +13,12 @@ export default class CommandManager {
 
 		this.pairs.forEach((pair) =>
 			this.addCommand(pair, false)
+		);
+	}
+
+	public validPairs(): CommandIconPair[] {
+		return this.pairs.filter((pair) =>
+			isValidPair(pair, this.plugin)
 		);
 	}
 

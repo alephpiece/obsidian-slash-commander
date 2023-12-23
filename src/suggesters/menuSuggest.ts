@@ -39,7 +39,7 @@ export class MenuSuggest {
         const modal = new MenuSuggestionModal(
             this.plugin,
             this.search,
-            this.plugin.manager.pairs);
+            this.plugin.manager.validPairs());
 
         modal.open();
 

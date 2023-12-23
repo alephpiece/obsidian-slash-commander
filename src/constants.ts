@@ -62,17 +62,38 @@ export const DEFAULT_COMMANDS = [
 		icon: "check-circle",
 		mode: "any"
 	},
-    {
-      name: "Template",
-      id: "templater-obsidian:insert-templater",
-      icon: "book-copy",
-      mode: "any"
-    },
+	{
+		name: "Template",
+		id: "templater-obsidian:insert-templater",
+		icon: "book-copy",
+		mode: "any"
+	},
 	{
 		name: "Citation",
 		id: "zotlit:insert-markdown-citation",
 		icon: "book-marked",
 		mode: "desktop"
+	},
+	{
+		name: "Search",
+		id: "none",
+		icon: "search",
+		mode: "any",
+		isGroup: true,
+		children: [
+			{
+				id: "omnisearch:show-modal",
+				name: "Omnisearch: Vault search",
+				icon: "search",
+				mode: "any"
+			},
+			{
+				id: "omnisearch:show-modal-infile",
+				name: "Omnisearch: Vault search",
+				icon: "search",
+				mode: "any"
+			}
+		]
 	}
 ];
 
