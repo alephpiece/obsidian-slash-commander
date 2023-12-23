@@ -73,5 +73,5 @@ export function isTriggerInConflicts(
 	const { mainTrigger, extraTriggers } = plugin.settings;
 	return plugin.app.internalPlugins.plugins["slash-command"].enabled
 		&& (mainTrigger == "/"
-			|| (plugin.settings.moreTriggers && extraTriggers.includes("/")));
+			|| (plugin.settings.useExtraTriggers && extraTriggers.includes("/")));
 }

@@ -15,7 +15,7 @@ export type SlashCommandMatch = RegExpMatchArray & {
 
 export function buildQueryPattern(settings: CommanderSettings): RegExp {
 	const allTriggers = [settings.mainTrigger].concat(settings.extraTriggers);
-	const triggers = settings.moreTriggers ? allTriggers : [settings.mainTrigger];
+	const triggers = settings.useExtraTriggers ? allTriggers : [settings.mainTrigger];
 
 	const escapedTriggers = triggers.map((trigger) => trigger.replace(
 		/[.*+?^${}()|[\]\\]/g,

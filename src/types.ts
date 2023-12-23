@@ -7,7 +7,7 @@ export interface CommanderSettings {
 	debug: boolean;
 	mainTrigger: string;
 	extraTriggers: string[];
-	moreTriggers: boolean;
+	useExtraTriggers: boolean;
 	triggerOnlyOnNewLine: boolean;
 	queryPattern: RegExp;
 	bindings: CommandIconPair[];

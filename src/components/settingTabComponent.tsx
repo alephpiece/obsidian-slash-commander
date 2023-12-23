@@ -59,16 +59,16 @@ export default function settingTabComponent({
 				<ToggleComponent
 					name={t("More triggers")}
 					description={t("Add more command triggers.")}
-					value={plugin.settings.moreTriggers}
+					value={plugin.settings.useExtraTriggers}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.moreTriggers = !value;
+						plugin.settings.useExtraTriggers = !value;
 						plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
 						await plugin.saveSettings();
 						this.forceUpdate();
 					}}
 				/>
 				{
-					plugin.settings.moreTriggers &&
+					plugin.settings.useExtraTriggers &&
 					<TriggerViewer
 						plugin={plugin}
 					/>
