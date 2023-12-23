@@ -1,3 +1,5 @@
+import { CommanderSettings } from "src/types";
+
 export type SlashCommandMatch = RegExpMatchArray & {
 	indices: {
 		groups: {
@@ -11,16 +13,19 @@ export type SlashCommandMatch = RegExpMatchArray & {
 	};
 };
 
-export function buildQueryPattern(commandTrigger: string): RegExp {
-	const escapedTrigger = commandTrigger.replace(
+export function buildQueryPattern(settings: CommanderSettings): RegExp {
+	const allTriggers = [settings.mainTrigger].concat(settings.extraTriggers);
+	const triggers = settings.moreTriggers ? allTriggers : [settings.mainTrigger];
+
+	const escapedTriggers = triggers.map((trigger) => trigger.replace(
 		/[.*+?^${}()|[\]\\]/g,
 		"\\$&",
-	);
+	));
 
 	// Always matching from the beginning of the line.
 	// The trigger mode is tweaked by passing in different parts of the line.
 	return new RegExp(
-		`^\\s*(?<fullQuery>${escapedTrigger}(?<commandQuery>.*))`,
+		`^\\s*(?<fullQuery>(?:${escapedTriggers.join("|")})(?<commandQuery>.*))`,
 		"d"
 	);
 }

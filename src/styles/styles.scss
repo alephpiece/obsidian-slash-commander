@@ -621,3 +621,34 @@
 		background-color: var(--background-modifier-hover);
 	}
 }
+
+.cmdr-triggers {
+	display: flex;
+	font-size: var(--font-ui-small);
+	padding: 0.5em var(--size-2-3);
+	align-items: center;
+
+	.cmdr-trigger-pill {
+		display: flex;
+		margin-left: 0.75em;
+
+		.cmdr-icon {
+			align-self: center;
+			padding: 0 0
+		}
+
+		input {
+			border: 1px solid var(--background-modifier-border-hover);
+			border-radius: var(--radius-s);
+			max-width: 6em;
+			padding-left: 6px;
+			padding-right: 6px;
+		}
+
+	}
+
+	.cmdr-trigger-add {
+		margin-left: 1em;
+		vertical-align: bottom;
+	}
+}

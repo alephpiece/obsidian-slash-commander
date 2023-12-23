@@ -10,6 +10,7 @@ import {
 	TextBoxComponent
 } from "./settingItemComponent";
 import SettingCollapser from "./settingHeaderComponent";
+import TriggerViewer from "./TriggerViewerComponent";
 
 export default function settingTabComponent({
 	plugin,
@@ -37,24 +38,41 @@ export default function settingTabComponent({
 								className="setting-item-name"
 								style="font-weight: bold; color: crimson"
 							>
-								{t("Command trigger conflicts with the 'Slash commands' plugin.")}
+								{t("One of the command triggers conflicts with the 'Slash commands' plugin.")}
 							</div>
 							<div className="setting-item-description">
-								{t("Please pick another trigger or disable the above plugin, and then reload this setting tab to dismiss this warning.")}
+								{t("Please modify your triggers or disable the above plugin, and then reload this setting tab to dismiss this warning.")}
 							</div>
 						</div>
 					</div>
 				)}
 				<TextBoxComponent
-					value={plugin.settings.trigger}
+					value={plugin.settings.mainTrigger}
 					name={t("Command trigger")}
 					description={t("Characters to trigger slash commands.")}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.trigger = value;
-						plugin.settings.queryPattern = buildQueryPattern(value);
+						plugin.settings.mainTrigger = value;
+						plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
 						await plugin.saveSettings();
 					}}
 				/>
+				<ToggleComponent
+					name={t("More triggers")}
+					description={t("Add more command triggers.")}
+					value={plugin.settings.moreTriggers}
+					changeHandler={async (value): Promise<void> => {
+						plugin.settings.moreTriggers = !value;
+						plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
+						await plugin.saveSettings();
+						this.forceUpdate();
+					}}
+				/>
+				{
+					plugin.settings.moreTriggers &&
+					<TriggerViewer
+						plugin={plugin}
+					/>
+				}
 				<ToggleComponent
 					name={t("Only on new line")}
 					description={t(

@@ -75,7 +75,7 @@ export default class SlashCommanderPlugin extends Plugin {
 	private async loadSettings(): Promise<void> {
 		const data = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 		this.settings = data;
-		this.settings.queryPattern = buildQueryPattern(this.settings.trigger);
+		this.settings.queryPattern = buildQueryPattern(this.settings);
 	}
 
 	public async saveSettings(): Promise<void> {

@@ -70,6 +70,8 @@ export function isCommandNameUnique(
 export function isTriggerInConflicts(
 	plugin: SlashCommanderPlugin
 ): boolean {
+	const { mainTrigger, extraTriggers } = plugin.settings;
 	return plugin.app.internalPlugins.plugins["slash-command"].enabled
-		&& (plugin.settings.trigger == "/");
+		&& (mainTrigger == "/"
+			|| (plugin.settings.moreTriggers && extraTriggers.includes("/")));
 }
