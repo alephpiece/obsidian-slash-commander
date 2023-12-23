@@ -39,9 +39,9 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ![slash-commander-add](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/95750d82-1846-4a29-af13-9e450cca4a65)
 
-### Define your own trigger
+### Define your own trigger(s)
 
-![slash-commander-trigger](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/95c14d92-686f-4d2d-977b-be0f0dda4c23)
+![slash-commander-triggers](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/94f63b78-bf79-45f2-b84b-9bcdb5fe393e)
 
 ### Triggering on new line
 
