@@ -5,7 +5,8 @@ export interface CommanderSettings {
 	showDescriptions: boolean;
 	showSourcesForDuplicates: boolean;
 	debug: boolean;
-	trigger: string;
+	triggers: string[];
+	moreTriggers: boolean;
 	triggerOnlyOnNewLine: boolean;
 	queryPattern: RegExp;
 	bindings: CommandIconPair[];
