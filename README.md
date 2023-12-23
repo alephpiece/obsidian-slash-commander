@@ -6,9 +6,12 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ## Features
 
-- Customizable slash command trigger (defaults to `/`)
-- Customizable slash command list, which is manually maintained
-- Triggering slash commands only at the beginning of a line
+- [x] Customizable slash command trigger (defaults to `/`)
+	- [ ] Additional triggers
+- [x] Customizable slash command list
+	- [x] Drag-and-drop command setting items
+ 	- [ ] Command groups
+- [x] Triggering slash commands only at the beginning of a line
 
 ## How to install
 
