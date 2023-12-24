@@ -2,10 +2,10 @@ import { Notice, Platform } from "obsidian";
 import { Fragment, h } from "preact";
 import t from "src/l10n";
 import SlashCommanderPlugin from "src/main";
-import { CommandIconPair } from "src/types";
+import { CommandIconPair } from "src/data/types";
 import { getCommandFromId, getCommandSourceName, isCommandGroup } from "src/utils/util";
-import ObsidianIcon from "src/components/obsidianIconComponent";
-import MobileModifyModal from "../settings/mobileModifyModal";
+import ObsidianIcon from "src/ui/components/obsidianIconComponent";
+import MobileModifyModal from "../modals/mobileModifyModal";
 import ChangeableText from "./changeableText";
 
 interface CommandProps {

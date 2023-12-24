@@ -1,8 +1,8 @@
 import { Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
-import { CommandIconPair } from "src/types";
+import { CommandIconPair } from "src/data/types";
 import { getCommandFromId, getCommandSourceName, isCommandGroup, isCommandNameUnique } from "src/utils/util";
-import ObsidianIcon from "src/components/obsidianIconComponent";
+import ObsidianIcon from "src/ui/components/obsidianIconComponent";
 import { FuzzyMatch } from "obsidian";
 
 interface SuggestionProps {

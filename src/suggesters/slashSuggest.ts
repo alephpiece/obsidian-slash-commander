@@ -1,4 +1,4 @@
-import { CommandIconPair } from "../types";
+import { CommandIconPair } from "../data/types";
 import SlashCommanderPlugin from "../main";
 import { SlashCommandMatch } from "../utils/search";
 import {
@@ -12,7 +12,7 @@ import {
   TFile,
 } from "obsidian";
 import { h, render } from "preact";
-import SuggestionComponent from "../components/suggestionComponent";
+import SuggestionComponent from "../ui/components/suggestionComponent";
 import { isValidPair } from "src/utils/util";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<CommandIconPair>> {

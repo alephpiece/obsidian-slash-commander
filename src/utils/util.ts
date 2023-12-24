@@ -1,9 +1,9 @@
-import { CommandIconPair } from "../types";
+import { CommandIconPair } from "../data/types";
 import SlashCommanderPlugin from "../main";
-import AddCommandModal from "../settings/addCommandModal";
-import ChooseIconModal from "../settings/chooseIconModal";
+import AddCommandModal from "../ui/modals/addCommandModal";
+import ChooseIconModal from "../ui/modals/chooseIconModal";
 import { Command } from "obsidian";
-import ChooseCustomNameModal from "../settings/chooseCustomNameModal";
+import ChooseCustomNameModal from "../ui/modals/chooseCustomNameModal";
 
 /**
  * It creates a modal, waits for the user to select a command, and then creates another modal to wait

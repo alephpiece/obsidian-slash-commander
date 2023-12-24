@@ -1,6 +1,6 @@
 import { Fragment, h } from "preact";
 import t from "src/l10n";
-import ConfirmDeleteModal from "../settings/confirmDeleteModal";
+import ConfirmDeleteModal from "../modals/confirmDeleteModal";
 
 export function confirmDeleteComponent({
 	modal,

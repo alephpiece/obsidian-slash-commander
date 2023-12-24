@@ -1,7 +1,7 @@
 import { TextComponent } from "obsidian";
 import SlashCommanderPlugin from "../main";
 import { MenuSuggestionModal } from "./suggester";
-import { Coords, EnhancedEditor } from "src/types";
+import { Coords, EnhancedEditor } from "src/data/types";
 
 export class MenuSuggest {
     private plugin: SlashCommanderPlugin;

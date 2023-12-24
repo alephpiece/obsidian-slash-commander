@@ -1,10 +1,10 @@
 import { MarkdownView, Plugin } from "obsidian";
-import { DEFAULT_SETTINGS } from "./constants";
+import { DEFAULT_SETTINGS } from "./data/constants";
 import t from "./l10n";
-import { CommanderSettings, EnhancedEditor } from "./types";
+import { CommanderSettings, EnhancedEditor } from "./data/types";
 import CommanderSettingTab from "./settings/settingTab";
-import SettingTabModal from "./settings/settingTabModal";
-import CommandManager from "./manager/commandManager";
+import SettingTabModal from "./ui/modals/settingTabModal";
+import CommandManager from "./data/commandManager";
 import { SlashSuggester } from "./suggesters/slashSuggest";
 import { MenuSuggest } from "./suggesters/menuSuggest";
 import { buildQueryPattern } from "./utils/search";

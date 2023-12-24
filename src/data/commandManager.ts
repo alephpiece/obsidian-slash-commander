@@ -1,6 +1,6 @@
-import { DEFAULT_SETTINGS } from "src/constants";
+import { DEFAULT_SETTINGS } from "src/data/constants";
 import SlashCommanderPlugin from "src/main";
-import { CommandIconPair } from "src/types";
+import { CommandIconPair } from "src/data/types";
 import { isModeActive, isValidPair } from "src/utils/util";
 
 export default class CommandManager {

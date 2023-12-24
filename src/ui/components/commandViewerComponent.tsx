@@ -1,11 +1,11 @@
 import { createContext, Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import CommandComponent from "./commandComponent";
-import CommandManager from "src/manager/commandManager";
+import CommandManager from "src/data/commandManager";
 import { chooseNewCommand, isModeActive } from "src/utils/util";
-import ObsidianIcon from "src/components/obsidianIconComponent";
-import ChooseIconModal from "../settings/chooseIconModal";
-import ConfirmDeleteModal from "../settings/confirmDeleteModal";
+import ObsidianIcon from "src/ui/components/obsidianIconComponent";
+import ChooseIconModal from "../modals/chooseIconModal";
+import ConfirmDeleteModal from "../modals/confirmDeleteModal";
 import t from "src/l10n";
 import { Platform } from "obsidian";
 import { useState } from "react";

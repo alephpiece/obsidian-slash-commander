@@ -10,10 +10,10 @@ import {
 } from "obsidian";
 
 import { createPopper, Instance as PopperInstance } from "@popperjs/core";
-import { CommandIconPair } from "src/types";
+import { CommandIconPair } from "src/data/types";
 import SlashCommanderPlugin from "src/main";
 import { h, render } from "preact";
-import SuggestionComponent from "src/components/suggestionComponent";
+import SuggestionComponent from "src/ui/components/suggestionComponent";
 
 export default class Suggester<T> {
     public owner: SuggestModal<T>;

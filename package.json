@@ -36,8 +36,9 @@
 	},
 	"dependencies": {
 		"preact": "^10.11.3",
-		"react": "npm:@preact/compat",
-		"react-dom": "npm:@preact/compat",
+		"react": "npm:@preact/compat@^17.1.2",
+		"react-dom": "npm:@preact/compat@^17.1.2",
+		"react-popper": "^2.3.0",
 		"react-sortablejs": "^6.1.4",
 		"sortablejs": "^1.15.1"
 	}

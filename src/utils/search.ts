@@ -1,4 +1,4 @@
-import { CommanderSettings } from "src/types";
+import { CommanderSettings } from "src/data/types";
 
 export type SlashCommandMatch = RegExpMatchArray & {
 	indices: {
