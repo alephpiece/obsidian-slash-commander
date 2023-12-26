@@ -86,3 +86,7 @@ export function isTriggerInConflicts(
 export function isCommandGroup(pair: CommandIconPair): boolean {
 	return pair.isGroup === true;
 }
+
+export function isTriggeredAnywhere(pair: CommandIconPair): boolean {
+	return typeof pair.triggerMode === "undefined" || pair.triggerMode === "anywhere";
+}

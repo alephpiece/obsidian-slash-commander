@@ -15,6 +15,7 @@ interface CommandProps {
 	handleNewIcon: () => void;
 	handleRename: (name: string) => void;
 	handleModeChange: (mode?: string) => void;
+	handleTriggerModeChange: (mode?: string) => void;
 	sortable?: boolean;
 }
 
@@ -25,6 +26,7 @@ export default function CommandComponent({
 	handleNewIcon,
 	handleRename,
 	handleModeChange,
+	handleTriggerModeChange
 }: CommandProps): h.JSX.Element {
 	const cmd = getCommandFromId(plugin, pair.id);
 	if (!cmd && !isCommandGroup(pair)) {
@@ -99,6 +101,15 @@ export default function CommandComponent({
 		? pair.mode[0].toUpperCase() + pair.mode.substring(1)
 		: t("This device");
 
+	const triggerMode = typeof pair.triggerMode === "undefined"
+		? "anywhere"
+		: pair.triggerMode;
+
+	const triggerModeIcon = getTriggerModeIcon(triggerMode);
+	const triggerModeName = triggerMode === "anywhere"
+		? t("Anywhere")
+		: t(triggerMode[0].toUpperCase() + triggerMode.substring(1) + " only");
+
 	return (
 		<Fragment>
 			{Platform.isDesktop && (
@@ -144,6 +155,14 @@ export default function CommandComponent({
 						}
 					</div>
 					<div className="setting-item-control">
+						<ObsidianIcon
+							icon={triggerModeIcon}
+							className="setting-editor-extra-setting-button clickable-icon"
+							onClick={(): void => handleTriggerModeChange()}
+							aria-label={t(
+								"Change trigger mode (Currently: {{current_mode}})"
+							).replace("{{current_mode}}", triggerModeName)}
+						/>
 						<ObsidianIcon
 							icon={modeIcon}
 							className="setting-editor-extra-setting-button clickable-icon"
@@ -231,4 +250,14 @@ function getModeIcon(mode: string): string {
 	if (mode === "desktop") return "monitor";
 	if (mode === "any") return "cmdr-all-devices";
 	return "airplay";
+}
+
+function getTriggerModeIcon(triggerMode: string): string {
+	if (triggerMode === "newline") {
+		return "cmdr-triggered-newline";
+	} else if (triggerMode === "inline") {
+		return "cmdr-triggered-inline";
+	} else {
+		return "regex";
+	}
 }
