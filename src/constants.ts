@@ -5,95 +5,86 @@ export const DEFAULT_COMMANDS = [
 		name: "Table",
 		id: "editor:insert-table",
 		icon: "table-2",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Callout",
 		id: "editor:insert-callout",
 		icon: "indent",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Code",
 		id: "editor:insert-codeblock",
 		icon: "terminal",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Math",
 		id: "editor:insert-mathblock",
 		icon: "percent",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Embed",
 		id: "editor:insert-embed",
 		icon: "sticky-note",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Attachment",
 		id: "editor:attach-file",
 		icon: "paperclip",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Property",
 		id: "markdown:add-metadata-property",
 		icon: "plus-circle",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Admonition",
 		id: "obsidian-admonition:insert-admonition",
 		icon: "indent",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Excalidraw",
 		id:
 			"obsidian-excalidraw-plugin:excalidraw-autocreate-and-embed-new-tab",
 		icon: "image",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Task",
 		id: "obsidian-tasks-plugin:edit-task",
 		icon: "check-circle",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Template",
 		id: "templater-obsidian:insert-templater",
 		icon: "book-copy",
-		mode: "any"
+		mode: "any",
+		triggerMode: "anywhere"
 	},
 	{
 		name: "Citation",
 		id: "zotlit:insert-markdown-citation",
 		icon: "book-marked",
-		mode: "desktop"
-	},
-	{
-		name: "Search",
-		id: "none",
-		icon: "search",
-		mode: "any",
-		isGroup: true,
-		children: [
-			{
-				id: "omnisearch:show-modal",
-				name: "Omnisearch: Vault search",
-				icon: "search",
-				mode: "any"
-			},
-			{
-				id: "omnisearch:show-modal-infile",
-				name: "Omnisearch: Vault search",
-				icon: "search",
-				mode: "any"
-			}
-		]
+		mode: "desktop",
+		triggerMode: "anywhere"
 	}
 ];
 

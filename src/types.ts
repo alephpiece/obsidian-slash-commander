@@ -14,12 +14,14 @@ export interface CommanderSettings {
 }
 
 export type Mode = "desktop" | "any" | "mobile" | string;
+export type TriggerMode = "newline" | "inline" | "anywhere" | string;
 
 export interface CommandIconPair {
 	id: string;
 	icon: string;
 	name: string;
 	mode: Mode;
+	triggerMode?: TriggerMode;
 	color?: string;
 	isGroup?: boolean;
 	children?: CommandIconPair[];

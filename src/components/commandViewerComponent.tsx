@@ -112,6 +112,29 @@ export default function CommandViewer({
                                             manager.reorder();
                                             setState(manager.pairs);
                                         }}
+                                        handleTriggerModeChange={async (
+                                            mode?: string
+                                        ): Promise<void> => {
+                                            const modes = [
+                                                "anywhere",
+                                                "newline",
+                                                "inline",
+                                            ];
+
+                                            if (typeof cmd.triggerMode === "undefined")
+                                                cmd.triggerMode = "anywhere";
+
+                                            let currentIdx = modes.indexOf(
+                                                cmd.triggerMode
+                                            );
+                                            if (currentIdx === 2) currentIdx = -1;
+
+                                            cmd.triggerMode =
+                                                mode || modes[currentIdx + 1];
+                                            await plugin.saveSettings();
+                                            manager.reorder();
+                                            setState(manager.pairs);
+                                        }}
                                     />
                                 );
                             }

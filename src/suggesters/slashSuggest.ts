@@ -76,7 +76,14 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<CommandIconPair>> {
         .filter(({ match }) => match);
     }
 
-    return results.filter(({ item }) => isValidPair(item, this.plugin));
+    // Filter by trigger mode
+    const onNewLine = context.start.ch == 0;
+
+    return results
+      .filter(({ item }) => isValidPair(item, this.plugin))
+      .filter(({ item }) =>
+        onNewLine && item.triggerMode != "inline"
+        || !onNewLine && item.triggerMode != "newline");
   }
 
   public renderSuggestion(result: FuzzyMatch<CommandIconPair>, el: HTMLElement): void {
