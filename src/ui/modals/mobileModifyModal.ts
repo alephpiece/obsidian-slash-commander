@@ -14,7 +14,8 @@ export default class MobileModifyModal extends Modal {
 		public pair: CommandIconPair,
 		public handleRename: (name: string) => void,
 		public handleNewIcon: () => void,
-		public handleModeChange: (mode?: string) => void
+		public handleModeChange: (mode?: string) => void,
+		public handleTriggerModeChange: (mode?: string) => void
 	) {
 		super(plugin.app);
 	}

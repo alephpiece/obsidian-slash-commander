@@ -205,7 +205,8 @@ export default function CommandComponent({
 									pair,
 									handleRename,
 									handleNewIcon,
-									handleModeChange
+									handleModeChange,
+									handleTriggerModeChange
 								).open();
 							}}
 						/>
@@ -218,7 +219,8 @@ export default function CommandComponent({
 								pair,
 								handleRename,
 								handleNewIcon,
-								handleModeChange
+								handleModeChange,
+								handleTriggerModeChange
 							).open();
 						}}
 					>
@@ -234,7 +236,8 @@ export default function CommandComponent({
 									pair,
 									handleRename,
 									handleNewIcon,
-									handleModeChange
+									handleModeChange,
+									handleTriggerModeChange
 								).open();
 							}}
 						/>

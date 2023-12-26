@@ -66,6 +66,25 @@ export default function MobileModifyComponent({
 					</option>
 				</select>
 			</div>
+			<div className="cmdr-mobile-modify-option">
+				<select
+					className="dropdown"
+					value={controller.pair.triggerMode}
+					onChange={({ currentTarget }): void =>
+						controller.handleTriggerModeChange(currentTarget.value)
+					}
+				>
+					<option value="anywhere">
+						{t("Show command on any triggering")}
+					</option>
+					<option value="newline">
+						{t("Show command on newline triggering")}
+					</option>
+					<option value="inline">
+						{t("Show command on inline triggering")}
+					</option>
+				</select>
+			</div>
 			<div className="modal-button-container">
 				<button
 					className="mod-cta"

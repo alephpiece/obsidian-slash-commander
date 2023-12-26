@@ -34,6 +34,8 @@ export default function CommandViewer({
                     <ReactSortable
                         list={state}
                         setList={setState}
+                        delay={50}
+                        delayOnTouchOnly={true}
                         animation={200}
                         forceFallback={true}
                         fallbackClass="sortable-fallback"
