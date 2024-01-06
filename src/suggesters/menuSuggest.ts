@@ -36,10 +36,21 @@ export class MenuSuggest {
             }
         });
 
+        // Cursor position
+        const cursor = this.editor.getCursor("from");
+
+        // Filter suggestions and open the menu modal
+        const onNewLine = cursor.ch == 0;
+
         const modal = new MenuSuggestionModal(
             this.plugin,
             this.search,
-            this.plugin.manager.validPairs());
+            this.plugin.manager
+                .validPairs()
+                .filter((pair) =>
+                    onNewLine && pair.triggerMode != "inline"
+                    || !onNewLine && pair.triggerMode != "newline")
+        );
 
         modal.open();
 
@@ -49,7 +60,6 @@ export class MenuSuggest {
         // Figure out the popover position
         // Credits go to https://github.com/Jambo2018/notion-assistant-plugin
         // and https://github.com/chetachiezikeuzor/Highlightr-Plugin
-        const cursor = this.editor.getCursor("from");
         let coords: Coords;
 
         if (this.editor.cursorCoords) {
