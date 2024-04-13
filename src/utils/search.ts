@@ -25,7 +25,7 @@ export function buildQueryPattern(settings: CommanderSettings): RegExp {
 	// Always matching from the beginning of the line.
 	// The trigger mode is tweaked by passing in different parts of the line.
 	return new RegExp(
-		`^\\s*(?<fullQuery>(?:${escapedTriggers.join("|")})(?<commandQuery>.*))`,
+		`^(?<fullQuery>(?:${escapedTriggers.join("|")})(?<commandQuery>.*))`,
 		"d"
 	);
 }
