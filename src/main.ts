@@ -7,7 +7,7 @@ import { SlashSuggester } from "@/services/suggesters/slashSuggest";
 import { MenuSuggest } from "@/services/suggesters/menuSuggest";
 
 import "@/ui/styles/styles.scss";
-import registerCustomIcons from "./assets/icons";
+import registerCustomIcons from "@/assets/icons";
 import CommandStore from "@/data/stores/CommandStore";
 import SettingsStore from "@/data/stores/SettingsStore";
 

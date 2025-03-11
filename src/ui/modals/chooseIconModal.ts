@@ -1,6 +1,6 @@
-import { ICON_LIST } from "../../data/constants/icons";
+import { ICON_LIST } from "@/data/constants/icons";
 import { setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
-import SlashCommanderPlugin from "src/main";
+import SlashCommanderPlugin from "@/main";
 import t from "@/i18n";
 
 export default class ChooseIconModal extends FuzzySuggestModal<string> {

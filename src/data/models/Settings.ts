@@ -1,5 +1,5 @@
 import { Editor } from "obsidian";
-import { SlashCommand } from "./SlashCommand";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
 export interface CommanderSettings {
 	confirmDeletion: boolean;

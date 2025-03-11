@@ -1,11 +1,11 @@
 import i18next from "i18next";
 import { moment } from "obsidian";
-import { SupportedLanguage, TranslationKey, TranslationOptions } from "./types";
+import { SupportedLanguage, TranslationKey, TranslationOptions } from "@/i18n/types";
 
-import en from "./resources/en-us.json";
-import zhCN from "./resources/zh-cn.json";
-import jaJP from "./resources/ja-jp.json";
-import ruRU from "./resources/ru-ru.json";
+import en from "@/i18n/resources/en-us.json";
+import zhCN from "@/i18n/resources/zh-cn.json";
+import jaJP from "@/i18n/resources/ja-jp.json";
+import ruRU from "@/i18n/resources/ru-ru.json";
 
 function normalizeLanguage(language: string): SupportedLanguage {
 	if (language.startsWith("zh")) return "zh-cn";
@@ -31,11 +31,10 @@ i18next.init({
 	},
 });
 
-export const t = (key: TranslationKey, options?: TranslationOptions): string => 
+export const t = (key: TranslationKey, options?: TranslationOptions): string =>
 	i18next.t(key, options);
 
-export const currentLanguage = (): SupportedLanguage => 
-	normalizeLanguage(i18next.language);
+export const currentLanguage = (): SupportedLanguage => normalizeLanguage(i18next.language);
 
 export const defaultLanguage: SupportedLanguage = "en-us";
 

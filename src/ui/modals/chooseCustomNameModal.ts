@@ -1,6 +1,6 @@
 import { SuggestModal } from "obsidian";
 import t from "@/i18n";
-import SlashCommanderPlugin from "src/main";
+import SlashCommanderPlugin from "@/main";
 
 export default class ChooseCustomNameModal extends SuggestModal<string> {
 	// This is used in onOpen, not sure why eslint doesn't recognize it

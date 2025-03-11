@@ -1,8 +1,8 @@
 import { Modal } from "obsidian";
 import { h, render, VNode } from "preact";
 import t from "@/i18n";
-import SlashCommanderPlugin from "src/main";
-import { confirmDeleteComponent } from "../components/confirmDeleteComponent";
+import SlashCommanderPlugin from "@/main";
+import { confirmDeleteComponent } from "@/ui/components/confirmDeleteComponent";
 
 export default class ConfirmDeleteModal extends Modal {
 	private reactComponent: VNode;

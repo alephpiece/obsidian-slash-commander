@@ -1,6 +1,6 @@
 import { Command, setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
 import t from "@/i18n";
-import SlashCommanderPlugin from "src/main";
+import SlashCommanderPlugin from "@/main";
 
 export default class AddCommandModal extends FuzzySuggestModal<Command> {
 	private commands: Command[];

@@ -1,4 +1,4 @@
-import { SlashCommand } from "../slashCommand";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
 export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{

@@ -2,8 +2,8 @@
 import { SlashCommand } from "@/data/models/SlashCommand";
 import { Modal } from "obsidian";
 import { h, render, VNode } from "preact";
-import MobileModifyComponent from "../components/mobileModifyComponent";
-import SlashCommanderPlugin from "src/main";
+import MobileModifyComponent from "@/ui/components/mobileModifyComponent";
+import SlashCommanderPlugin from "@/main";
 
 export default class MobileModifyModal extends Modal {
 	private reactComponent: VNode;

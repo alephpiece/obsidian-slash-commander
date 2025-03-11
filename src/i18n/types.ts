@@ -1,4 +1,4 @@
-import en from "./resources/en-us.json";
+import en from "@/i18n/resources/en-us.json";
 
 export type SupportedLanguage = "en-us" | "zh-cn" | "ja-jp" | "ru-ru";
 export type TranslationKey = keyof typeof en;
