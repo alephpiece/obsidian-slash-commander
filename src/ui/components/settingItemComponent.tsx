@@ -7,7 +7,8 @@ interface BaseComponentProps {
 	description: string;
 	className?: string;
 }
-function BaseComponent({
+
+export function BaseComponent({
 	name,
 	description,
 	children,
@@ -36,11 +37,7 @@ export function ToggleComponent(props: SettingProps<boolean>): h.JSX.Element {
 	const [state, setState] = useState(props.value);
 
 	return (
-		<BaseComponent
-			name={props.name}
-			description={props.description}
-			className="mod-toggle"
-		>
+		<BaseComponent name={props.name} description={props.description} className="mod-toggle">
 			<div
 				className={`checkbox-container ${state ? "is-enabled" : ""}`}
 				onClick={(): void => {
@@ -54,18 +51,18 @@ export function ToggleComponent(props: SettingProps<boolean>): h.JSX.Element {
 
 export function TextBoxComponent(props: SettingProps<string>): h.JSX.Element {
 	return (
-		<BaseComponent
-			description={props.description}
-			name={props.name}
-			className="cmdr-text"
-		>
+		<BaseComponent description={props.description} name={props.name} className="cmdr-text">
 			<input
 				type="text"
 				value={props.value}
 				onChange={({ target }): void => {
-					{/*@ts-expect-error*/ }
+					{
+						/*@ts-expect-error*/
+					}
 					if (props.value !== target.value) {
-						{/*@ts-expect-error*/ }
+						{
+							/*@ts-expect-error*/
+						}
 						props.changeHandler(target.value);
 					}
 				}}

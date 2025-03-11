@@ -1,11 +1,14 @@
 import { SuggestModal } from "obsidian";
-import t from "src/l10n";
+import t from "@/i18n";
 import SlashCommanderPlugin from "src/main";
 
 export default class ChooseCustomNameModal extends SuggestModal<string> {
 	// This is used in onOpen, not sure why eslint doesn't recognize it
 	// eslint-disable-next-line no-unused-vars
-	public constructor(plugin: SlashCommanderPlugin, private defaultName: string) {
+	public constructor(
+		plugin: SlashCommanderPlugin,
+		private defaultName: string
+	) {
 		super(plugin.app);
 		this.setPlaceholder(t("Use a custom name"));
 		this.resultContainerEl.style.display = "none";
@@ -33,9 +36,13 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 		const wrapper = createDiv({ cls: "cmdr-name-input-wrapper" });
 		this.inputEl.parentNode?.insertBefore(wrapper, this.inputEl);
 		wrapper.appendChild(this.inputEl);
-		wrapper.parentElement!.style.display = "block";
+		if (wrapper.parentElement) {
+			wrapper.parentElement.style.display = "block";
+		}
 
 		const btn = createEl("button", { text: t("Save"), cls: "mod-cta" });
+		btn.style.position = "relative";
+		btn.style.left = "-2.5em";
 		btn.onclick = (e): void => this.selectSuggestion(this.inputEl.value, e);
 		wrapper.appendChild(btn);
 	}
@@ -45,8 +52,7 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 		return new Promise((resolve, reject) => {
 			this.onChooseSuggestion = (item): void => resolve(item);
 			//This is wrapped inside a setTimeout, because onClose is called before onChooseItem
-			this.onClose = (): number =>
-				window.setTimeout(() => reject("No Name selected"), 0);
+			this.onClose = (): number => window.setTimeout(() => reject("No Name selected"), 0);
 		});
 	}
 
@@ -60,8 +66,5 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 
 	// This will be overriden anyway, but typescript complains if it's not declared
 	// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
-	public onChooseSuggestion(
-		item: string,
-		evt: MouseEvent | KeyboardEvent
-	): void {}
+	public onChooseSuggestion(item: string, evt: MouseEvent | KeyboardEvent): void {}
 }

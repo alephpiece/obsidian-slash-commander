@@ -1,6 +1,6 @@
 import { Modal } from "obsidian";
 import { h, render, VNode } from "preact";
-import t from "src/l10n";
+import t from "@/i18n";
 import SlashCommanderPlugin from "src/main";
 import { confirmDeleteComponent } from "../components/confirmDeleteComponent";
 
@@ -22,7 +22,7 @@ export default class ConfirmDeleteModal extends Modal {
 
 	public async didChooseRemove(): Promise<boolean> {
 		this.open();
-		return new Promise((resolve) => {
+		return new Promise(resolve => {
 			this.onClose = (): void => resolve(this.remove ?? false);
 		});
 	}

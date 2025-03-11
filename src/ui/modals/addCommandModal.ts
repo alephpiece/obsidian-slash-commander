@@ -1,5 +1,5 @@
 import { Command, setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
-import t from "src/l10n";
+import t from "@/i18n";
 import SlashCommanderPlugin from "src/main";
 
 export default class AddCommandModal extends FuzzySuggestModal<Command> {
@@ -31,8 +31,7 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
 		return new Promise((resolve, reject) => {
 			this.onChooseItem = (item): void => resolve(item);
 			//This is wrapped inside a setTimeout, because onClose is called before onChooseItem
-			this.onClose = (): number =>
-				window.setTimeout(() => reject("No Command selected"), 0);
+			this.onClose = (): number => window.setTimeout(() => reject("No Command selected"), 0);
 		});
 	}
 
@@ -44,10 +43,8 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
 		//Append the icon if available
 		if (item.item.icon) {
 			const aux = el.createDiv({ cls: "suggestion-aux" });
-			setIcon(
-				aux.createSpan({ cls: "suggestion-flair" }),
-				item.item.icon
-			);
+			const iconElement = aux.createSpan({ cls: "suggestion-flair" });
+			setIcon(iconElement, item.item.icon);
 		}
 	}
 

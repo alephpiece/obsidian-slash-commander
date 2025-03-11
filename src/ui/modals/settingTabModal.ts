@@ -14,10 +14,7 @@ export default class SettingTabModal extends Modal {
 
 	public onOpen(): void {
 		const mobileMode = Platform.isMobile; //this.containerEl.getBoundingClientRect().width <= 1100;
-		render(
-			h(settingTabComponent, { plugin: this.plugin, mobileMode }),
-			this.contentEl
-		);
+		render(h(settingTabComponent, { plugin: this.plugin, mobileMode }), this.contentEl);
 	}
 
 	public onClose(): void {

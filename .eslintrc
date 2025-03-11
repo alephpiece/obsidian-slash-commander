@@ -1,25 +1,28 @@
 {
 	"root": true,
 	"parser": "@typescript-eslint/parser",
-	"env": { "node": true },
-	"plugins": ["@typescript-eslint"],
+	"env": {
+		"browser": true,
+		"node": true
+	},
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
-		"plugin:@typescript-eslint/recommended"
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended"
 	],
 	"parserOptions": {
-		"sourceType": "module"
+		"sourceType": "module",
+		"ecmaVersion": 2020
 	},
+	"plugins": ["@typescript-eslint", "prettier"],
 	"rules": {
-		"no-unused-vars": "error",
+		"prettier/prettier": "warn",
 		"@typescript-eslint/no-unused-vars": ["error", { "args": "none" }],
 		"@typescript-eslint/ban-ts-comment": "off",
+		"@typescript-eslint/no-empty-function": "off",
+		"@typescript-eslint/no-explicit-any": "off",
 		"no-prototype-builtins": "off",
-		"@typescript-eslint/no-empty-function": ["error"],
-		"semi": ["error", "always"],
-		"@typescript-eslint/class-literal-property-style": ["error", "fields"],
-		"@typescript-eslint/explicit-function-return-type": ["error"],
-		"@typescript-eslint/explicit-member-accessibility": ["error"]
+		"@typescript-eslint/no-non-null-assertion": "off"
 	}
 }

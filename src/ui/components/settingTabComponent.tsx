@@ -1,14 +1,11 @@
 import { Fragment, h } from "preact";
-import t from "src/l10n";
-import { isTriggerInConflicts } from "src/utils/util";
+import t from "@/i18n";
+import { isTriggerInConflicts } from "@/services/utils/util";
 import ObsidianIcon from "src/ui/components/obsidianIconComponent";
-import { buildQueryPattern } from "src/utils/search";
+import { buildQueryPattern } from "@/services/utils/search";
 import SlashCommanderPlugin from "../../main";
 import CommandViewer from "./commandViewerComponent";
-import {
-	ToggleComponent,
-	TextBoxComponent
-} from "./settingItemComponent";
+import { ToggleComponent, TextBoxComponent } from "./settingItemComponent";
 import SettingCollapser from "./settingHeaderComponent";
 import TriggerViewer from "./TriggerViewerComponent";
 
@@ -18,10 +15,9 @@ export default function settingTabComponent({
 	plugin: SlashCommanderPlugin;
 	mobileMode: boolean;
 }): h.JSX.Element {
-
 	return (
-		<Fragment>
-			<Fragment>
+		<>
+			<>
 				<h2>{t("General")}</h2>
 				{isTriggerInConflicts(plugin) && (
 					<div
@@ -30,7 +26,7 @@ export default function settingTabComponent({
 					>
 						<ObsidianIcon
 							icon="alert-triangle"
-							size={20}
+							size="var(--icon-m)"
 							className="cmdr-suggest-item-icon-large mod-warning"
 						/>
 						<div className="setting-item-info">
@@ -38,10 +34,14 @@ export default function settingTabComponent({
 								className="setting-item-name"
 								style="font-weight: bold; color: crimson"
 							>
-								{t("One of the command triggers conflicts with the 'Slash commands' plugin.")}
+								{t(
+									"One of the command triggers conflicts with the 'Slash commands' plugin."
+								)}
 							</div>
 							<div className="setting-item-description">
-								{t("Please modify your triggers or disable the above plugin, and then reload this setting tab to dismiss this warning.")}
+								{t(
+									"Please modify your triggers or disable the above plugin, and then reload this setting tab to dismiss this warning."
+								)}
 							</div>
 						</div>
 					</div>
@@ -67,16 +67,11 @@ export default function settingTabComponent({
 						this.forceUpdate();
 					}}
 				/>
-				{
-					plugin.settings.useExtraTriggers &&
-					<TriggerViewer
-						plugin={plugin}
-					/>
-				}
+				{plugin.settings.useExtraTriggers && <TriggerViewer plugin={plugin} />}
 				<ToggleComponent
-					name={t("Only on new line")}
+					name={t("Only on newline")}
 					description={t(
-						"Show slash commands only if the trigger is at the beginning of a line."
+						"Show commands only for triggers starting newlines. Turn this off to enable per-command settings."
 					)}
 					value={plugin.settings.triggerOnlyOnNewLine}
 					changeHandler={async (value): Promise<void> => {
@@ -86,9 +81,7 @@ export default function settingTabComponent({
 				/>
 				<ToggleComponent
 					name={t("Show command descriptions")}
-					description={t(
-						"Always show command descriptions in editor suggestions."
-					)}
+					description={t("Always show command descriptions in editor suggestions.")}
 					value={plugin.settings.showDescriptions}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.showDescriptions = !value;
@@ -108,22 +101,17 @@ export default function settingTabComponent({
 				/>
 				<ToggleComponent
 					name={t("Ask before removing")}
-					description={t(
-						"Always show a popup to confirm deletion of a command."
-					)}
+					description={t("Always show a popup to confirm deletion of a command.")}
 					value={plugin.settings.confirmDeletion}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.confirmDeletion = !value;
 						await plugin.saveSettings();
 					}}
 				/>
-			</Fragment>
+			</>
 			<SettingCollapser title={t("Bindings")}>
-				<CommandViewer
-					manager={plugin.manager}
-					plugin={plugin}
-				/>
+				<CommandViewer manager={plugin.commandStore} plugin={plugin} />
 			</SettingCollapser>
-		</Fragment>
+		</>
 	);
 }

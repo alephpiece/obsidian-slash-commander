@@ -1,10 +1,9 @@
-import { ICON_LIST } from "../../data/constants";
+import { ICON_LIST } from "../../data/constants/icons";
 import { setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
 import SlashCommanderPlugin from "src/main";
-import t from "src/l10n";
+import t from "@/i18n";
 
 export default class ChooseIconModal extends FuzzySuggestModal<string> {
-
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
 		this.setPlaceholder(t("Choose an icon for your new command"));
@@ -30,8 +29,7 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 		return new Promise((resolve, reject) => {
 			this.onChooseItem = (item): void => resolve(item);
 			//This is wrapped inside a setTimeout, because onClose is called before onChooseItem
-			this.onClose = (): number =>
-				window.setTimeout(() => reject("No Icon selected"), 0);
+			this.onClose = (): number => window.setTimeout(() => reject("No Icon selected"), 0);
 		});
 	}
 
@@ -43,13 +41,12 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 			.setText(
 				item.item
 					.replace(/-/g, " ")
-					.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
-						letter.toUpperCase()
-					)
+					.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())
 			);
 
 		const aux = el.createDiv({ cls: "suggestion-aux" });
-		setIcon(aux.createSpan({ cls: "suggestion-flair" }), item.item);
+		const iconElement = aux.createSpan({ cls: "suggestion-flair" });
+		setIcon(iconElement, item.item);
 	}
 
 	public getItems(): string[] {

@@ -1,31 +1,46 @@
 import { MarkdownView, Plugin } from "obsidian";
-import { DEFAULT_SETTINGS } from "./data/constants";
-import t from "./l10n";
-import { CommanderSettings, EnhancedEditor } from "./data/types";
-import CommanderSettingTab from "./settings/settingTab";
-import SettingTabModal from "./ui/modals/settingTabModal";
-import CommandManager from "./data/commandManager";
-import { SlashSuggester } from "./suggesters/slashSuggest";
-import { MenuSuggest } from "./suggesters/menuSuggest";
-import { buildQueryPattern } from "./utils/search";
+import t from "@/i18n";
+import { CommanderSettings, EnhancedEditor } from "@/data/models/Settings";
+import CommanderSettingTab from "@/ui/settingTab";
+import SettingTabModal from "@/ui/modals/settingTabModal";
+import { SlashSuggester } from "@/services/suggesters/slashSuggest";
+import { MenuSuggest } from "@/services/suggesters/menuSuggest";
 
-import "./styles/styles.scss";
+import "@/ui/styles/styles.scss";
 import registerCustomIcons from "./assets/icons";
+import CommandStore from "@/data/stores/CommandStore";
+import SettingsStore from "@/data/stores/SettingsStore";
 
 export default class SlashCommanderPlugin extends Plugin {
 	public settings: CommanderSettings;
-	public manager: CommandManager;
+	public commandStore: CommandStore;
+	public settingsStore: SettingsStore;
 	public scrollArea?: Element | undefined;
 	public menuSuggest?: MenuSuggest;
 
 	public async onload(): Promise<void> {
-		await this.loadSettings();
+		this.settingsStore = new SettingsStore(this);
+		this.settings = await this.settingsStore.loadSettings();
 
 		registerCustomIcons();
 
-		this.manager = new CommandManager(this);
-
 		this.addSettingTab(new CommanderSettingTab(this));
+
+		// Ensure that active views are detected
+		this.app.workspace.onLayoutReady(() => {
+			// Initialize plugin when it's already enabled on startup
+			if (this.manifest.id in this.app.plugins.manifests) {
+				this.initializePlugin();
+			}
+		});
+	}
+
+	public onUserEnable(): void {
+		this.initializePlugin();
+	}
+
+	private initializePlugin(): void {
+		this.commandStore = new CommandStore(this);
 
 		this.addCommand({
 			name: t("Open settings"),
@@ -50,21 +65,15 @@ export default class SlashCommanderPlugin extends Plugin {
 		});
 
 		// Get the scroller area
-		// Credits go to https://github.com/Jambo2018/notion-assistant-plugin
 		const renderPlugin = (): void => {
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (!view) return;
-			this.scrollArea =
-				view.containerEl.querySelector(".cm-scroller") ?? undefined;
+			this.scrollArea = view.containerEl.querySelector(".cm-scroller") ?? undefined;
 			if (!this.scrollArea) return;
 		};
 
-		/**Ensure that the plugin can be loaded and used immediately after it is turned on */
-		renderPlugin();
-
-		this.registerEvent(
-			this.app.workspace.on("active-leaf-change", renderPlugin)
-		);
+		this.app.workspace.onLayoutReady(renderPlugin);
+		this.registerEvent(this.app.workspace.on("active-leaf-change", renderPlugin));
 	}
 
 	public onunload(): void {
@@ -72,13 +81,7 @@ export default class SlashCommanderPlugin extends Plugin {
 		this.menuSuggest?.close();
 	}
 
-	private async loadSettings(): Promise<void> {
-		const data = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-		this.settings = data;
-		this.settings.queryPattern = buildQueryPattern(this.settings);
-	}
-
 	public async saveSettings(): Promise<void> {
-		await this.saveData(this.settings);
+		await this.settingsStore.saveSettings();
 	}
 }

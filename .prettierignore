@@ -1,0 +1,22 @@
+# 构建输出
+main.js
+styles.css
+*.map
+
+# 依赖目录
+node_modules
+
+# 其他生成的文件
+dist
+.obsidian
+
+# 数据文件
+data.json
+manifest.json
+
+# VSCode
+.vscode
+
+# 系统文件
+.DS_Store
+Thumbs.db 

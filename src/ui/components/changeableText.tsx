@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { Ref, useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 
 interface Props {
 	value: string;
@@ -8,49 +8,45 @@ interface Props {
 	ariaLabel: string;
 }
 
-export default function ChangeableText({
-	value,
-	handleChange,
-	ariaLabel,
-}: Props): h.JSX.Element {
-	const [showInputEle, setShowInput] = useState(false);
-	const el: Ref<HTMLInputElement> | undefined = useRef(null);
-	const [width, setWidth] = useState<number>(0);
+export default function ChangeableText({ value, handleChange, ariaLabel }: Props): h.JSX.Element {
+	const [isEditing, setIsEditing] = useState(false);
+	const inputRef = useRef<HTMLInputElement>(null);
+	const [inputWidth, setInputWidth] = useState<number>(0);
 
 	useEffect(() => {
-		el?.current?.select();
-		el?.current?.focus();
-	});
+		if (isEditing && inputRef.current) {
+			inputRef.current.select();
+			inputRef.current.focus();
+		}
+	}, [isEditing]);
+
+	const handleKeyDown = (e: h.JSX.TargetedKeyboardEvent<HTMLInputElement>): void => {
+		if (e.key === "Enter" && e.currentTarget.value.length > 0) {
+			setIsEditing(false);
+			handleChange(e);
+		}
+	};
+
+	const handleDoubleClick = (e: h.JSX.TargetedMouseEvent<HTMLSpanElement>): void => {
+		const span = e.currentTarget as HTMLSpanElement;
+		setInputWidth(span.offsetWidth);
+		setIsEditing(true);
+	};
 
 	return (
 		<div class="cmdr-editable">
-			{showInputEle ? (
+			{isEditing ? (
 				<input
 					type="text"
 					value={value}
-					style={{ width: width + 25 + "px" }}
-					onKeyDown={(e): void => {
-						/* If Enter was pressed, handle the name change and set to display mode */
-						if (
-							e.key === "Enter" &&
-							(e.target as HTMLInputElement).value.length > 0
-						) {
-							setShowInput(false);
-							handleChange(e);
-						}
-					}}
-					onBlur={(): void => setShowInput(false)}
-					ref={el}
+					style={{ width: `${inputWidth + 25}px` }}
+					onKeyDown={handleKeyDown}
+					onBlur={(): void => setIsEditing(false)}
+					ref={inputRef}
+					aria-label={ariaLabel}
 				/>
 			) : (
-				<span
-					onDblClick={({ target }): void => {
-						/* @ts-ignore */
-						setWidth(target?.offsetWidth);
-						setShowInput(true);
-					}}
-					aria-label={ariaLabel}
-				>
+				<span onDblClick={handleDoubleClick} aria-label={ariaLabel}>
 					{value}
 				</span>
 			)}

@@ -1,14 +1,10 @@
 import { Fragment, h } from "preact";
-import t from "src/l10n";
+import t from "@/i18n";
 import ConfirmDeleteModal from "../modals/confirmDeleteModal";
 
-export function confirmDeleteComponent({
-	modal,
-}: {
-	modal: ConfirmDeleteModal;
-}): h.JSX.Element {
+export function confirmDeleteComponent({ modal }: { modal: ConfirmDeleteModal }): h.JSX.Element {
 	return (
-		<Fragment>
+		<>
 			<p>{t("Are you sure you want to delete the command?")}</p>
 			<div className="modal-button-container">
 				<button
@@ -41,6 +37,6 @@ export function confirmDeleteComponent({
 					{t("Cancel")}
 				</button>
 			</div>
-		</Fragment>
+		</>
 	);
 }

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { CommandIconPair } from "src/data/types";
+import { SlashCommand } from "@/data/models/SlashCommand";
 import { Modal } from "obsidian";
 import { h, render, VNode } from "preact";
 import MobileModifyComponent from "../components/mobileModifyComponent";
@@ -11,10 +11,10 @@ export default class MobileModifyModal extends Modal {
 
 	public constructor(
 		public plugin: SlashCommanderPlugin,
-		public pair: CommandIconPair,
+		public pair: SlashCommand,
 		public handleRename: (name: string) => void,
 		public handleNewIcon: () => void,
-		public handleModeChange: (mode?: string) => void,
+		public handleDeviceModeChange: (mode?: string) => void,
 		public handleTriggerModeChange: (mode?: string) => void
 	) {
 		super(plugin.app);
