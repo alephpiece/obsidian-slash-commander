@@ -20,6 +20,7 @@
 	"keywords": [],
 	"author": "alephpiece",
 	"devDependencies": {
+		"@popperjs/core": "^2.11.8",
 		"@preact/preset-vite": "^2.8.1",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/babel__core": "^7.20.5",
@@ -43,7 +44,6 @@
 		"vite": "^6.2.1"
 	},
 	"dependencies": {
-		"@popperjs/core": "^2.11.8",
 		"@preact/compat": "^18.3.1",
 		"i18next": "^24.2.2",
 		"preact": "^10.26.4",
