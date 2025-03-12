@@ -91,7 +91,11 @@ export default function CommandComponent({
 							icon={isCollapsed ? "chevron-right" : "chevron-down"}
 							className="cmdr-group-collapser-button clickable-icon"
 							onClick={handleCollapse}
-							aria-label={isCollapsed ? t("bindings.group.expand") : t("bindings.group.collapse")}
+							aria-label={
+								isCollapsed
+									? t("bindings.group.expand")
+									: t("bindings.group.collapse")
+							}
 						/>
 					)}
 					{handleAddChild && (

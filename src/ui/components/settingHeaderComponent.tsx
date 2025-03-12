@@ -6,10 +6,7 @@ interface SettingCollapserProps extends ComponentProps<"details"> {
 	children: ReactElement | ReactElement[];
 }
 
-export default function SettingCollapser({
-	title,
-	children,
-}: SettingCollapserProps): ReactElement {
+export default function SettingCollapser({ title, children }: SettingCollapserProps): ReactElement {
 	const [open, setOpen] = useState(true);
 
 	const toggleHandler = (): void => {

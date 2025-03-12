@@ -114,7 +114,6 @@ function SortableCommandList({
 	);
 }
 
-
 interface CollapsibleCommandGroupProps {
 	cmd: SlashCommand;
 	plugin: SlashCommanderPlugin;
@@ -298,11 +297,7 @@ interface CommandViewerToolsProps {
  * @param setState - The state updater function.
  * @returns The rendered command list tools.
  */
-function CommandViewerTools({
-	plugin,
-	manager,
-	setState,
-}: CommandViewerToolsProps): ReactElement {
+function CommandViewerTools({ plugin, manager, setState }: CommandViewerToolsProps): ReactElement {
 	const { t } = useTranslation();
 	return (
 		<div className="cmdr-add-new-wrapper">

@@ -12,14 +12,9 @@ const commonRules = {
 	"prettier/prettier": "warn",
 };
 
-const commonPlugins = {
-	react: reactPlugin,
-	"react-hooks": reactHooksPlugin,
-	prettier: prettierPlugin,
-};
-
 export default {
 	...eslint.configs.recommended,
+	...tseslint.configs.recommended,
 	files: ["**/*.{ts,tsx,js,jsx}"],
 	ignores: [
 		"**/node_modules/**",
