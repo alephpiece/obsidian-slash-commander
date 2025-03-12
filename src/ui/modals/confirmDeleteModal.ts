@@ -1,6 +1,6 @@
 import { Modal } from "obsidian";
 import { h, render, VNode } from "preact";
-import t from "@/i18n";
+import i18n from "@/i18n";
 import SlashCommanderPlugin from "@/main";
 import { confirmDeleteComponent } from "@/ui/components/confirmDeleteComponent";
 
@@ -14,7 +14,7 @@ export default class ConfirmDeleteModal extends Modal {
 	}
 
 	public async onOpen(): Promise<void> {
-		this.titleEl.innerText = t("Remove command");
+		this.titleEl.innerText = i18n.t("modal.remove_command.title");
 		this.containerEl.style.zIndex = "99";
 		this.reactComponent = h(confirmDeleteComponent, { modal: this });
 		render(this.reactComponent, this.contentEl);

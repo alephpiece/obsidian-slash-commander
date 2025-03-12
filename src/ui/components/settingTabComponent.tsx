@@ -1,5 +1,4 @@
 import { Fragment, h } from "preact";
-import t from "@/i18n";
 import { isTriggerInConflicts } from "@/services/utils/util";
 import ObsidianIcon from "src/ui/components/obsidianIconComponent";
 import { buildQueryPattern } from "@/services/utils/search";
@@ -8,6 +7,7 @@ import CommandViewer from "./commandViewerComponent";
 import { ToggleComponent, TextBoxComponent } from "./settingItemComponent";
 import SettingCollapser from "./settingHeaderComponent";
 import TriggerViewer from "./TriggerViewerComponent";
+import { useTranslation } from "react-i18next";
 
 export default function settingTabComponent({
 	plugin,
@@ -15,10 +15,11 @@ export default function settingTabComponent({
 	plugin: SlashCommanderPlugin;
 	mobileMode: boolean;
 }): h.JSX.Element {
+	const { t } = useTranslation();
 	return (
 		<>
 			<>
-				<h2>{t("General")}</h2>
+				<h2>{t("settings.general")}</h2>
 				{isTriggerInConflicts(plugin) && (
 					<div
 						className="setting-item"
@@ -35,12 +36,12 @@ export default function settingTabComponent({
 								style="font-weight: bold; color: crimson"
 							>
 								{t(
-									"One of the command triggers conflicts with the 'Slash commands' plugin."
+									"triggers.conflict.title"
 								)}
 							</div>
 							<div className="setting-item-description">
 								{t(
-									"Please modify your triggers or disable the above plugin, and then reload this setting tab to dismiss this warning."
+									"triggers.conflict.detail"
 								)}
 							</div>
 						</div>
@@ -48,8 +49,8 @@ export default function settingTabComponent({
 				)}
 				<TextBoxComponent
 					value={plugin.settings.mainTrigger}
-					name={t("Command trigger")}
-					description={t("Characters to trigger slash commands.")}
+					name={t("triggers.command.title")}
+					description={t("triggers.command.detail")}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.mainTrigger = value;
 						plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
@@ -57,8 +58,8 @@ export default function settingTabComponent({
 					}}
 				/>
 				<ToggleComponent
-					name={t("More triggers")}
-					description={t("Add more command triggers.")}
+					name={t("triggers.more.title")}
+					description={t("triggers.more.detail")}
 					value={plugin.settings.useExtraTriggers}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.useExtraTriggers = !value;
@@ -69,10 +70,8 @@ export default function settingTabComponent({
 				/>
 				{plugin.settings.useExtraTriggers && <TriggerViewer plugin={plugin} />}
 				<ToggleComponent
-					name={t("Only on newline")}
-					description={t(
-						"Show commands only for triggers starting newlines. Turn this off to enable per-command settings."
-					)}
+					name={t("settings.newline_only")}
+					description={t("settings.newline_only.detail")}
 					value={plugin.settings.triggerOnlyOnNewLine}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.triggerOnlyOnNewLine = !value;
@@ -80,8 +79,8 @@ export default function settingTabComponent({
 					}}
 				/>
 				<ToggleComponent
-					name={t("Show command descriptions")}
-					description={t("Always show command descriptions in editor suggestions.")}
+					name={t("settings.show_descriptions")}
+					description={t("settings.show_descriptions.detail")}
 					value={plugin.settings.showDescriptions}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.showDescriptions = !value;
@@ -89,10 +88,8 @@ export default function settingTabComponent({
 					}}
 				/>
 				<ToggleComponent
-					name={t("Show command sources")}
-					description={t(
-						"Show command sources in editor suggestions for duplicated command names."
-					)}
+					name={t("settings.show_sources")}
+					description={t("settings.show_sources.detail")}
 					value={plugin.settings.showSourcesForDuplicates}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.showSourcesForDuplicates = !value;
@@ -100,8 +97,8 @@ export default function settingTabComponent({
 					}}
 				/>
 				<ToggleComponent
-					name={t("Ask before removing")}
-					description={t("Always show a popup to confirm deletion of a command.")}
+					name={t("settings.ask_before_removing")}
+					description={t("settings.ask_before_removing.detail")}
 					value={plugin.settings.confirmDeletion}
 					changeHandler={async (value): Promise<void> => {
 						plugin.settings.confirmDeletion = !value;
@@ -109,7 +106,7 @@ export default function settingTabComponent({
 					}}
 				/>
 			</>
-			<SettingCollapser title={t("Bindings")}>
+			<SettingCollapser title={t("bindings.title")}>
 				<CommandViewer manager={plugin.commandStore} plugin={plugin} />
 			</SettingCollapser>
 		</>

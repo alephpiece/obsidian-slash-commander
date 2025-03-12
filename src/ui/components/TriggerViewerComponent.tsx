@@ -2,7 +2,7 @@ import { Fragment, h } from "preact";
 import SlashCommanderPlugin from "src/main";
 import { buildQueryPattern } from "@/services/utils/search";
 import ObsidianIcon from "./obsidianIconComponent";
-import t from "@/i18n";
+import { useTranslation } from "react-i18next";
 
 interface TriggerViewerProps {
 	plugin: SlashCommanderPlugin;
@@ -12,6 +12,7 @@ interface TriggerViewerProps {
 export default function TriggerViewer({ plugin, children }: TriggerViewerProps): h.JSX.Element {
 	// FIXME: more flexible is good
 	const triggers = plugin.settings.extraTriggers;
+	const { t } = useTranslation();
 	return (
 		<>
 			<div className="cmdr-triggers">
@@ -37,7 +38,7 @@ export default function TriggerViewer({ plugin, children }: TriggerViewerProps):
 								className="cmdr-icon clickable-icon"
 								icon="trash-2"
 								size="var(--icon-s)"
-								aria-label={t("Delete")}
+								aria-label={t("common.delete")}
 								onClick={async (): Promise<void> => {
 									triggers.splice(index, 1);
 									plugin.settings.queryPattern = buildQueryPattern(
@@ -57,7 +58,7 @@ export default function TriggerViewer({ plugin, children }: TriggerViewerProps):
 						this.forceUpdate();
 					}}
 				>
-					{t("Add")}
+					{t("common.add")}
 				</button>
 				{children}
 			</div>

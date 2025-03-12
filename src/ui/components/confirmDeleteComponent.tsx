@@ -1,11 +1,12 @@
 import { Fragment, h } from "preact";
-import t from "@/i18n";
+import { useTranslation } from "react-i18next";
 import ConfirmDeleteModal from "../modals/confirmDeleteModal";
 
 export function confirmDeleteComponent({ modal }: { modal: ConfirmDeleteModal }): h.JSX.Element {
+	const { t } = useTranslation();
 	return (
 		<>
-			<p>{t("Are you sure you want to delete the command?")}</p>
+			<p>{t("modal.remove_command.detail")}</p>
 			<div className="modal-button-container">
 				<button
 					className="mod-warning"
@@ -17,7 +18,7 @@ export function confirmDeleteComponent({ modal }: { modal: ConfirmDeleteModal })
 						modal.close();
 					}}
 				>
-					{t("Remove and don't ask again")}
+					{t("modal.remove_command.dont_ask")}
 				</button>
 				<button
 					className="mod-warning"
@@ -26,7 +27,7 @@ export function confirmDeleteComponent({ modal }: { modal: ConfirmDeleteModal })
 						modal.close();
 					}}
 				>
-					{t("Remove")}
+					{t("common.remove")}
 				</button>
 				<button
 					onClick={(): void => {
@@ -34,7 +35,7 @@ export function confirmDeleteComponent({ modal }: { modal: ConfirmDeleteModal })
 						modal.close();
 					}}
 				>
-					{t("Cancel")}
+					{t("common.cancel")}
 				</button>
 			</div>
 		</>

@@ -13,10 +13,10 @@ import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
 import CommandComponent from "@/ui/components/commandComponent";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
-import t from "@/i18n";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
 import { chooseNewCommand } from "@/services/utils/util";
+import { useTranslation } from "react-i18next";
 
 export const CommandStoreContext = createContext<CommandStore>(null!);
 
@@ -28,6 +28,7 @@ interface CommandViewerProps {
 export default function CommandViewer({ manager, plugin }: CommandViewerProps): h.JSX.Element {
 	// State of the root component
 	const [, setState] = useState(manager.data);
+	const { t } = useTranslation();
 
 	return (
 		<CommandStoreContext.Provider value={manager}>
@@ -38,8 +39,8 @@ export default function CommandViewer({ manager, plugin }: CommandViewerProps): 
 				pre => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)
 			) && (
 				<div class="cmdr-commands-empty">
-					<h3>{t("No commands here!")}</h3>
-					<span>{t("Would you like to add one now?")}</span>
+					<h3>{t("bindings.no_command.detail")}</h3>
+					<span>{t("bindings.no_command.add_now")}</span>
 				</div>
 			)}
 
@@ -297,6 +298,7 @@ function CommandViewerTools({
 	manager: CommandStore;
 	setState: (commands: SlashCommand[]) => void;
 }): h.JSX.Element {
+	const { t } = useTranslation();
 	return (
 		<div className="cmdr-add-new-wrapper">
 			<button
@@ -309,13 +311,13 @@ function CommandViewerTools({
 					this.forceUpdate();
 				}}
 			>
-				{t("Add command")}
+				{t("bindings.add")}
 			</button>
 			<ObsidianIcon
 				className="cmdr-icon clickable-icon"
 				icon="rotate-ccw"
 				size="var(--icon-m)"
-				aria-label={t("Restore default")}
+				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
 					manager.restoreDefault();
 					manager.reorder();
@@ -342,13 +344,14 @@ function CommandViewerToolsShort({
 	manager: CommandStore;
 	setState: (commands: SlashCommand[]) => void;
 }): h.JSX.Element {
+	const { t } = useTranslation();
 	return (
 		<div className="cmdr-add-new-wrapper">
 			<ObsidianIcon
 				className="cmdr-icon clickable-icon"
 				icon="plus-circle"
 				size="var(--icon-m)"
-				aria-label={t("Add command")}
+				aria-label={t("bindings.add")}
 				onClick={async (): Promise<void> => {
 					const pair = await chooseNewCommand(plugin);
 					await manager.addCommand(pair);
@@ -361,7 +364,7 @@ function CommandViewerToolsShort({
 				className="cmdr-icon clickable-icon"
 				icon="rotate-ccw"
 				size="var(--icon-m)"
-				aria-label={t("Restore default")}
+				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
 					manager.restoreDefault();
 					manager.reorder();

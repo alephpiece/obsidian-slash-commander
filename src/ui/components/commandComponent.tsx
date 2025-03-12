@@ -1,6 +1,5 @@
 import { Notice, Platform } from "obsidian";
 import { Fragment, h } from "preact";
-import t from "@/i18n";
 import SlashCommanderPlugin from "@/main";
 import {
 	SlashCommand,
@@ -11,6 +10,7 @@ import {
 import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import MobileModifyModal from "@/ui/modals/mobileModifyModal";
+import { useTranslation } from "react-i18next";
 
 interface CommandProps {
 	plugin: SlashCommanderPlugin;
@@ -37,6 +37,7 @@ export default function CommandComponent({
 	isCollapsed,
 	handleCollapse,
 }: CommandProps): h.JSX.Element {
+	const { t } = useTranslation();
 	const cmd = getCommandFromId(plugin, pair.id);
 	if (!isCommandGroup(pair) && !cmd) {
 		return <UnavailableCommandComponent pair={pair} handleRemove={handleRemove} />;
@@ -55,14 +56,14 @@ export default function CommandComponent({
 				<ObsidianIcon
 					icon={pair.icon}
 					size="var(--icon-m)"
-					aria-label={t("Choose new")}
+					aria-label={t("bindings.icon.change")}
 					onClick={handleNewIcon}
 					className="cmdr-icon clickable-icon"
 				/>
 				<div className="setting-item-info">
 					<div className="setting-item-name">
 						<ChangeableText
-							ariaLabel={t("Double click to rename")}
+							ariaLabel={t("bindings.rename.doubleclick")}
 							handleChange={({ target }): void => {
 								/* @ts-ignore */
 								handleRename(target?.value);
@@ -72,15 +73,14 @@ export default function CommandComponent({
 					</div>
 					{cmd && (
 						<div className="setting-item-description">
-							{"From {{plugin_name}}".replace(
-								"{{plugin_name}}",
-								getCommandSourceName(plugin, cmd)
-							)}
+							{t("bindings.source", {
+								plugin_name: getCommandSourceName(plugin, cmd),
+							})}
 							{pair.name !== cmd.name ? ` "${cmd.name}"` : "."}
 							{/* {" "} */}
 							{/* {isChecked
 								? t(
-									"Warning: This command might not run under every circumstance."
+									"bindings.device_mode.warn"
 								)
 								: ""} */}
 						</div>
@@ -92,7 +92,7 @@ export default function CommandComponent({
 							icon={isCollapsed ? "chevron-right" : "chevron-down"}
 							className="cmdr-group-collapser-button clickable-icon"
 							onClick={handleCollapse}
-							aria-label={isCollapsed ? t("Expand") : t("Collapse")}
+							aria-label={isCollapsed ? t("bindings.group.expand") : t("bindings.group.collapse")}
 						/>
 					)}
 					{handleAddChild && (
@@ -100,32 +100,30 @@ export default function CommandComponent({
 							icon="plus-circle"
 							className="setting-editor-extra-setting-button clickable-icon"
 							onClick={handleAddChild}
-							aria-label={t("Add child command")}
+							aria-label={t("bindings.add_child")}
 						/>
 					)}
 					<ObsidianIcon
 						icon={triggerModeIcon}
 						className="setting-editor-extra-setting-button clickable-icon"
 						onClick={(): void => handleTriggerModeChange()}
-						aria-label={t("Change trigger mode (Currently: {{current_mode}})").replace(
-							"{{current_mode}}",
-							triggerModeName
-						)}
+						aria-label={t("bindings.trigger_mode.change", {
+							current_mode: triggerModeName,
+						})}
 					/>
 					<ObsidianIcon
 						icon={deviceModeIcon}
 						className="setting-editor-extra-setting-button clickable-icon"
 						onClick={(): void => handleDeviceModeChange()}
-						aria-label={t("Change mode (Currently: {{current_mode}})").replace(
-							"{{current_mode}}",
-							deviceModeName
-						)}
+						aria-label={t("bindings.device_mode.change", {
+							current_mode: deviceModeName,
+						})}
 					/>
 					<button
 						className="mod-warning"
 						style="display: flex"
 						onClick={handleRemove}
-						aria-label={t("Delete")}
+						aria-label={t("common.delete")}
 					>
 						<ObsidianIcon icon="lucide-trash" />
 					</button>
@@ -182,6 +180,7 @@ export default function CommandComponent({
  * @param mode - The device mode to get the icon and name for.
  */
 function getDeviceModeInfo(mode = "any"): { deviceModeIcon: string; deviceModeName: string } {
+	const { t } = useTranslation();
 	const icons: { [iconName: string]: string } = {
 		mobile: "smartphone",
 		desktop: "monitor",
@@ -189,8 +188,8 @@ function getDeviceModeInfo(mode = "any"): { deviceModeIcon: string; deviceModeNa
 	};
 	const deviceModeIcon = icons[mode] ?? "airplay";
 	const deviceModeName = mode.match(/desktop|mobile|any/)
-		? mode[0].toUpperCase() + mode.substring(1)
-		: t("This device");
+		? t(`bindings.device_mode.${mode}`)
+		: t("bindings.device_mode.this");
 
 	return { deviceModeIcon, deviceModeName };
 }
@@ -203,16 +202,14 @@ function getTriggerModeInfo(mode = "anywhere"): {
 	triggerModeIcon: string;
 	triggerModeName: string;
 } {
+	const { t } = useTranslation();
 	const icons: { [iconName: string]: string } = {
 		newline: "cmdr-triggered-newline",
 		inline: "cmdr-triggered-inline",
 		anywhere: "regex",
 	};
 	const triggerModeIcon = icons[mode] ?? "regex";
-	const triggerModeName =
-		mode === "anywhere"
-			? t("Anywhere")
-			: t(mode[0].toUpperCase() + mode.substring(1) + " only");
+	const triggerModeName = t(`bindings.trigger_mode.${mode}`);
 
 	return { triggerModeIcon, triggerModeName };
 }
@@ -229,6 +226,7 @@ function UnavailableCommandComponent({
 	pair: SlashCommand;
 	handleRemove: () => void;
 }): h.JSX.Element {
+	const { t } = useTranslation();
 	if (Platform.isDesktop) {
 		return (
 			<div className="setting-item mod-toggle">
@@ -240,7 +238,7 @@ function UnavailableCommandComponent({
 				<div className="setting-item-info">
 					<div className="setting-item-name">{pair.name}</div>
 					<div className="setting-item-description">
-						{t("This command is not available on this device.")}
+						{t("bindings.device_mode.unavailable")}
 					</div>
 				</div>
 				<div className="setting-item-control">
@@ -248,7 +246,7 @@ function UnavailableCommandComponent({
 						className="mod-warning"
 						style="display: flex"
 						onClick={handleRemove}
-						aria-label={t("Delete")}
+						aria-label={t("common.delete")}
 					>
 						<ObsidianIcon icon="lucide-trash" />
 					</button>
@@ -260,7 +258,7 @@ function UnavailableCommandComponent({
 			<div
 				className="mobile-option-setting-item"
 				onClick={(): void => {
-					new Notice(t("This command is not available on this device."));
+					new Notice(t("bindings.device_mode.unavailable"));
 				}}
 			>
 				<span className="mobile-option-setting-item-remove-icon" onClick={handleRemove}>

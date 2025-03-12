@@ -1,25 +1,25 @@
 import { ICON_LIST } from "@/data/constants/icons";
 import { setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
 import SlashCommanderPlugin from "@/main";
-import t from "@/i18n";
+import i18n from "@/i18n";
 
 export default class ChooseIconModal extends FuzzySuggestModal<string> {
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
-		this.setPlaceholder(t("Choose an icon for your new command"));
+		this.setPlaceholder(i18n.t("modals.new_icon.placeholder"));
 
 		this.setInstructions([
 			{
 				command: "↑↓",
-				purpose: t("to navigate"),
+				purpose: i18n.t("modals.to_navigate"),
 			},
 			{
 				command: "↵",
-				purpose: t("to choose a custom icon"),
+				purpose: i18n.t("modals.to_save"),
 			},
 			{
 				command: "esc",
-				purpose: t("to cancel"),
+				purpose: i18n.t("modals.to_cancel"),
 			},
 		]);
 	}

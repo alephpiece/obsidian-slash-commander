@@ -15,7 +15,7 @@ export async function chooseNewCommand(plugin: SlashCommanderPlugin): Promise<Sl
 	const command = await new AddCommandModal(plugin).awaitSelection();
 
 	let icon;
-	if (!command.hasOwnProperty("icon")) {
+	if (!command.hasOwnProperty("common.icon")) {
 		icon = await new ChooseIconModal(plugin).awaitSelection();
 	}
 

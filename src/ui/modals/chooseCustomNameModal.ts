@@ -1,6 +1,7 @@
 import { SuggestModal } from "obsidian";
-import t from "@/i18n";
 import SlashCommanderPlugin from "@/main";
+import i18n from "@/i18n";
+import { useTranslation } from "react-i18next";
 
 export default class ChooseCustomNameModal extends SuggestModal<string> {
 	// This is used in onOpen, not sure why eslint doesn't recognize it
@@ -10,21 +11,21 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 		private defaultName: string
 	) {
 		super(plugin.app);
-		this.setPlaceholder(t("Use a custom name"));
+		this.setPlaceholder(i18n.t("modals.new_name.placeholder"));
 		this.resultContainerEl.style.display = "none";
 
 		this.setInstructions([
 			{
 				command: "",
-				purpose: t("Choose a custom name for your new command"),
+				purpose: i18n.t("modals.new_name.detail"),
 			},
 			{
 				command: "↵",
-				purpose: t("to save"),
+				purpose: i18n.t("modals.to_save"),
 			},
 			{
 				command: "esc",
-				purpose: t("to cancel"),
+				purpose: i18n.t("modals.to_cancel"),
 			},
 		]);
 	}
@@ -40,7 +41,7 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 			wrapper.parentElement.style.display = "block";
 		}
 
-		const btn = createEl("button", { text: t("Save"), cls: "mod-cta" });
+		const btn = createEl("button", { text: i18n.t("common.save"), cls: "mod-cta" });
 		btn.style.position = "relative";
 		btn.style.left = "-2.5em";
 		btn.onclick = (e): void => this.selectSuggestion(this.inputEl.value, e);

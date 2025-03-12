@@ -1,5 +1,4 @@
 import { MarkdownView, Plugin } from "obsidian";
-import t from "@/i18n";
 import { CommanderSettings, EnhancedEditor } from "@/data/models/Settings";
 import CommanderSettingTab from "@/ui/settingTab";
 import SettingTabModal from "@/ui/modals/settingTabModal";
@@ -10,6 +9,7 @@ import "@/ui/styles/styles.scss";
 import registerCustomIcons from "@/assets/icons";
 import CommandStore from "@/data/stores/CommandStore";
 import SettingsStore from "@/data/stores/SettingsStore";
+import i18n from "@/i18n";
 
 export default class SlashCommanderPlugin extends Plugin {
 	public settings: CommanderSettings;
@@ -43,13 +43,13 @@ export default class SlashCommanderPlugin extends Plugin {
 		this.commandStore = new CommandStore(this);
 
 		this.addCommand({
-			name: t("Open settings"),
+			name: i18n.t("settings.open"),
 			id: "open-settings",
 			callback: () => new SettingTabModal(this).open(),
 		});
 
 		this.addCommand({
-			name: t("Open standalone menu"),
+			name: i18n.t("standalone.menu.open"),
 			id: "open-standalone-menu",
 			editorCallback: (editor: EnhancedEditor) => {
 				this.menuSuggest?.close();

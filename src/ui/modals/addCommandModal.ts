@@ -1,5 +1,5 @@
 import { Command, setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
-import t from "@/i18n";
+import i18n from "@/i18n";
 import SlashCommanderPlugin from "@/main";
 
 export default class AddCommandModal extends FuzzySuggestModal<Command> {
@@ -8,20 +8,20 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
 		this.commands = Object.values(plugin.app.commands.commands);
-		this.setPlaceholder(t("Choose a command to add"));
+		this.setPlaceholder(i18n.t("modals.new_command.placeholder"));
 
 		this.setInstructions([
 			{
 				command: "↑↓",
-				purpose: t("to navigate"),
+				purpose: i18n.t("modals.to_navigate"),
 			},
 			{
 				command: "↵",
-				purpose: t("to choose an icon"),
+				purpose: i18n.t("modals.new_icon.choose"),
 			},
 			{
 				command: "esc",
-				purpose: t("to cancel"),
+				purpose: i18n.t("modals.to_cancel"),
 			},
 		]);
 	}
