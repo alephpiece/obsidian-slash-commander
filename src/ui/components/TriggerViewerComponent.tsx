@@ -1,7 +1,6 @@
 import type { ReactElement, ChangeEvent } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SlashCommanderPlugin from "src/main";
-import { buildQueryPattern } from "@/services/utils/search";
 import ObsidianIcon from "./obsidianIconComponent";
 import { useTranslation } from "react-i18next";
 
@@ -11,18 +10,26 @@ interface TriggerViewerProps {
 }
 
 export default function TriggerViewer({ plugin, children }: TriggerViewerProps): ReactElement {
-	// FIXME: more flexible is good
-	const [triggers, setTriggers] = useState(plugin.settings.extraTriggers);
 	const { t } = useTranslation();
+	const [triggers, setTriggers] = useState(plugin.settingsStore.getSettings().extraTriggers);
+
+	useEffect(() => {
+		const unsubscribe = plugin.settingsStore.subscribe(settings => {
+			setTriggers([...settings.extraTriggers]);
+		});
+
+		return unsubscribe;
+	}, [plugin]);
 
 	const handleTriggerChange = async (index: number, value: string): Promise<void> => {
 		if (triggers[index] !== value) {
 			const newTriggers = [...triggers];
 			newTriggers[index] = value;
 			setTriggers(newTriggers);
-			plugin.settings.extraTriggers = newTriggers;
-			plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
-			await plugin.saveSettings();
+
+			plugin.settingsStore.updateSettings({
+				extraTriggers: newTriggers,
+			});
 		}
 	};
 
@@ -30,15 +37,19 @@ export default function TriggerViewer({ plugin, children }: TriggerViewerProps):
 		const newTriggers = [...triggers];
 		newTriggers.splice(index, 1);
 		setTriggers(newTriggers);
-		plugin.settings.extraTriggers = newTriggers;
-		plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
-		await plugin.saveSettings();
+
+		plugin.settingsStore.updateSettings({
+			extraTriggers: newTriggers,
+		});
 	};
 
 	const handleAddTrigger = (): void => {
 		const newTriggers = [...triggers, ""];
 		setTriggers(newTriggers);
-		plugin.settings.extraTriggers = newTriggers;
+
+		plugin.settingsStore.updateSettings({
+			extraTriggers: newTriggers,
+		});
 	};
 
 	return (

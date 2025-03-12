@@ -8,7 +8,7 @@ export default class CommandStore {
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		this.plugin = plugin;
-		this.data = plugin.settings.bindings;
+		this.data = plugin.settingsStore.getSettings().bindings;
 
 		this.data.forEach(scmd => this.addCommand(scmd, false));
 	}
@@ -50,7 +50,8 @@ export default class CommandStore {
 
 	public async restoreDefault(): Promise<void> {
 		this.data = Object.assign([], DEFAULT_SETTINGS.bindings);
-		this.plugin.settings.bindings = this.data;
-		await this.plugin.saveSettings();
+		this.plugin.settingsStore.updateSettings({
+			bindings: this.data,
+		});
 	}
 }

@@ -15,14 +15,22 @@ import SlashCommanderPlugin from "@/main";
 import { SlashCommandMatch } from "@/services/utils/search";
 import SuggestionComponent from "@/ui/components/suggestionComponent";
 import { SubSuggest } from "./subSuggest";
+import { CommanderSettings } from "@/data/models/Settings";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 	private plugin: SlashCommanderPlugin;
 	private containerEl: HTMLElement;
+	private settings: CommanderSettings;
+	private unsubscribe: (() => void) | null = null;
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
 		this.plugin = plugin;
+		this.settings = plugin.settingsStore.getSettings();
+
+		this.unsubscribe = plugin.settingsStore.subscribe(newSettings => {
+			this.settings = { ...newSettings };
+		});
 	}
 
 	public onTrigger(
@@ -30,12 +38,12 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 		editor: Editor,
 		_file: TFile
 	): EditorSuggestTriggerInfo | null {
-		const queryPattern = this.plugin.settings.queryPattern;
+		const queryPattern = this.settings.queryPattern;
 		const currentLine = editor.getLine(cursor.line).slice(0, cursor.ch);
 		let lastWordIndex = 0;
 		let lastWord = currentLine;
 
-		if (!this.plugin.settings.triggerOnlyOnNewLine) {
+		if (!this.settings.triggerOnlyOnNewLine) {
 			// Only the last word of the line will trigger slash commands.
 			lastWordIndex = currentLine.lastIndexOf(" ") + 1;
 			lastWord = currentLine.slice(lastWordIndex, cursor.ch);

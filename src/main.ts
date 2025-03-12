@@ -12,15 +12,18 @@ import SettingsStore from "@/data/stores/SettingsStore";
 import i18n from "@/i18n"; // initialize i18n
 
 export default class SlashCommanderPlugin extends Plugin {
-	public settings: CommanderSettings;
-	public commandStore: CommandStore;
 	public settingsStore: SettingsStore;
+	public commandStore: CommandStore;
 	public scrollArea?: Element | undefined;
 	public menuSuggest?: MenuSuggest;
 
+	public get settings(): CommanderSettings {
+		return this.settingsStore.getSettings();
+	}
+
 	public async onload(): Promise<void> {
 		this.settingsStore = new SettingsStore(this);
-		this.settings = await this.settingsStore.loadSettings();
+		await this.settingsStore.loadSettings();
 
 		registerCustomIcons();
 

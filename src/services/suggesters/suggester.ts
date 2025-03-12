@@ -17,7 +17,6 @@ import { createElement } from "react";
 import { createRoot } from "react-dom/client";
 import SuggestionComponent from "@/ui/components/suggestionComponent";
 import SuggestionGroupComponent from "@/ui/components/suggestionGroupComponent";
-import { buildQueryPattern } from "@/services/utils/search";
 import { t } from "i18next";
 
 export default class Suggester<T> {

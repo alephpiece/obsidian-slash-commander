@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { useState, useEffect } from "react";
 import SlashCommanderPlugin from "@/main";
 import {
 	SlashCommand,
@@ -9,6 +10,7 @@ import {
 } from "@/data/models/SlashCommand";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { FuzzyMatch } from "obsidian";
+import { CommanderSettings } from "@/data/models/Settings";
 
 interface SuggestionProps {
 	plugin: SlashCommanderPlugin;
@@ -21,6 +23,16 @@ export default function SuggestionComponent({
 }: SuggestionProps): ReactElement | null {
 	const { item: scmd } = result;
 	const cmd = getCommandFromId(plugin, scmd.id);
+	const [settings, setSettings] = useState<CommanderSettings>(plugin.settingsStore.getSettings());
+
+	useEffect(() => {
+		const unsubscribe = plugin.settingsStore.subscribe(newSettings => {
+			setSettings({ ...newSettings });
+		});
+
+		return unsubscribe;
+	}, [plugin]);
+
 	if (!isCommandGroup(scmd) && !cmd) {
 		return null;
 	}
@@ -30,7 +42,7 @@ export default function SuggestionComponent({
 				icon={scmd.icon}
 				size="var(--icon-m)"
 				className={
-					plugin.settings.showDescriptions
+					settings.showDescriptions
 						? "cmdr-suggest-item-icon-large"
 						: "cmdr-suggest-item-icon"
 				}
@@ -38,7 +50,7 @@ export default function SuggestionComponent({
 			<div className="cmdr-suggest-content">
 				<div>
 					{highlightMatch(result)}
-					{plugin.settings.showSourcesForDuplicates &&
+					{settings.showSourcesForDuplicates &&
 						!isCommandGroup(scmd) &&
 						!isCommandActiveUnique(plugin, scmd) && (
 							<span className="cmdr-suggest-item-source">
@@ -46,7 +58,7 @@ export default function SuggestionComponent({
 							</span>
 						)}
 				</div>
-				{plugin.settings.showDescriptions && !isCommandGroup(scmd) && (
+				{settings.showDescriptions && !isCommandGroup(scmd) && (
 					<div className="cmdr-suggest-item-description">{cmd!.name}</div>
 				)}
 			</div>

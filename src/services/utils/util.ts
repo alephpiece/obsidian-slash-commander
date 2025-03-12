@@ -32,10 +32,12 @@ export async function chooseNewCommand(plugin: SlashCommanderPlugin): Promise<Sl
 }
 
 export function isTriggerInConflicts(plugin: SlashCommanderPlugin): boolean {
-	const { mainTrigger, extraTriggers } = plugin.settings;
+	const settings = plugin.settingsStore.getSettings();
+	const { mainTrigger, extraTriggers, useExtraTriggers } = settings;
+
 	return (
 		plugin.app.internalPlugins.plugins["slash-command"].enabled &&
-		(mainTrigger == "/" || (plugin.settings.useExtraTriggers && extraTriggers.includes("/")))
+		(mainTrigger == "/" || (useExtraTriggers && extraTriggers.includes("/")))
 	);
 }
 

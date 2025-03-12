@@ -1,13 +1,14 @@
 import type { ReactElement } from "react";
+import { useState, useEffect } from "react";
 import { isTriggerInConflicts } from "@/services/utils/util";
 import ObsidianIcon from "@ui/components/obsidianIconComponent";
-import { buildQueryPattern } from "@/services/utils/search";
 import SlashCommanderPlugin from "@/main";
 import CommandViewer from "@ui/components/commandViewerComponent";
 import { ToggleComponent, TextBoxComponent } from "@ui/components/settingItemComponent";
 import SettingCollapser from "@ui/components/settingHeaderComponent";
 import TriggerViewer from "@ui/components/TriggerViewerComponent";
 import { useTranslation } from "react-i18next";
+import { CommanderSettings } from "@/data/models/Settings";
 
 interface SettingTabProps {
 	plugin: SlashCommanderPlugin;
@@ -16,6 +17,15 @@ interface SettingTabProps {
 
 export default function SettingTabComponent({ plugin }: SettingTabProps): ReactElement {
 	const { t } = useTranslation();
+	const [settings, setSettings] = useState<CommanderSettings>(plugin.settingsStore.getSettings());
+
+	useEffect(() => {
+		const unsubscribe = plugin.settingsStore.subscribe(newSettings => {
+			setSettings({ ...newSettings });
+		});
+
+		return unsubscribe;
+	}, [plugin]);
 
 	return (
 		<div>
@@ -46,60 +56,64 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					</div>
 				)}
 				<TextBoxComponent
-					value={plugin.settings.mainTrigger}
+					value={settings.mainTrigger}
 					name={t("triggers.command.title")}
 					description={t("triggers.command.detail")}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.mainTrigger = value;
-						plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
-						await plugin.saveSettings();
+						plugin.settingsStore.updateSettings({
+							mainTrigger: value,
+						});
 					}}
 				/>
 				<ToggleComponent
 					name={t("triggers.more.title")}
 					description={t("triggers.more.detail")}
-					value={plugin.settings.useExtraTriggers}
+					value={settings.useExtraTriggers}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.useExtraTriggers = !value;
-						plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
-						await plugin.saveSettings();
+						plugin.settingsStore.updateSettings({
+							useExtraTriggers: !value,
+						});
 					}}
 				/>
-				{plugin.settings.useExtraTriggers && <TriggerViewer plugin={plugin} />}
+				{settings.useExtraTriggers && <TriggerViewer plugin={plugin} />}
 				<ToggleComponent
 					name={t("settings.newline_only")}
 					description={t("settings.newline_only.detail")}
-					value={plugin.settings.triggerOnlyOnNewLine}
+					value={settings.triggerOnlyOnNewLine}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.triggerOnlyOnNewLine = !value;
-						await plugin.saveSettings();
+						plugin.settingsStore.updateSettings({
+							triggerOnlyOnNewLine: !value,
+						});
 					}}
 				/>
 				<ToggleComponent
 					name={t("settings.show_descriptions")}
 					description={t("settings.show_descriptions.detail")}
-					value={plugin.settings.showDescriptions}
+					value={settings.showDescriptions}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.showDescriptions = !value;
-						await plugin.saveSettings();
+						plugin.settingsStore.updateSettings({
+							showDescriptions: !value,
+						});
 					}}
 				/>
 				<ToggleComponent
 					name={t("settings.show_sources")}
 					description={t("settings.show_sources.detail")}
-					value={plugin.settings.showSourcesForDuplicates}
+					value={settings.showSourcesForDuplicates}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.showSourcesForDuplicates = !value;
-						await plugin.saveSettings();
+						plugin.settingsStore.updateSettings({
+							showSourcesForDuplicates: !value,
+						});
 					}}
 				/>
 				<ToggleComponent
 					name={t("settings.ask_before_removing")}
 					description={t("settings.ask_before_removing.detail")}
-					value={plugin.settings.confirmDeletion}
+					value={settings.confirmDeletion}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settings.confirmDeletion = !value;
-						await plugin.saveSettings();
+						plugin.settingsStore.updateSettings({
+							confirmDeletion: !value,
+						});
 					}}
 				/>
 			</div>

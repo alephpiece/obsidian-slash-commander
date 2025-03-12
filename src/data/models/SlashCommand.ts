@@ -48,7 +48,8 @@ export function getCommandSourceName(plugin: SlashCommanderPlugin, cmd: Command)
 }
 
 export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
-	let commands = plugin.settings.bindings.filter(binding => isCommandActive(plugin, binding));
+	const settings = plugin.settingsStore.getSettings();
+	let commands = settings.bindings.filter(binding => isCommandActive(plugin, binding));
 
 	commands = commands.flatMap(binding => [binding, ...(binding.children ?? [])]);
 
