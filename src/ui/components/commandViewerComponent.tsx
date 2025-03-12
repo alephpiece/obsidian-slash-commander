@@ -92,7 +92,7 @@ function SortableCommandList({
 			}}
 		>
 			{commands.map(cmd => {
-				return isCommandGroup(cmd) && cmd.children ? (
+				return isCommandGroup(cmd) ? (
 					<CollapsibleCommandGroup
 						key={cmd.id}
 						cmd={cmd}
@@ -137,20 +137,20 @@ function CollapsibleCommandGroup({
 	setState,
 }: CollapsibleCommandGroupProps): ReactElement {
 	const [collapsed, setCollapsed] = useState(false);
-	const subcommands = cmd.children!;
+	const childCommands = parentCommands.filter(c => c.parentId === cmd.id);
 
 	return (
 		<div className="cmdr-group-collapser" aria-expanded={!collapsed}>
 			<CommandListItem
 				cmd={cmd}
 				plugin={plugin}
-				commands={subcommands}
+				commands={childCommands}
 				setState={setState}
 				isCollapsed={collapsed}
 				onCollapse={(): void => setCollapsed(!collapsed)}
 			/>
 			<ReactSortable
-				list={subcommands}
+				list={childCommands}
 				setList={(newState): void => setState(newState)}
 				group="root"
 				delay={100}
@@ -167,30 +167,30 @@ function CollapsibleCommandGroup({
 
 					// Moving within the same child list
 					if (from === to) {
-						const [removed] = subcommands.splice(oldIndex, 1);
-						subcommands.splice(newIndex, 0, removed);
+						const [removed] = childCommands.splice(oldIndex, 1);
+						childCommands.splice(newIndex, 0, removed);
 					}
 					// Moving from child to parent list
 					else if (from.classList.contains("cmdr-group-collapser-content")) {
-						const [removed] = subcommands.splice(oldIndex, 1);
+						const [removed] = childCommands.splice(oldIndex, 1);
 						parentCommands.splice(newIndex, 0, removed);
 					}
 					// Moving from parent to child list
 					else if (to.classList.contains("cmdr-group-collapser-content")) {
 						const [removed] = parentCommands.splice(oldIndex, 1);
-						subcommands.splice(newIndex, 0, removed);
+						childCommands.splice(newIndex, 0, removed);
 					}
 
 					plugin.saveSettings();
 					setState(parentCommands);
 				}}
 			>
-				{subcommands.map(cmd => (
+				{childCommands.map(cmd => (
 					<CommandListItem
 						key={cmd.id}
 						cmd={cmd}
 						plugin={plugin}
-						commands={subcommands}
+						commands={childCommands}
 						setState={setState}
 					/>
 				))}

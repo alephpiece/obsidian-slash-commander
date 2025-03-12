@@ -11,8 +11,10 @@ export interface SlashCommand {
 	mode?: DeviceMode;
 	triggerMode?: TriggerMode;
 	color?: string;
-	isChild?: boolean;
-	children?: SlashCommand[];
+	
+	// Fields for command groups
+	parentId?: string;
+	childrenIds?: string[];
 }
 
 export function getCommandFromId(plugin: SlashCommanderPlugin, id: string): Command | null {
@@ -49,19 +51,33 @@ export function getCommandSourceName(plugin: SlashCommanderPlugin, cmd: Command)
 
 export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
 	const settings = plugin.settingsStore.getSettings();
-	let commands = settings.bindings.filter(binding => isCommandActive(plugin, binding));
-
-	commands = commands.flatMap(binding => [binding, ...(binding.children ?? [])]);
-
-	const matches = commands.filter(({ name }) => name === scmd.name);
-
+	const commands = settings.bindings;
+	
+	// Get all active commands including children
+	const activeCommands = commands.filter(cmd => isCommandActive(plugin, cmd));
+	const activeCommandsWithChildren = activeCommands.flatMap(cmd => 
+		[cmd, ...getChildCommands(commands, cmd.id)]
+	);
+	
+	const matches = activeCommandsWithChildren.filter(cmd => cmd.name === scmd.name);
 	return matches.length === 1;
 }
 
 export function isParentCommand(scmd: SlashCommand): boolean {
-	return scmd.isChild !== true;
+	return scmd.parentId === undefined;
 }
 
 export function isCommandGroup(scmd: SlashCommand): boolean {
-	return isParentCommand(scmd) && (scmd.children?.length ?? 0) > 0;
+	return isParentCommand(scmd) && (scmd.childrenIds?.length ?? 0) > 0;
+}
+
+export function getChildCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
+	return commands.filter(cmd => cmd.parentId === parentId);
+}
+
+export function getDescendantCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
+	const children = getChildCommands(commands, parentId);
+	return children.concat(
+		...children.flatMap(child => getDescendantCommands(commands, child.id))
+	);
 }

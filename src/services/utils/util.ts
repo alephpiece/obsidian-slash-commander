@@ -6,10 +6,9 @@ import ChooseCustomNameModal from "@/ui/modals/chooseCustomNameModal";
 import SlashCommanderPlugin from "@/main";
 
 /**
- * It creates a modal, waits for the user to select a command, and then creates another modal to wait
- * for the user to select an icon
- * @param {SlashCommanderPlugin} plugin - The plugin that is calling the modal.
- * @returns {SlashCommand}
+ * Creates a new command by prompting the user to select a command, icon, and name
+ * @param {SlashCommanderPlugin} plugin - The plugin instance
+ * @returns {SlashCommand} A new slash command object
  */
 export async function chooseNewCommand(plugin: SlashCommanderPlugin): Promise<SlashCommand> {
 	const command = await new AddCommandModal(plugin).awaitSelection();
@@ -23,11 +22,11 @@ export async function chooseNewCommand(plugin: SlashCommanderPlugin): Promise<Sl
 
 	return {
 		id: command.id,
-		//This cannot be undefined anymore
+		// This cannot be undefined anymore
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		icon: icon ?? command.icon!,
 		name: name || command.name,
-		mode: "any",
+		mode: "any"
 	};
 }
 

@@ -3927,6 +3927,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-complex-tree@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "react-complex-tree@npm:2.5.0"
+  peerDependencies:
+    react: ">=16.0.0"
+  checksum: 10c0/5c39122b3d5bb6d9e462f39dd7b01e156295cfbb731a046da01f82004292da1acbf11382917b56bf25ca51566408beb35172a5c0780a6fa6950090918d8e8cca
+  languageName: node
+  linkType: hard
+
 "react-dom@npm:^19.0.0":
   version: 19.0.0
   resolution: "react-dom@npm:19.0.0"
@@ -4425,6 +4434,7 @@ __metadata:
     obsidian: "npm:latest"
     prettier: "npm:^3.5.3"
     react: "npm:^19.0.0"
+    react-complex-tree: "npm:^2.5.0"
     react-dom: "npm:^19.0.0"
     react-i18next: "npm:^15.4.1"
     react-popper: "npm:^2.3.0"
