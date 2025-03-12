@@ -9,7 +9,7 @@ import "@/ui/styles/styles.scss";
 import registerCustomIcons from "@/assets/icons";
 import CommandStore from "@/data/stores/CommandStore";
 import SettingsStore from "@/data/stores/SettingsStore";
-import { t } from "i18next";
+import i18n from "@/i18n"; // initialize i18n
 
 export default class SlashCommanderPlugin extends Plugin {
 	public settings: CommanderSettings;
@@ -43,13 +43,13 @@ export default class SlashCommanderPlugin extends Plugin {
 		this.commandStore = new CommandStore(this);
 
 		this.addCommand({
-			name: t("settings.open"),
+			name: i18n.t("settings.open"),
 			id: "open-settings",
 			callback: () => new SettingTabModal(this).open(),
 		});
 
 		this.addCommand({
-			name: t("standalone.menu.open"),
+			name: i18n.t("standalone.menu.open"),
 			id: "open-standalone-menu",
 			editorCallback: (editor: EnhancedEditor) => {
 				this.menuSuggest?.close();
