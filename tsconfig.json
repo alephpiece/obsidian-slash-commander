@@ -19,7 +19,6 @@
 			"ES2021"
 		],
 		"jsx": "react-jsx",
-		"jsxImportSource": "preact",
 		"paths": {
 			"@/*": ["src/*"],
 			"@data/*": ["src/data/*"],

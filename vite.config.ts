@@ -1,6 +1,6 @@
 import { defineConfig, Plugin } from 'vite';
 import { resolve } from 'path';
-import preact from '@preact/preset-vite';
+import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import builtins from 'builtin-modules';
 
@@ -40,7 +40,7 @@ const external = [
 
 export default defineConfig({
   plugins: [
-    preact(),
+    react(),
     tailwindcss(),
   ],
   css: {
@@ -88,10 +88,6 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      'react': 'preact/compat',
-      'react-dom/test-utils': 'preact/test-utils',
-      'react-dom': 'preact/compat',
-      'react/jsx-runtime': 'preact/jsx-runtime',
       'src': resolve(__dirname, './src'),
       '@': resolve(__dirname, './src'),
       '@data': resolve(__dirname, './src/data'),
