@@ -1,5 +1,5 @@
 import { Notice, Platform } from "obsidian";
-import { Fragment, h } from "preact";
+import type { ReactElement } from "react";
 import SlashCommanderPlugin from "@/main";
 import {
 	SlashCommand,
@@ -36,7 +36,7 @@ export default function CommandComponent({
 	handleAddChild,
 	isCollapsed,
 	handleCollapse,
-}: CommandProps): h.JSX.Element {
+}: CommandProps): ReactElement {
 	const { t } = useTranslation();
 	const cmd = getCommandFromId(plugin, pair.id);
 	if (!isCommandGroup(pair) && !cmd) {
@@ -64,9 +64,8 @@ export default function CommandComponent({
 					<div className="setting-item-name">
 						<ChangeableText
 							ariaLabel={t("bindings.rename.doubleclick")}
-							handleChange={({ target }): void => {
-								/* @ts-ignore */
-								handleRename(target?.value);
+							handleChange={(e): void => {
+								handleRename(e.currentTarget.value);
 							}}
 							value={pair.name}
 						/>
@@ -121,7 +120,7 @@ export default function CommandComponent({
 					/>
 					<button
 						className="mod-warning"
-						style="display: flex"
+						style={{ display: "flex" }}
 						onClick={handleRemove}
 						aria-label={t("common.delete")}
 					>
@@ -225,7 +224,7 @@ function UnavailableCommandComponent({
 }: {
 	pair: SlashCommand;
 	handleRemove: () => void;
-}): h.JSX.Element {
+}): ReactElement {
 	const { t } = useTranslation();
 	if (Platform.isDesktop) {
 		return (
@@ -244,7 +243,7 @@ function UnavailableCommandComponent({
 				<div className="setting-item-control">
 					<button
 						className="mod-warning"
-						style="display: flex"
+						style={{ display: "flex" }}
 						onClick={handleRemove}
 						aria-label={t("common.delete")}
 					>
@@ -269,7 +268,7 @@ function UnavailableCommandComponent({
 					/>
 				</span>
 				<span className="mobile-option-setting-item-option-icon mod-warning">
-					<ObsidianIcon icon={"alert-triangle"} size="var(--icon-l)" />
+					<ObsidianIcon icon="alert-triangle" size="var(--icon-l)" />
 				</span>
 				<span className="mobile-option-setting-item-name">{pair.name}</span>
 			</div>

@@ -1,13 +1,13 @@
 import { setIcon } from "obsidian";
-import { ComponentProps, h } from "preact";
-import { useRef, useLayoutEffect } from "preact/hooks";
+import type { ComponentProps } from "react";
+import { useRef, useLayoutEffect } from "react";
 
 interface ObsidianIconProps extends ComponentProps<"div"> {
 	icon: string;
 	size?: string;
 }
 
-export default function ObsidianIcon({ icon, size, ...props }: ObsidianIconProps): h.JSX.Element {
+export default function ObsidianIcon({ icon, size, ...props }: ObsidianIconProps) {
 	const iconEl = useRef<HTMLDivElement>(null);
 
 	useLayoutEffect(() => {

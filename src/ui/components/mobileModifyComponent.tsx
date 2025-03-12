@@ -1,22 +1,38 @@
-import { h } from "preact";
-import { useEffect } from "preact/hooks";
+import type { ReactElement, ChangeEvent } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ObsidianIcon from "src/ui/components/obsidianIconComponent";
 import MobileModifyModal from "../modals/mobileModifyModal";
 
+interface MobileModifyProps {
+	modal: MobileModifyModal;
+}
+
 export default function MobileModifyComponent({
 	modal: controller,
-}: {
-	modal: MobileModifyModal;
-}): h.JSX.Element {
+}: MobileModifyProps): ReactElement {
 	const { t } = useTranslation();
+
 	useEffect(() => {
 		const update = (): void => {
-			this.forceUpdate();
+			// Force a re-render when icon changes
+			window.dispatchEvent(new Event("cmdr-icon-changed"));
 		};
-		addEventListener("cmdr-icon-changed", update);
-		return () => removeEventListener("cmdr-icon-changed", update);
+		window.addEventListener("cmdr-icon-changed", update);
+		return () => window.removeEventListener("cmdr-icon-changed", update);
 	}, []);
+
+	const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
+		controller.handleRename(e.currentTarget.value);
+	};
+
+	const handleDeviceModeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+		controller.handleDeviceModeChange(e.currentTarget.value);
+	};
+
+	const handleTriggerModeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+		controller.handleTriggerModeChange(e.currentTarget.value);
+	};
 
 	return (
 		<div className="cmdr-mobile-modify-grid">
@@ -34,9 +50,7 @@ export default function MobileModifyComponent({
 			<div className="cmdr-mobile-modify-option">
 				<span>{t("common.name")}</span>
 				<input
-					onBlur={({ currentTarget }): void =>
-						controller.handleRename(currentTarget.value)
-					}
+					onBlur={handleNameChange}
 					type="text"
 					placeholder={t("modals.new_name.placeholder")}
 					value={controller.pair.name}
@@ -46,9 +60,7 @@ export default function MobileModifyComponent({
 				<select
 					className="dropdown"
 					value={controller.pair.mode}
-					onChange={({ currentTarget }): void =>
-						controller.handleDeviceModeChange(currentTarget.value)
-					}
+					onChange={handleDeviceModeChange}
 				>
 					<option value="any">{t("bindings.device_mode.any.detail")}</option>
 					<option value="mobile">{t("bindings.device_mode.mobile.detail")}</option>
@@ -62,9 +74,7 @@ export default function MobileModifyComponent({
 				<select
 					className="dropdown"
 					value={controller.pair.triggerMode}
-					onChange={({ currentTarget }): void =>
-						controller.handleTriggerModeChange(currentTarget.value)
-					}
+					onChange={handleTriggerModeChange}
 				>
 					<option value="anywhere">{t("bindings.trigger_mode.anywhere.detail")}</option>
 					<option value="newline">{t("bindings.trigger_mode.newline.detail")}</option>

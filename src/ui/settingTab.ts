@@ -1,10 +1,12 @@
 import { Platform, PluginSettingTab } from "obsidian";
-import { h, render } from "preact";
+import { createElement } from "react";
+import { createRoot } from "react-dom/client";
 import SlashCommanderPlugin from "@/main";
 import settingTabComponent from "@/ui/components/settingTabComponent";
 
 export default class CommanderSettingTab extends PluginSettingTab {
 	private plugin: SlashCommanderPlugin;
+	private root: ReturnType<typeof createRoot> | null = null;
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app, plugin);
@@ -12,16 +14,19 @@ export default class CommanderSettingTab extends PluginSettingTab {
 	}
 
 	public display(): void {
-		render(
-			h(settingTabComponent, {
+		if (!this.root) {
+			this.root = createRoot(this.containerEl);
+		}
+		this.root.render(
+			createElement(settingTabComponent, {
 				plugin: this.plugin,
 				mobileMode: Platform.isMobile,
-			}),
-			this.containerEl
+			})
 		);
 	}
 
 	public hide(): void {
-		render(null, this.containerEl);
+		this.root?.unmount();
+		this.root = null;
 	}
 }

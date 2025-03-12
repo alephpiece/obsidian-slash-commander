@@ -1,48 +1,46 @@
-import { Fragment, h } from "preact";
+import type { ReactElement } from "react";
 import { isTriggerInConflicts } from "@/services/utils/util";
-import ObsidianIcon from "src/ui/components/obsidianIconComponent";
+import ObsidianIcon from "@ui/components/obsidianIconComponent";
 import { buildQueryPattern } from "@/services/utils/search";
-import SlashCommanderPlugin from "../../main";
-import CommandViewer from "./commandViewerComponent";
-import { ToggleComponent, TextBoxComponent } from "./settingItemComponent";
-import SettingCollapser from "./settingHeaderComponent";
-import TriggerViewer from "./TriggerViewerComponent";
+import SlashCommanderPlugin from "@/main";
+import CommandViewer from "@ui/components/commandViewerComponent";
+import { ToggleComponent, TextBoxComponent } from "@ui/components/settingItemComponent";
+import SettingCollapser from "@ui/components/settingHeaderComponent";
+import TriggerViewer from "@ui/components/TriggerViewerComponent";
 import { useTranslation } from "react-i18next";
 
-export default function settingTabComponent({
-	plugin,
-}: {
+interface SettingTabProps {
 	plugin: SlashCommanderPlugin;
 	mobileMode: boolean;
-}): h.JSX.Element {
+}
+
+export default function SettingTabComponent({ plugin }: SettingTabProps): ReactElement {
 	const { t } = useTranslation();
+
 	return (
-		<>
-			<>
+		<div>
+			<div>
 				<h2>{t("settings.general")}</h2>
 				{isTriggerInConflicts(plugin) && (
 					<div
 						className="setting-item"
-						style="border: thin solid crimson; padding-left: 1em"
+						style={{ border: "thin solid crimson", paddingLeft: "1em" }}
 					>
 						<ObsidianIcon
 							icon="alert-triangle"
 							size="var(--icon-m)"
 							className="cmdr-suggest-item-icon-large mod-warning"
+							style={{ display: "flex" }}
 						/>
 						<div className="setting-item-info">
 							<div
 								className="setting-item-name"
-								style="font-weight: bold; color: crimson"
+								style={{ fontWeight: "bold", color: "crimson" }}
 							>
-								{t(
-									"triggers.conflict.title"
-								)}
+								{t("triggers.conflict.title")}
 							</div>
 							<div className="setting-item-description">
-								{t(
-									"triggers.conflict.detail"
-								)}
+								{t("triggers.conflict.detail")}
 							</div>
 						</div>
 					</div>
@@ -65,7 +63,6 @@ export default function settingTabComponent({
 						plugin.settings.useExtraTriggers = !value;
 						plugin.settings.queryPattern = buildQueryPattern(plugin.settings);
 						await plugin.saveSettings();
-						this.forceUpdate();
 					}}
 				/>
 				{plugin.settings.useExtraTriggers && <TriggerViewer plugin={plugin} />}
@@ -105,10 +102,10 @@ export default function settingTabComponent({
 						await plugin.saveSettings();
 					}}
 				/>
-			</>
+			</div>
 			<SettingCollapser title={t("bindings.title")}>
 				<CommandViewer manager={plugin.commandStore} plugin={plugin} />
 			</SettingCollapser>
-		</>
+		</div>
 	);
 }

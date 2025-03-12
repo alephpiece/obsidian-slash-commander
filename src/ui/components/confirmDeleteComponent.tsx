@@ -1,8 +1,12 @@
-import { Fragment, h } from "preact";
+import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import ConfirmDeleteModal from "../modals/confirmDeleteModal";
 
-export function confirmDeleteComponent({ modal }: { modal: ConfirmDeleteModal }): h.JSX.Element {
+interface ConfirmDeleteProps {
+	modal: ConfirmDeleteModal;
+}
+
+export function confirmDeleteComponent({ modal }: ConfirmDeleteProps): ReactElement {
 	const { t } = useTranslation();
 	return (
 		<>

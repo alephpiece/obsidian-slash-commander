@@ -59,6 +59,7 @@
 		"settings.show_sources.detail": "Show command sources in editor suggestions for duplicated command names.",
 		"settings.show_sources": "Show command sources",
 		"standalone.menu.open": "Open standalone menu",
+		"suggester.no_matches": "No matches found",
 		"triggers.command.detail": "Characters to trigger slash commands.",
 		"triggers.command.title": "Command trigger",
 		"triggers.conflict.detail": "Please modify your triggers or disable the above plugin, and then reload this setting tab to dismiss this warning.",

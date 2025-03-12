@@ -13,10 +13,12 @@ import {
 import { createPopper, Instance as PopperInstance } from "@popperjs/core";
 import { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
-import { h, render } from "preact";
+import { createElement } from "react";
+import { createRoot } from "react-dom/client";
 import SuggestionComponent from "@/ui/components/suggestionComponent";
 import SuggestionGroupComponent from "@/ui/components/suggestionGroupComponent";
 import { buildQueryPattern } from "@/services/utils/search";
+import { t } from "i18next";
 
 export default class Suggester<T> {
 	public owner: SuggestModal<T>;
@@ -121,7 +123,7 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
 	public suggester: Suggester<FuzzyMatch<T>>;
 	public suggestEl: HTMLDivElement;
 	public promptEl: HTMLDivElement;
-	public emptyStateText = "No match found";
+	public emptyStateText = t("suggester.no_matches");
 	public limit = 100;
 	public constructor(app: App, inputEl: HTMLInputElement, items: T[]) {
 		super(app);
@@ -255,7 +257,8 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
 		}
 		if (result.item.isChild) return;
 
-		render(h(SuggestionComponent, { plugin: this.plugin, result }), el);
+		const root = createRoot(el);
+		root.render(createElement(SuggestionComponent, { plugin: this.plugin, result }));
 	}
 	public getItems(): SlashCommand[] {
 		return this.items;

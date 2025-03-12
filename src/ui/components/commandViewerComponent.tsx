@@ -1,5 +1,5 @@
 import { Platform } from "obsidian";
-import { createContext, h } from "preact";
+import { createContext, type ReactElement } from "react";
 import { useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import {
@@ -25,8 +25,7 @@ interface CommandViewerProps {
 	plugin: SlashCommanderPlugin;
 }
 
-export default function CommandViewer({ manager, plugin }: CommandViewerProps): h.JSX.Element {
-	// State of the root component
+export default function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
 	const [, setState] = useState(manager.data);
 	const { t } = useTranslation();
 
@@ -38,7 +37,7 @@ export default function CommandViewer({ manager, plugin }: CommandViewerProps): 
 			{!manager.data.some(
 				pre => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)
 			) && (
-				<div class="cmdr-commands-empty">
+				<div className="cmdr-commands-empty">
 					<h3>{t("bindings.no_command.detail")}</h3>
 					<span>{t("bindings.no_command.add_now")}</span>
 				</div>
@@ -68,12 +67,12 @@ function SortableCommandList({
 	plugin,
 	commands,
 	setState,
-}: SortableCommandListProps): h.JSX.Element {
+}: SortableCommandListProps): ReactElement {
 	return (
 		<ReactSortable
 			list={commands}
 			setList={(newState): void => setState(newState)}
-			group={"root"}
+			group="root"
 			delay={100}
 			delayOnTouchOnly={true}
 			animation={200}
@@ -95,6 +94,7 @@ function SortableCommandList({
 			{commands.map(cmd => {
 				return isCommandGroup(cmd) && cmd.children ? (
 					<CollapsibleCommandGroup
+						key={cmd.id}
 						cmd={cmd}
 						plugin={plugin}
 						parentCommands={commands}
@@ -102,6 +102,7 @@ function SortableCommandList({
 					/>
 				) : (
 					<CommandListItem
+						key={cmd.id}
 						cmd={cmd}
 						plugin={plugin}
 						commands={commands}
@@ -111,6 +112,14 @@ function SortableCommandList({
 			})}
 		</ReactSortable>
 	);
+}
+
+
+interface CollapsibleCommandGroupProps {
+	cmd: SlashCommand;
+	plugin: SlashCommanderPlugin;
+	parentCommands: SlashCommand[];
+	setState: (commands: SlashCommand[]) => void;
 }
 
 /**
@@ -127,14 +136,8 @@ function CollapsibleCommandGroup({
 	plugin,
 	parentCommands,
 	setState,
-}: {
-	cmd: SlashCommand;
-	plugin: SlashCommanderPlugin;
-	parentCommands: SlashCommand[];
-	setState: (commands: SlashCommand[]) => void;
-}): h.JSX.Element {
+}: CollapsibleCommandGroupProps): ReactElement {
 	const [collapsed, setCollapsed] = useState(false);
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const subcommands = cmd.children!;
 
 	return (
@@ -150,7 +153,7 @@ function CollapsibleCommandGroup({
 			<ReactSortable
 				list={subcommands}
 				setList={(newState): void => setState(newState)}
-				group={"root"}
+				group="root"
 				delay={100}
 				delayOnTouchOnly={true}
 				animation={200}
@@ -183,19 +186,27 @@ function CollapsibleCommandGroup({
 					setState(parentCommands);
 				}}
 			>
-				{subcommands.map(cmd => {
-					return (
-						<CommandListItem
-							cmd={cmd}
-							plugin={plugin}
-							commands={subcommands}
-							setState={setState}
-						/>
-					);
-				})}
+				{subcommands.map(cmd => (
+					<CommandListItem
+						key={cmd.id}
+						cmd={cmd}
+						plugin={plugin}
+						commands={subcommands}
+						setState={setState}
+					/>
+				))}
 			</ReactSortable>
 		</div>
 	);
+}
+
+interface CommandListItemProps {
+	cmd: SlashCommand;
+	plugin: SlashCommanderPlugin;
+	commands: SlashCommand[];
+	setState: (commands: SlashCommand[]) => void;
+	isCollapsed?: boolean;
+	onCollapse?: () => void;
 }
 
 /**
@@ -213,14 +224,7 @@ function CommandListItem({
 	setState,
 	isCollapsed,
 	onCollapse,
-}: {
-	cmd: SlashCommand;
-	plugin: SlashCommanderPlugin;
-	commands: SlashCommand[];
-	setState: (commands: SlashCommand[]) => void;
-	isCollapsed?: boolean;
-	onCollapse?: () => void;
-}): h.JSX.Element | null {
+}: CommandListItemProps): ReactElement | null {
 	if (!isDeviceValid(plugin, cmd.mode)) {
 		return null;
 	}
@@ -234,7 +238,6 @@ function CommandListItem({
 	return (
 		<CommandComponent
 			plugin={plugin}
-			key={cmd.id}
 			pair={cmd}
 			handleRemove={async (): Promise<void> => {
 				if (
@@ -282,6 +285,12 @@ function CommandListItem({
 	);
 }
 
+interface CommandViewerToolsProps {
+	plugin: SlashCommanderPlugin;
+	manager: CommandStore;
+	setState: (commands: SlashCommand[]) => void;
+}
+
 /**
  * Render the command list tools (full version).
  * @param plugin - The plugin instance.
@@ -293,11 +302,7 @@ function CommandViewerTools({
 	plugin,
 	manager,
 	setState,
-}: {
-	plugin: SlashCommanderPlugin;
-	manager: CommandStore;
-	setState: (commands: SlashCommand[]) => void;
-}): h.JSX.Element {
+}: CommandViewerToolsProps): ReactElement {
 	const { t } = useTranslation();
 	return (
 		<div className="cmdr-add-new-wrapper">
@@ -308,7 +313,6 @@ function CommandViewerTools({
 					await manager.addCommand(pair);
 					manager.reorder();
 					setState(manager.data);
-					this.forceUpdate();
 				}}
 			>
 				{t("bindings.add")}
@@ -339,11 +343,7 @@ function CommandViewerToolsShort({
 	plugin,
 	manager,
 	setState,
-}: {
-	plugin: SlashCommanderPlugin;
-	manager: CommandStore;
-	setState: (commands: SlashCommand[]) => void;
-}): h.JSX.Element {
+}: CommandViewerToolsProps): ReactElement {
 	const { t } = useTranslation();
 	return (
 		<div className="cmdr-add-new-wrapper">
@@ -357,7 +357,6 @@ function CommandViewerToolsShort({
 					await manager.addCommand(pair);
 					manager.reorder();
 					setState(manager.data);
-					this.forceUpdate();
 				}}
 			/>
 			<ObsidianIcon

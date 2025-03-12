@@ -1,5 +1,5 @@
 import { Command, setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
-import i18n from "@/i18n";
+import { t } from "i18next";
 import SlashCommanderPlugin from "@/main";
 
 export default class AddCommandModal extends FuzzySuggestModal<Command> {
@@ -8,20 +8,20 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
 		this.commands = Object.values(plugin.app.commands.commands);
-		this.setPlaceholder(i18n.t("modals.new_command.placeholder"));
+		this.setPlaceholder(t("modals.new_command.placeholder"));
 
 		this.setInstructions([
 			{
 				command: "↑↓",
-				purpose: i18n.t("modals.to_navigate"),
+				purpose: t("modals.to_navigate"),
 			},
 			{
 				command: "↵",
-				purpose: i18n.t("modals.new_icon.choose"),
+				purpose: t("modals.new_icon.choose"),
 			},
 			{
 				command: "esc",
-				purpose: i18n.t("modals.to_cancel"),
+				purpose: t("modals.to_cancel"),
 			},
 		]);
 	}
@@ -30,7 +30,6 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
 		this.open();
 		return new Promise((resolve, reject) => {
 			this.onChooseItem = (item): void => resolve(item);
-			//This is wrapped inside a setTimeout, because onClose is called before onChooseItem
 			this.onClose = (): number => window.setTimeout(() => reject("No Command selected"), 0);
 		});
 	}
@@ -40,7 +39,6 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
 		const content = el.createDiv({ cls: "suggestion-content" });
 		content.createDiv({ cls: "suggestion-title" }).setText(item.item.name);
 
-		//Append the icon if available
 		if (item.item.icon) {
 			const aux = el.createDiv({ cls: "suggestion-aux" });
 			const iconElement = aux.createSpan({ cls: "suggestion-flair" });
@@ -56,7 +54,5 @@ export default class AddCommandModal extends FuzzySuggestModal<Command> {
 		return item.name;
 	}
 
-	// This will be overriden anyway, but typescript complains if it's not declared
-	// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
 	public onChooseItem(item: Command, evt: MouseEvent | KeyboardEvent): void {}
 }

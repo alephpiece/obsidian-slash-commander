@@ -59,6 +59,7 @@
 		"settings.show_sources.detail": "Показывать источники команд в подсказках редактора при дублировании имён.",
 		"settings.show_sources": "Показывать источники команд",
 		"standalone.menu.open": "Открыть отдельное меню",
+		"suggester.no_matches": "Ничего не найдено",
 		"triggers.command.detail": "Символы для активации слеш-команд.",
 		"triggers.command.title": "Триггер команд",
 		"triggers.conflict.detail": "Измените триггеры или отключите плагин выше, затем перезагрузите вкладку настроек.",

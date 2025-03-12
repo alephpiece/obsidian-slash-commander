@@ -1,14 +1,13 @@
-import { h } from "preact";
-import { useEffect, useRef, useState } from "preact/hooks";
+import type { ReactElement, KeyboardEvent, MouseEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
 	value: string;
-	// eslint-disable-next-line no-unused-vars
-	handleChange: (e: h.JSX.TargetedKeyboardEvent<HTMLInputElement>) => void;
+	handleChange: (e: KeyboardEvent<HTMLInputElement>) => void;
 	ariaLabel: string;
 }
 
-export default function ChangeableText({ value, handleChange, ariaLabel }: Props): h.JSX.Element {
+export default function ChangeableText({ value, handleChange, ariaLabel }: Props): ReactElement {
 	const [isEditing, setIsEditing] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [inputWidth, setInputWidth] = useState<number>(0);
@@ -20,21 +19,21 @@ export default function ChangeableText({ value, handleChange, ariaLabel }: Props
 		}
 	}, [isEditing]);
 
-	const handleKeyDown = (e: h.JSX.TargetedKeyboardEvent<HTMLInputElement>): void => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
 		if (e.key === "Enter" && e.currentTarget.value.length > 0) {
 			setIsEditing(false);
 			handleChange(e);
 		}
 	};
 
-	const handleDoubleClick = (e: h.JSX.TargetedMouseEvent<HTMLSpanElement>): void => {
-		const span = e.currentTarget as HTMLSpanElement;
+	const handleDoubleClick = (e: MouseEvent<HTMLSpanElement>): void => {
+		const span = e.currentTarget;
 		setInputWidth(span.offsetWidth);
 		setIsEditing(true);
 	};
 
 	return (
-		<div class="cmdr-editable">
+		<div className="cmdr-editable">
 			{isEditing ? (
 				<input
 					type="text"
@@ -46,7 +45,7 @@ export default function ChangeableText({ value, handleChange, ariaLabel }: Props
 					aria-label={ariaLabel}
 				/>
 			) : (
-				<span onDblClick={handleDoubleClick} aria-label={ariaLabel}>
+				<span onDoubleClick={handleDoubleClick} aria-label={ariaLabel}>
 					{value}
 				</span>
 			)}

@@ -8,7 +8,8 @@ import {
 	prepareFuzzySearch,
 	TFile,
 } from "obsidian";
-import { h, render } from "preact";
+import { createElement } from "react";
+import { createRoot } from "react-dom/client";
 import { isCommandGroup, SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { SlashCommandMatch } from "@/services/utils/search";
@@ -112,6 +113,7 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 
 	public renderSuggestion(result: FuzzyMatch<SlashCommand>, el: HTMLElement): void {
 		this.containerEl = el;
-		render(h(SuggestionComponent, { plugin: this.plugin, result: result }), el);
+		const root = createRoot(el);
+		root.render(createElement(SuggestionComponent, { plugin: this.plugin, result: result }));
 	}
 }

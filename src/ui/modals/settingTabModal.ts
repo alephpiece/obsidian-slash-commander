@@ -1,10 +1,12 @@
 import { Modal, Platform } from "obsidian";
-import { h, render } from "preact";
+import { createElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
 import SlashCommanderPlugin from "@/main";
 import settingTabComponent from "@/ui/components/settingTabComponent";
 
 export default class SettingTabModal extends Modal {
 	private plugin: SlashCommanderPlugin;
+	private root: Root | null = null;
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
@@ -13,11 +15,15 @@ export default class SettingTabModal extends Modal {
 	}
 
 	public onOpen(): void {
-		const mobileMode = Platform.isMobile; //this.containerEl.getBoundingClientRect().width <= 1100;
-		render(h(settingTabComponent, { plugin: this.plugin, mobileMode }), this.contentEl);
+		const mobileMode = Platform.isMobile;
+		this.root = createRoot(this.contentEl);
+		this.root.render(createElement(settingTabComponent, { plugin: this.plugin, mobileMode }));
 	}
 
 	public onClose(): void {
-		render(null, this.contentEl);
+		if (this.root) {
+			this.root.unmount();
+			this.root = null;
+		}
 	}
 }

@@ -1,23 +1,23 @@
 import { Modal } from "obsidian";
-import { h, render, VNode } from "preact";
-import i18n from "@/i18n";
+import { createElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { t } from "i18next";
 import SlashCommanderPlugin from "@/main";
 import { confirmDeleteComponent } from "@/ui/components/confirmDeleteComponent";
 
 export default class ConfirmDeleteModal extends Modal {
-	private reactComponent: VNode;
+	private root: Root | null = null;
 	public remove: boolean;
 
-	// eslint-disable-next-line no-unused-vars
 	public constructor(public plugin: SlashCommanderPlugin) {
 		super(plugin.app);
 	}
 
 	public async onOpen(): Promise<void> {
-		this.titleEl.innerText = i18n.t("modal.remove_command.title");
+		this.titleEl.innerText = t("modal.remove_command.title");
 		this.containerEl.style.zIndex = "99";
-		this.reactComponent = h(confirmDeleteComponent, { modal: this });
-		render(this.reactComponent, this.contentEl);
+		this.root = createRoot(this.contentEl);
+		this.root.render(createElement(confirmDeleteComponent, { modal: this }));
 	}
 
 	public async didChooseRemove(): Promise<boolean> {
@@ -28,6 +28,9 @@ export default class ConfirmDeleteModal extends Modal {
 	}
 
 	public onClose(): void {
-		render(null, this.contentEl);
+		if (this.root) {
+			this.root.unmount();
+			this.root = null;
+		}
 	}
 }

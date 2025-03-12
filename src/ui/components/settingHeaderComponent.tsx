@@ -1,14 +1,15 @@
-import { ComponentProps, h } from "preact";
-import { useState } from "preact/hooks";
+import type { ComponentProps, ReactElement } from "react";
+import { useState } from "react";
 
 interface SettingCollapserProps extends ComponentProps<"details"> {
 	title: string;
-	children: h.JSX.Element | h.JSX.Element[];
+	children: ReactElement | ReactElement[];
 }
+
 export default function SettingCollapser({
 	title,
 	children,
-}: SettingCollapserProps): h.JSX.Element {
+}: SettingCollapserProps): ReactElement {
 	const [open, setOpen] = useState(true);
 
 	const toggleHandler = (): void => {

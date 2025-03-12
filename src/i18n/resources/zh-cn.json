@@ -59,6 +59,7 @@
 		"settings.show_sources.detail": "在编辑器建议中显示重复命令名的来源。",
 		"settings.show_sources": "显示命令来源",
 		"standalone.menu.open": "打开独立菜单",
+		"suggester.no_matches": "没有匹配的命令",
 		"triggers.command.detail": "触发斜杠命令的字符。",
 		"triggers.command.title": "命令触发符",
 		"triggers.conflict.detail": "请修改触发符或禁用上述插件，然后重新加载此设置选项卡以消除此警告。",
