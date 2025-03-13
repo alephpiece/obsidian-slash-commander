@@ -6,16 +6,13 @@ import {
 	SlashCommand,
 	isCommandGroup,
 	isCommandActive,
-	isParentCommand,
 	isDeviceValid,
+	isParentCommand,
 } from "@/data/models/SlashCommand";
 import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
-import CommandComponent from "@/ui/components/commandComponent";
-import ObsidianIcon from "@/ui/components/obsidianIconComponent";
-import ChooseIconModal from "@/ui/modals/chooseIconModal";
-import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
-import { chooseNewCommand } from "@/services/utils/util";
+import { CommandListItem } from "@/ui/components/commandListItem";
+import { CommandViewerTools, CommandViewerToolsShort } from "@/ui/components/commandViewerTools";
 import { useTranslation } from "react-i18next";
 
 export const CommandStoreContext = createContext<CommandStore>(null!);
@@ -195,176 +192,6 @@ function CollapsibleCommandGroup({
 					/>
 				))}
 			</ReactSortable>
-		</div>
-	);
-}
-
-interface CommandListItemProps {
-	cmd: SlashCommand;
-	plugin: SlashCommanderPlugin;
-	commands: SlashCommand[];
-	setState: (commands: SlashCommand[]) => void;
-	isCollapsed?: boolean;
-	onCollapse?: () => void;
-}
-
-/**
- * Render a command list item if the command is visible.
- * @param cmd - The command to render.
- * @param plugin - The plugin instance.
- * @param commands - The commands to render.
- * @param setState - The state updater function.
- * @returns The rendered command list item or null if the command is not visible.
- */
-function CommandListItem({
-	cmd,
-	plugin,
-	commands,
-	setState,
-	isCollapsed,
-	onCollapse,
-}: CommandListItemProps): ReactElement | null {
-	if (!isDeviceValid(plugin, cmd.mode)) {
-		return null;
-	}
-
-	const saveAndUpdate = async (): Promise<void> => {
-		await plugin.saveSettings();
-		plugin.commandStore.reorder();
-		setState([...commands]);
-	};
-
-	return (
-		<CommandComponent
-			plugin={plugin}
-			pair={cmd}
-			handleRemove={async (): Promise<void> => {
-				if (
-					!plugin.settings.confirmDeletion ||
-					(await new ConfirmDeleteModal(plugin).didChooseRemove())
-				) {
-					commands.remove(cmd);
-					await saveAndUpdate();
-				}
-			}}
-			handleRename={async (name): Promise<void> => {
-				cmd.name = name;
-				await saveAndUpdate();
-			}}
-			handleNewIcon={async (): Promise<void> => {
-				const newIcon = await new ChooseIconModal(plugin).awaitSelection();
-				if (newIcon && newIcon !== cmd.icon) {
-					cmd.icon = newIcon;
-					await saveAndUpdate();
-				}
-				dispatchEvent(new Event("cmdr-icon-changed"));
-			}}
-			handleDeviceModeChange={async (mode?: string): Promise<void> => {
-				const modes = ["any", "desktop", "mobile", plugin.app.appId];
-				const nextIndex = (modes.indexOf(cmd.mode ?? "any") + 1) % modes.length;
-				cmd.mode = mode || modes[nextIndex];
-				await saveAndUpdate();
-			}}
-			handleTriggerModeChange={async (mode?: string): Promise<void> => {
-				const modes = ["anywhere", "newline", "inline"];
-				const nextIndex = (modes.indexOf(cmd.triggerMode ?? "anywhere") + 1) % modes.length;
-				cmd.triggerMode = mode || modes[nextIndex];
-				await saveAndUpdate();
-			}}
-			handleAddChild={
-				isParentCommand(cmd)
-					? (): void => {
-							// TODO: Add child command
-						}
-					: undefined
-			}
-			isCollapsed={isCollapsed}
-			handleCollapse={onCollapse}
-		/>
-	);
-}
-
-interface CommandViewerToolsProps {
-	plugin: SlashCommanderPlugin;
-	manager: CommandStore;
-	setState: (commands: SlashCommand[]) => void;
-}
-
-/**
- * Render the command list tools (full version).
- * @param plugin - The plugin instance.
- * @param manager - The command manager instance.
- * @param setState - The state updater function.
- * @returns The rendered command list tools.
- */
-function CommandViewerTools({ plugin, manager, setState }: CommandViewerToolsProps): ReactElement {
-	const { t } = useTranslation();
-	return (
-		<div className="cmdr-add-new-wrapper">
-			<button
-				className="mod-cta"
-				onClick={async (): Promise<void> => {
-					const pair = await chooseNewCommand(plugin);
-					await manager.addCommand(pair);
-					manager.reorder();
-					setState(manager.data);
-				}}
-			>
-				{t("bindings.add")}
-			</button>
-			<ObsidianIcon
-				className="cmdr-icon clickable-icon"
-				icon="rotate-ccw"
-				size="var(--icon-m)"
-				aria-label={t("bindings.restore_default")}
-				onClick={async (): Promise<void> => {
-					manager.restoreDefault();
-					manager.reorder();
-					setState(manager.data);
-				}}
-			/>
-		</div>
-	);
-}
-
-/**
- * Render the command list tools (short version).
- * @param plugin - The plugin instance.
- * @param manager - The command manager instance.
- * @param setState - The state updater function.
- * @returns The rendered command list tools short.
- */
-function CommandViewerToolsShort({
-	plugin,
-	manager,
-	setState,
-}: CommandViewerToolsProps): ReactElement {
-	const { t } = useTranslation();
-	return (
-		<div className="cmdr-add-new-wrapper">
-			<ObsidianIcon
-				className="cmdr-icon clickable-icon"
-				icon="plus-circle"
-				size="var(--icon-m)"
-				aria-label={t("bindings.add")}
-				onClick={async (): Promise<void> => {
-					const pair = await chooseNewCommand(plugin);
-					await manager.addCommand(pair);
-					manager.reorder();
-					setState(manager.data);
-				}}
-			/>
-			<ObsidianIcon
-				className="cmdr-icon clickable-icon"
-				icon="rotate-ccw"
-				size="var(--icon-m)"
-				aria-label={t("bindings.restore_default")}
-				onClick={async (): Promise<void> => {
-					manager.restoreDefault();
-					manager.reorder();
-					setState(manager.data);
-				}}
-			/>
 		</div>
 	);
 }

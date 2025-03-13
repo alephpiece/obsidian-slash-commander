@@ -48,10 +48,12 @@
 		"vite": "^6.2.1"
 	},
 	"dependencies": {
+		"@dnd-kit/core": "^6.3.1",
+		"@dnd-kit/sortable": "^10.0.0",
+		"@dnd-kit/utilities": "^3.2.2",
 		"@popperjs/core": "^2.11.8",
 		"i18next": "^24.2.2",
 		"react": "^19.0.0",
-		"react-complex-tree": "^2.5.0",
 		"react-dom": "^19.0.0",
 		"react-i18next": "^15.4.1",
 		"react-popper": "^2.3.0",
