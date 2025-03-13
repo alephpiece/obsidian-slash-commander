@@ -37,9 +37,24 @@ interface DropParams {
  * Uses react-arborist for efficient tree rendering and handling of drag-drop operations.
  */
 export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
-	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.data);
+	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.getAllCommands());
 	const { t } = useTranslation();
 	const treeRef = useRef<any>(null);
+
+	// Subscribe to command store changes
+	useEffect(() => {
+		const handleStoreChange = (newCommands: SlashCommand[]): void => {
+			setCommands([...newCommands]);
+		};
+		
+		// Subscribe to changes
+		const unsubscribe = manager.on('changed', handleStoreChange);
+		
+		// Cleanup subscription on unmount
+		return () => {
+			unsubscribe();
+		};
+	}, [manager]);
 
 	// Get root-level commands for the tree
 	const rootCommands = useMemo(() => 
@@ -47,13 +62,8 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 		[commands]
 	);
 	
-	// Keep local state in sync with store
-	useEffect(() => {
-		setCommands([...manager.data]);
-	}, [manager]);
-	
 	// Handle movement of commands in the tree
-	const handleMove = useCallback(({ dragIds, parentId, index }: MoveParams) => {
+	const handleMove = useCallback(async ({ dragIds, parentId, index }: MoveParams) => {
 		const updatedCommands = [...commands];
 		const draggedCmd = updatedCommands.find(cmd => cmd.id === dragIds[0]);
 		const targetParent = parentId 
@@ -89,10 +99,9 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 			draggedCmd.parentId = undefined;
 		}
 		
-		setCommands(updatedCommands);
-		manager.reorder();
-		plugin.saveSettings();
-	}, [commands, manager, plugin]);
+		// Use new updateStructure method
+		await manager.updateStructure(updatedCommands);
+	}, [commands, manager]);
 	
 	// Handle selection events from the tree
 	const handleSelect = useCallback((nodes: NodeApi<SlashCommand>[]) => {
@@ -126,8 +135,9 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 		return Math.max(calculatedHeight, minHeight);
 	}, [commands.length]);
 	
+	// Simplified sync function that just triggers changes from manager
 	const syncDataFromManager = useCallback(() => {
-		setCommands([...manager.data]);
+		manager.commitChanges();
 	}, [manager]);
 	
 	// Custom tree node renderer

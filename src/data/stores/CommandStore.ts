@@ -7,11 +7,40 @@ import {
 	getChildCommands
 } from "@/data/models/SlashCommand";
 
-export default class CommandStore {
+// Simple EventEmitter implementation
+type EventCallback<T = any> = (data: T) => void;
+
+class EventEmitter {
+	private events: Record<string, EventCallback[]> = {};
+
+	public on<T>(event: string, callback: EventCallback<T>): () => void {
+		if (!this.events[event]) {
+			this.events[event] = [];
+		}
+		this.events[event].push(callback);
+		
+		// Return unsubscribe function
+		return () => this.off(event, callback);
+	}
+
+	public off(event: string, callback: EventCallback): void {
+		if (!this.events[event]) return;
+		this.events[event] = this.events[event].filter(cb => cb !== callback);
+	}
+
+	public emit<T>(event: string, data: T): void {
+		if (!this.events[event]) return;
+		this.events[event].forEach(callback => callback(data));
+	}
+}
+
+export default class CommandStore extends EventEmitter {
 	private commandsMap: Map<string, SlashCommand> = new Map();
+	private registeredCommands: Set<string> = new Set();
 	protected plugin: SlashCommanderPlugin;
 
 	public constructor(plugin: SlashCommanderPlugin) {
+		super();
 		this.plugin = plugin;
 		this.initializeFromSettings();
 	}
@@ -21,19 +50,52 @@ export default class CommandStore {
 		
 		bindings.forEach(cmd => this.commandsMap.set(cmd.id, cmd));
 		
-		// Register commands with Obsidian
-		this.getAllCommands().forEach(cmd => {
-			if (isCommandActive(this.plugin, cmd)) {
-				this.plugin.register(() => this.removeCommand(cmd.id, false));
-			}
-		});
+		// Initialize registered commands
+		this.updateActiveCommands();
+	}
+
+	// Update which commands should be active based on current state
+	private updateActiveCommands(): void {
+		// Get currently active command IDs
+		const shouldBeActive = new Set(
+			this.getAllCommands()
+				.filter(cmd => isCommandActive(this.plugin, cmd))
+				.map(cmd => cmd.id)
+		);
+		
+		// Find commands to register
+		const toRegister = new Set(
+			[...shouldBeActive].filter(id => !this.registeredCommands.has(id))
+		);
+		
+		// Find commands to unregister
+		const toUnregister = new Set(
+			[...this.registeredCommands].filter(id => !shouldBeActive.has(id))
+		);
+		
+		// Register new commands
+		for (const id of toRegister) {
+			this.plugin.register(() => this.removeCommand(id, false));
+			this.registeredCommands.add(id);
+		}
+		
+		// Update tracking of registered commands
+		for (const id of toUnregister) {
+			this.registeredCommands.delete(id);
+		}
 	}
 
 	private async saveToSettings(): Promise<void> {
 		const commands = this.getAllCommands();
-		this.plugin.settingsStore.updateSettings({
+		await this.plugin.settingsStore.updateSettings({
 			bindings: commands
 		});
+	}
+
+	public async commitChanges(): Promise<void> {
+		this.updateActiveCommands();
+		await this.saveToSettings();
+		this.emit('changed', this.getAllCommands());
 	}
 
 	public getAllCommands(): SlashCommand[] {
@@ -76,11 +138,7 @@ export default class CommandStore {
 		this.commandsMap.set(scmd.id, scmd);
 		
 		if (newlyAdded) {
-			await this.saveToSettings();
-		}
-		
-		if (isCommandActive(this.plugin, scmd)) {
-			this.plugin.register(() => this.removeCommand(scmd.id, false));
+			await this.commitChanges();
 		}
 	}
 
@@ -97,7 +155,7 @@ export default class CommandStore {
 		this.commandsMap.delete(commandId);
 		
 		if (save) {
-			await this.saveToSettings();
+			await this.commitChanges();
 		}
 	}
 	
@@ -106,15 +164,16 @@ export default class CommandStore {
 		if (!command) return;
 		
 		command.parentId = newParentId;
-		await this.saveToSettings();
+		await this.commitChanges();
 	}
 
-	public reorder(): void {
-		this.getAllCommands().forEach(cmd => {
-			if (isCommandActive(this.plugin, cmd)) {
-				this.plugin.register(() => this.removeCommand(cmd.id, false));
-			}
-		});
+	// Update entire command structure (used for drag-drop operations)
+	public async updateStructure(commands: SlashCommand[]): Promise<void> {
+		this.commandsMap.clear();
+		for (const cmd of commands) {
+			this.commandsMap.set(cmd.id, cmd);
+		}
+		await this.commitChanges();
 	}
 
 	public async restoreDefault(): Promise<void> {
@@ -128,11 +187,6 @@ export default class CommandStore {
 			this.commandsMap.set(newCmd.id, newCmd);
 		});
 		
-		await this.saveToSettings();
-	}
-	
-	// For backward compatibility
-	public get data(): SlashCommand[] {
-		return this.getAllCommands();
+		await this.commitChanges();
 	}
 }

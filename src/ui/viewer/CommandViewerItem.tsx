@@ -33,8 +33,7 @@ export function CommandViewerItem({
 	}
 
 	const saveAndUpdate = async (): Promise<void> => {
-		await plugin.saveSettings();
-		plugin.commandStore.reorder();
+		await plugin.commandStore.commitChanges();
 		setState();
 	};
 

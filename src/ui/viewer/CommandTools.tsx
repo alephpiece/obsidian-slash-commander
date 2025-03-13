@@ -28,7 +28,6 @@ export function CommandTools({ plugin, manager, setState }: CommandToolsProps): 
 				onClick={async (): Promise<void> => {
 					const pair = await chooseNewCommand(plugin);
 					await manager.addCommand(pair);
-					manager.reorder();
 					setState();
 				}}
 			>
@@ -41,7 +40,6 @@ export function CommandTools({ plugin, manager, setState }: CommandToolsProps): 
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
 					await manager.restoreDefault();
-					manager.reorder();
 					setState();
 				}}
 			/>
@@ -72,7 +70,6 @@ export function CommandToolsShort({
 				onClick={async (): Promise<void> => {
 					const pair = await chooseNewCommand(plugin);
 					await manager.addCommand(pair);
-					manager.reorder();
 					setState();
 				}}
 			/>
@@ -83,7 +80,6 @@ export function CommandToolsShort({
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
 					await manager.restoreDefault();
-					manager.reorder();
 					setState();
 				}}
 			/>
