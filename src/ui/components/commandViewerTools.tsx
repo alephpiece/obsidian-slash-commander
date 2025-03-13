@@ -9,7 +9,7 @@ import { SlashCommand } from "@/data/models/SlashCommand";
 export interface CommandViewerToolsProps {
 	plugin: SlashCommanderPlugin;
 	manager: CommandStore;
-	setState: (commands: SlashCommand[]) => void;
+	setState: () => void;
 }
 
 /**
@@ -29,7 +29,7 @@ export function CommandViewerTools({ plugin, manager, setState }: CommandViewerT
 					const pair = await chooseNewCommand(plugin);
 					await manager.addCommand(pair);
 					manager.reorder();
-					setState(manager.data);
+					setState();
 				}}
 			>
 				{t("bindings.add")}
@@ -40,9 +40,9 @@ export function CommandViewerTools({ plugin, manager, setState }: CommandViewerT
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
-					manager.restoreDefault();
+					await manager.restoreDefault();
 					manager.reorder();
-					setState(manager.data);
+					setState();
 				}}
 			/>
 		</div>
@@ -73,7 +73,7 @@ export function CommandViewerToolsShort({
 					const pair = await chooseNewCommand(plugin);
 					await manager.addCommand(pair);
 					manager.reorder();
-					setState(manager.data);
+					setState();
 				}}
 			/>
 			<ObsidianIcon
@@ -82,9 +82,9 @@ export function CommandViewerToolsShort({
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
-					manager.restoreDefault();
+					await manager.restoreDefault();
 					manager.reorder();
-					setState(manager.data);
+					setState();
 				}}
 			/>
 		</div>

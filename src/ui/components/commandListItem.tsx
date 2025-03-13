@@ -9,18 +9,15 @@ export interface CommandListItemProps {
 	cmd: SlashCommand;
 	plugin: SlashCommanderPlugin;
 	commands: SlashCommand[];
-	setState: (commands: SlashCommand[]) => void;
+	setState: () => void;
 	isCollapsed?: boolean;
 	onCollapse?: () => void;
+	isGroupDragging?: boolean;
 }
 
 /**
  * Render a command list item if the command is visible.
- * @param cmd - The command to render.
- * @param plugin - The plugin instance.
- * @param commands - The commands to render.
- * @param setState - The state updater function.
- * @returns The rendered command list item or null if the command is not visible.
+ * This component is used both for regular display and as drag overlay.
  */
 export function CommandListItem({
 	cmd,
@@ -29,6 +26,7 @@ export function CommandListItem({
 	setState,
 	isCollapsed,
 	onCollapse,
+	isGroupDragging,
 }: CommandListItemProps): ReactElement | null {
 	if (!isDeviceValid(plugin, cmd.mode)) {
 		return null;
@@ -37,7 +35,7 @@ export function CommandListItem({
 	const saveAndUpdate = async (): Promise<void> => {
 		await plugin.saveSettings();
 		plugin.commandStore.reorder();
-		setState([...commands]);
+		setState();
 	};
 
 	return (
@@ -49,8 +47,12 @@ export function CommandListItem({
 					!plugin.settings.confirmDeletion ||
 					(await new ConfirmDeleteModal(plugin).didChooseRemove())
 				) {
-					commands.remove(cmd);
-					await saveAndUpdate();
+					// Find and remove the command
+					const command = commands.find(c => c.id === cmd.id);
+					if (command) {
+						await plugin.commandStore.removeCommand(command.id);
+						setState();
+					}
 				}
 			}}
 			handleRename={async (name): Promise<void> => {

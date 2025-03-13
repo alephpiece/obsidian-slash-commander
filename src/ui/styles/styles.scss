@@ -663,3 +663,73 @@
 		vertical-align: bottom;
 	}
 }
+
+// DND-Kit Drag & Drop styles
+.cmdr-commands-list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.cmdr-sortable-item {
+	position: relative;
+	
+	&.is-dragging {
+		z-index: 1;
+	}
+}
+
+.cmdr-command-wrapper {
+	position: relative;
+	touch-action: none;
+	
+	&.is-group {
+		font-weight: 500;
+	}
+}
+
+.cmdr-group-children {
+	margin-left: 1.5rem;
+	margin-top: 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	position: relative;
+	
+	// Add a vertical line to show hierarchy
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: -0.75rem;
+		width: 2px;
+		background-color: var(--background-modifier-border);
+		border-radius: 1px;
+	}
+}
+
+.cmdr-command-overlay {
+	cursor: grabbing;
+	background-color: var(--background-primary);
+	border-radius: 4px;
+	box-shadow: 0 0 0 1px var(--background-modifier-border),
+				0 2px 8px var(--background-modifier-box-shadow);
+	padding: 2px;
+	pointer-events: none;
+	position: relative;
+}
+
+.cmdr-group-badge {
+	position: absolute;
+	right: -8px;
+	top: -8px;
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-radius: 12px;
+	padding: 1px 8px;
+	font-size: 0.7rem;
+	font-weight: 600;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	z-index: 1;
+}
