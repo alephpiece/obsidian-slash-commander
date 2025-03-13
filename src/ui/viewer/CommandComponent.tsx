@@ -12,7 +12,7 @@ import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import MobileModifyModal from "@/ui/modals/mobileModifyModal";
 import { useTranslation } from "react-i18next";
 
-interface CommandProps {
+export interface CommandProps {
 	plugin: SlashCommanderPlugin;
 	pair: SlashCommand;
 	handleRemove: () => void;
@@ -25,7 +25,10 @@ interface CommandProps {
 	handleCollapse?: () => void;
 }
 
-export default function CommandComponent({
+/**
+ * Component for rendering a command item with appropriate controls.
+ */
+export function CommandComponent({
 	plugin,
 	pair,
 	handleRemove,
@@ -280,4 +283,4 @@ function UnavailableCommandComponent({
 	} else {
 		return <></>;
 	}
-}
+} 

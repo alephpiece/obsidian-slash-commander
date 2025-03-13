@@ -6,7 +6,7 @@ import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { chooseNewCommand } from "@/services/utils/util";
 import { SlashCommand } from "@/data/models/SlashCommand";
 
-export interface CommandViewerToolsProps {
+export interface CommandToolsProps {
 	plugin: SlashCommanderPlugin;
 	manager: CommandStore;
 	setState: () => void;
@@ -19,7 +19,7 @@ export interface CommandViewerToolsProps {
  * @param setState - The state updater function.
  * @returns The rendered command list tools.
  */
-export function CommandViewerTools({ plugin, manager, setState }: CommandViewerToolsProps): ReactElement {
+export function CommandTools({ plugin, manager, setState }: CommandToolsProps): ReactElement {
 	const { t } = useTranslation();
 	return (
 		<div className="cmdr-add-new-wrapper">
@@ -56,11 +56,11 @@ export function CommandViewerTools({ plugin, manager, setState }: CommandViewerT
  * @param setState - The state updater function.
  * @returns The rendered command list tools short.
  */
-export function CommandViewerToolsShort({
+export function CommandToolsShort({
 	plugin,
 	manager,
 	setState,
-}: CommandViewerToolsProps): ReactElement {
+}: CommandToolsProps): ReactElement {
 	const { t } = useTranslation();
 	return (
 		<div className="cmdr-add-new-wrapper">

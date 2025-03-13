@@ -11,8 +11,8 @@ import {
 } from "@/data/models/SlashCommand";
 import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
-import { CommandListItem } from "@/ui/components/commandListItem";
-import { CommandViewerTools } from "@/ui/components/commandViewerTools";
+import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
+import { CommandTools } from "@/ui/viewer/CommandTools";
 
 export const CommandStoreContext = createContext<CommandStore>(null!);
 
@@ -36,7 +36,7 @@ interface DropParams {
  * CommandViewer component renders a tree of commands with drag-and-drop capabilities.
  * Uses react-arborist for efficient tree rendering and handling of drag-drop operations.
  */
-export default function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
+export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
 	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.data);
 	const { t } = useTranslation();
 	const treeRef = useRef<any>(null);
@@ -121,7 +121,7 @@ export default function CommandViewer({ manager, plugin }: CommandViewerProps): 
 	const treeHeight = useMemo(() => {
 		const rowCount = commands.length;
 		const minHeight = 400;
-		const rowHeight = 55; // 确保每行有足够的空间
+		const rowHeight = 55;
 		const calculatedHeight = Math.min(rowCount * rowHeight, 600);
 		return Math.max(calculatedHeight, minHeight);
 	}, [commands.length]);
@@ -142,7 +142,7 @@ export default function CommandViewer({ manager, plugin }: CommandViewerProps): 
 				style={style}
 				className={`cmdr-command-wrapper ${isGroup ? 'is-group' : ''} ${node.state.isSelected ? 'is-selected' : ''}`}
 			>
-				<CommandListItem
+				<CommandViewerItem
 					cmd={command}
 					plugin={plugin}
 					commands={commands}
@@ -188,8 +188,8 @@ export default function CommandViewer({ manager, plugin }: CommandViewerProps): 
 
 				{Platform.isMobile && <hr />}
 
-				<CommandViewerTools plugin={plugin} manager={manager} setState={syncDataFromManager} />
+				<CommandTools plugin={plugin} manager={manager} setState={syncDataFromManager} />
 			</div>
 		</CommandStoreContext.Provider>
 	);
-}
+} 

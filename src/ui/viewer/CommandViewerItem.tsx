@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
 import SlashCommanderPlugin from "@/main";
 import { SlashCommand, isDeviceValid, isParentCommand } from "@/data/models/SlashCommand";
-import CommandComponent from "@/ui/components/commandComponent";
+import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
 
-export interface CommandListItemProps {
+export interface CommandViewerItemProps {
 	cmd: SlashCommand;
 	plugin: SlashCommanderPlugin;
 	commands: SlashCommand[];
@@ -16,10 +16,10 @@ export interface CommandListItemProps {
 }
 
 /**
- * Render a command list item if the command is visible.
+ * Render a command viewer item if the command is visible.
  * This component is used both for regular display and as drag overlay.
  */
-export function CommandListItem({
+export function CommandViewerItem({
 	cmd,
 	plugin,
 	commands,
@@ -27,7 +27,7 @@ export function CommandListItem({
 	isCollapsed,
 	onCollapse,
 	isGroupDragging,
-}: CommandListItemProps): ReactElement | null {
+}: CommandViewerItemProps): ReactElement | null {
 	if (!isDeviceValid(plugin, cmd.mode)) {
 		return null;
 	}

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { isTriggerInConflicts } from "@/services/utils/util";
 import ObsidianIcon from "@ui/components/obsidianIconComponent";
 import SlashCommanderPlugin from "@/main";
-import CommandViewer from "@ui/components/commandViewerComponent";
+import { CommandViewer } from "@ui/viewer/CommandViewer";
 import { ToggleComponent, TextBoxComponent } from "@ui/components/settingItemComponent";
 import SettingCollapser from "@ui/components/settingHeaderComponent";
 import TriggerViewer from "@ui/components/TriggerViewerComponent";
