@@ -446,16 +446,6 @@
 	}
 }
 
-.cmdr-slider {
-	.setting-item-control > div {
-		width: 100%;
-	}
-
-	input.slider {
-		margin-left: 4px;
-	}
-}
-
 .view-action:not(:last-child) {
 	margin-right: var(--cmdr-spacing);
 }
@@ -483,98 +473,6 @@
 		border-radius: 1em;
 		pointer-events: none;
 	}
-}
-
-.cmdr-mm-item {
-	display: flex;
-	flex-direction: row !important;
-	align-items: center !important;
-	justify-content: space-between;
-	padding: 24px 0px;
-
-	> *:first-child {
-		flex-grow: 1;
-	}
-
-	> *:last-child {
-		display: flex;
-	}
-
-	> * {
-		display: flex;
-		flex-direction: column;
-
-		> span {
-			margin-right: 4px;
-			margin-bottom: 2px;
-			font-size: 12px;
-			color: var(--text-muted);
-			font-weight: bold;
-			margin-left: 2px;
-		}
-	}
-
-	.cmdr-slider {
-		padding-bottom: 0;
-
-		.cmdr-editable {
-			width: initial;
-			font-size: smaller;
-
-			span {
-				color: var(--text-muted);
-			}
-		}
-	}
-}
-
-.cmdr-mm-actions {
-	width: 100%;
-	display: flex;
-	flex-direction: row !important;
-	justify-content: end;
-	gap: 8px;
-
-	button {
-		all: unset;
-		cursor: pointer;
-		color: var(--text-accent);
-		padding: 6px;
-		border-radius: 4px;
-		transition: all 150ms ease;
-		text-transform: uppercase;
-		font-weight: bold;
-		font-size: small;
-
-		&:hover {
-			color: var(--text-accent-hover);
-			background-color: var(--background-secondary);
-		}
-
-		&::before {
-			content: "+ ";
-		}
-
-		&:active {
-			transform: scale(0.98);
-		}
-	}
-}
-
-.cmdr-mm-control {
-	margin-top: 24px;
-	width: 100%;
-	display: flex;
-	justify-content: center;
-	gap: 8px;
-}
-
-.cmdr-mm-action-text {
-	opacity: 0;
-}
-
-.cmdr-mm-action-options {
-	display: flex;
 }
 
 .cmdr-suggest-item {
@@ -664,21 +562,6 @@
 	}
 }
 
-// DND-Kit Drag & Drop styles
-.cmdr-commands-list {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-}
-
-.cmdr-sortable-item {
-	position: relative;
-	
-	&.is-dragging {
-		z-index: 1;
-	}
-}
-
 .cmdr-command-wrapper {
 	position: relative;
 	touch-action: none;
@@ -709,27 +592,123 @@
 	}
 }
 
-.cmdr-command-overlay {
-	cursor: grabbing;
-	background-color: var(--background-primary);
-	border-radius: 4px;
-	box-shadow: 0 0 0 1px var(--background-modifier-border),
-				0 2px 8px var(--background-modifier-box-shadow);
-	padding: 2px;
-	pointer-events: none;
-	position: relative;
-}
+.cmdr-command-viewer {
+	.react-arborist {
+		width: 100%;
+		height: 400px;
+		overflow: auto;
+		border-radius: var(--radius-m);
+		background-color: var(--background-primary);
+	}
 
-.cmdr-group-badge {
-	position: absolute;
-	right: -8px;
-	top: -8px;
-	background-color: var(--interactive-accent);
-	color: var(--text-on-accent);
-	border-radius: 12px;
-	padding: 1px 8px;
-	font-size: 0.7rem;
-	font-weight: 600;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	z-index: 1;
+	.react-arborist-node {
+		margin-bottom: 6px;
+		
+		&[aria-selected="true"] {
+			background-color: var(--background-modifier-hover);
+		}
+
+		&.is-drop-target {
+			background-color: var(--background-modifier-border);
+		}
+	}
+
+	.cmdr-command-wrapper {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		transition: background-color 0.1s ease;
+		
+		&.is-group {
+			font-weight: var(--font-bold);
+		}
+		
+		&.is-selected {
+			background-color: var(--background-modifier-hover);
+		}
+		
+		.setting-item {
+			width: 100%;
+			padding: 10px 12px;
+			margin: 0;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			
+			.cmdr-icon {
+				margin-right: 6px;
+			}
+			
+			.setting-item-info {
+				overflow: hidden;
+				
+				.setting-item-name {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+			
+			.setting-item-control {
+				display: flex;
+				justify-content: flex-end;
+				align-items: center;
+				gap: 6px;
+				margin-left: auto;
+				white-space: nowrap;
+				flex-shrink: 0;
+				
+				button, .clickable-icon {
+					margin-left: 2px;
+				}
+			}
+		}
+	}
+
+	// Add visual indication for hierarchy
+	.react-arborist-tree-node-children {
+		margin-left: 1.5rem;
+		margin-top: 8px;
+		position: relative;
+
+		&::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: -0.75rem;
+			width: 2px;
+			background-color: var(--background-modifier-border);
+			border-radius: 1px;
+		}
+	}
+
+	// Style for dragged items preview
+	.react-arborist-drag-preview {
+		background-color: var(--background-primary);
+		border-radius: 4px;
+		box-shadow: 0 0 0 1px var(--background-modifier-border),
+					0 2px 8px var(--background-modifier-box-shadow);
+		padding: 2px;
+		opacity: 0.9;
+		
+		.cmdr-command-wrapper {
+			background-color: var(--background-primary);
+		}
+	}
+
+	// Badge for dragged groups
+	.react-arborist-drag-badge {
+		position: absolute;
+		right: -8px;
+		top: -8px;
+		background-color: var(--interactive-accent);
+		color: var(--text-on-accent);
+		border-radius: 12px;
+		padding: 1px 8px;
+		font-size: 0.7rem;
+		font-weight: 600;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		z-index: 1;
+	}
 }

@@ -1,24 +1,7 @@
 import { Platform } from "obsidian";
-import { createContext, type ReactElement, useState, useMemo, useEffect } from "react";
+import { createContext, type ReactElement, useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import {
-	DndContext,
-	closestCenter,
-	KeyboardSensor,
-	PointerSensor,
-	useSensor,
-	useSensors,
-	DragEndEvent,
-	DragOverlay,
-	DragStartEvent,
-	UniqueIdentifier
-} from '@dnd-kit/core';
-import {
-	SortableContext,
-	arrayMove,
-	sortableKeyboardCoordinates,
-	verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { Tree, NodeApi, NodeRendererProps } from "react-arborist";
 
 import {
 	SlashCommand,
@@ -30,7 +13,6 @@ import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
 import { CommandListItem } from "@/ui/components/commandListItem";
 import { CommandViewerTools } from "@/ui/components/commandViewerTools";
-import { SortableCommandItem } from "@/ui/components/sortableCommandItem";
 
 export const CommandStoreContext = createContext<CommandStore>(null!);
 
@@ -39,241 +21,175 @@ interface CommandViewerProps {
 	plugin: SlashCommanderPlugin;
 }
 
+interface MoveParams {
+	dragIds: string[];
+	parentId: string | null;
+	index: number | undefined;
+}
+
+interface DropParams {
+	parentNode: NodeApi<SlashCommand> | null;
+	dragNodes: NodeApi<SlashCommand>[];
+}
+
+/**
+ * CommandViewer component renders a tree of commands with drag-and-drop capabilities.
+ * Uses react-arborist for efficient tree rendering and handling of drag-drop operations.
+ */
 export default function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
 	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.data);
-	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const { t } = useTranslation();
+	const treeRef = useRef<any>(null);
 
-	// Find active command when dragging
-	const activeCommand = useMemo(() => 
-		activeId ? commands.find(cmd => cmd.id === activeId) : null, 
-		[activeId, commands]
-	);
-
-	// Configure sensors for drag detection
-	const sensors = useSensors(
-		useSensor(PointerSensor, {
-			activationConstraint: {
-				distance: 5, // Minimum drag distance to activate
-			},
-		}),
-		useSensor(KeyboardSensor, {
-			coordinateGetter: sortableKeyboardCoordinates,
-		})
-	);
-
-	// Organize commands into a tree structure for display
+	// Get root-level commands for the tree
 	const rootCommands = useMemo(() => 
 		commands.filter(cmd => !cmd.parentId),
 		[commands]
 	);
-
-	// Handle drag start
-	const handleDragStart = (event: DragStartEvent) => {
-		setActiveId(event.active.id);
-	};
-
-	// Handle drag end 
-	const handleDragEnd = (event: DragEndEvent) => {
-		const { active, over } = event;
-		
-		if (!over || active.id === over.id) {
-			setActiveId(null);
-			return;
-		}
-
-		// Create a new copy of commands
+	
+	// Keep local state in sync with store
+	useEffect(() => {
+		setCommands([...manager.data]);
+	}, [manager]);
+	
+	// Handle movement of commands in the tree
+	const handleMove = useCallback(({ dragIds, parentId, index }: MoveParams) => {
 		const updatedCommands = [...commands];
+		const draggedCmd = updatedCommands.find(cmd => cmd.id === dragIds[0]);
+		const targetParent = parentId 
+			? updatedCommands.find(cmd => cmd.id === parentId)
+			: null;
+			
+		if (!draggedCmd) return;
 		
-		// Find indexes of dragged and target items
-		const activeIndex = updatedCommands.findIndex(cmd => cmd.id === active.id);
-		const overIndex = updatedCommands.findIndex(cmd => cmd.id === over.id);
-		
-		if (activeIndex < 0 || overIndex < 0) {
-			setActiveId(null);
-			return;
-		}
-
-		const draggedCmd = updatedCommands[activeIndex];
-		const targetCmd = updatedCommands[overIndex];
-		
-		// Prevent dragging a group into another group
-		if (isCommandGroup(draggedCmd) && isCommandGroup(targetCmd)) {
-			setActiveId(null);
+		// Prevent nested command groups
+		if (draggedCmd.childrenIds?.length && targetParent?.childrenIds?.length) {
 			return;
 		}
 		
-		// Check if dragging to a command group
-		if (isCommandGroup(targetCmd)) {
-			// Move command to the group
-			const oldParentId = draggedCmd.parentId;
-
-			// Remove from previous parent's childrenIds if it existed
-			if (oldParentId) {
-				const oldParent = updatedCommands.find(cmd => cmd.id === oldParentId);
-				if (oldParent && oldParent.childrenIds) {
-					oldParent.childrenIds = oldParent.childrenIds.filter(id => id !== draggedCmd.id);
-				}
+		// Remove from old parent if applicable
+		if (draggedCmd.parentId) {
+			const oldParent = updatedCommands.find(cmd => cmd.id === draggedCmd.parentId);
+			if (oldParent && oldParent.childrenIds) {
+				oldParent.childrenIds = oldParent.childrenIds.filter(id => id !== draggedCmd.id);
 			}
-			
-			// Add to new parent at the beginning of the group
-			draggedCmd.parentId = targetCmd.id;
-			if (!targetCmd.childrenIds) targetCmd.childrenIds = [];
-			
-			// Add to beginning of the children array
-			targetCmd.childrenIds.unshift(draggedCmd.id);
 		}
-		// Handle case where target is a child command
-		else if (targetCmd.parentId) {
-			const parentId = targetCmd.parentId;
-			const parent = updatedCommands.find(cmd => cmd.id === parentId);
+		
+		// Add to new parent or keep at root level
+		if (targetParent) {
+			draggedCmd.parentId = targetParent.id;
+			if (!targetParent.childrenIds) targetParent.childrenIds = [];
 			
-			if (!parent || !parent.childrenIds) {
-				setActiveId(null);
-				return;
-			}
-			
-			// Find position in parent's children
-			const childIndex = parent.childrenIds.indexOf(targetCmd.id);
-			if (childIndex === -1) {
-				setActiveId(null);
-				return;
-			}
-			
-			// Remove from old parent if applicable
-			if (draggedCmd.parentId) {
-				const oldParent = updatedCommands.find(cmd => cmd.id === draggedCmd.parentId);
-				if (oldParent && oldParent.childrenIds) {
-					oldParent.childrenIds = oldParent.childrenIds.filter(id => id !== draggedCmd.id);
-				}
-			}
-			
-			// Add to new parent's children at the correct position
-			draggedCmd.parentId = parentId;
-			
-			// Same parent - we need to handle the position shift
-			if (draggedCmd.parentId === parent.id && parent.childrenIds.includes(draggedCmd.id)) {
-				// Remove first then insert
-				parent.childrenIds = parent.childrenIds.filter(id => id !== draggedCmd.id);
-				
-				// Get updated index after removal
-				const targetIndex = parent.childrenIds.indexOf(targetCmd.id);
-				parent.childrenIds.splice(targetIndex, 0, draggedCmd.id);
+			if (index === undefined) {
+				targetParent.childrenIds.push(draggedCmd.id);
 			} else {
-				// Insert at the correct position
-				parent.childrenIds.splice(childIndex, 0, draggedCmd.id);
+				targetParent.childrenIds.splice(index, 0, draggedCmd.id);
 			}
-		}
-		// Handle same-level reordering
-		else {
-			// If same parent or both at root level
-			if (draggedCmd.parentId === targetCmd.parentId) {
-				// Just reorder the array
-				const newCommands = arrayMove(updatedCommands, activeIndex, overIndex);
-				setCommands(newCommands);
-				setActiveId(null);
-				
-				// Save changes
-				manager.reorder();
-				plugin.saveSettings();
-				return;
-			}
-			// Handle moving from group to root level
-			else if (draggedCmd.parentId && !targetCmd.parentId) {
-				// Remove from parent group
-				const oldParent = updatedCommands.find(cmd => cmd.id === draggedCmd.parentId);
-				if (oldParent && oldParent.childrenIds) {
-					oldParent.childrenIds = oldParent.childrenIds.filter(id => id !== draggedCmd.id);
-				}
-				
-				// Remove parent reference
-				draggedCmd.parentId = undefined;
-				
-				// Place in the correct position at root level
-				const rootCommands = updatedCommands.filter(cmd => !cmd.parentId);
-				const targetIndex = rootCommands.findIndex(cmd => cmd.id === targetCmd.id);
-				
-				// Remove from current position
-				updatedCommands.splice(activeIndex, 1);
-				
-				// Find correct insertion point in the full array
-				const insertIndex = updatedCommands.findIndex(cmd => cmd.id === targetCmd.id);
-				updatedCommands.splice(insertIndex, 0, draggedCmd);
-			}
+		} else {
+			draggedCmd.parentId = undefined;
 		}
 		
-		// Update state and save changes
 		setCommands(updatedCommands);
 		manager.reorder();
 		plugin.saveSettings();
-		setActiveId(null);
-	};
-
-	// Update internal state when manager data changes
-	const syncDataFromManager = () => {
+	}, [commands, manager, plugin]);
+	
+	// Handle selection events from the tree
+	const handleSelect = useCallback((nodes: NodeApi<SlashCommand>[]) => {
+		// Optional: Handle selection behavior
+	}, []);
+	
+	// Convert our flat data structure to tree format
+	const childrenAccessor = useCallback((cmd: SlashCommand) => {
+		if (!cmd.childrenIds || cmd.childrenIds.length === 0) return null;
+		return commands.filter(c => cmd.childrenIds?.includes(c.id));
+	}, [commands]);
+	
+	// Prevent command groups from being nested
+	const disableDrop = useCallback(({ parentNode, dragNodes }: DropParams) => {
+		if (!parentNode) return false;
+		
+		return dragNodes.some(node => {
+			const nodeChildrenIds = node.data.childrenIds;
+			const parentChildrenIds = parentNode.data.childrenIds;
+			return (nodeChildrenIds && nodeChildrenIds.length > 0) && 
+				(parentChildrenIds && parentChildrenIds.length > 0);
+		});
+	}, []);
+	
+	// Calculate appropriate tree height
+	const treeHeight = useMemo(() => {
+		const rowCount = commands.length;
+		const minHeight = 400;
+		const rowHeight = 55; // 确保每行有足够的空间
+		const calculatedHeight = Math.min(rowCount * rowHeight, 600);
+		return Math.max(calculatedHeight, minHeight);
+	}, [commands.length]);
+	
+	const syncDataFromManager = useCallback(() => {
 		setCommands([...manager.data]);
-	};
+	}, [manager]);
+	
+	// Custom tree node renderer
+	const CommandNode = useCallback((props: NodeRendererProps<SlashCommand>) => {
+		const { node, dragHandle, style } = props;
+		const command = node.data;
+		const isGroup = command.childrenIds && command.childrenIds.length > 0;
+		
+		return (
+			<div 
+				ref={dragHandle}
+				style={style}
+				className={`cmdr-command-wrapper ${isGroup ? 'is-group' : ''} ${node.state.isSelected ? 'is-selected' : ''}`}
+			>
+				<CommandListItem
+					cmd={command}
+					plugin={plugin}
+					commands={commands}
+					setState={syncDataFromManager}
+					isCollapsed={!node.isOpen}
+					onCollapse={isGroup ? () => node.toggle() : undefined}
+				/>
+			</div>
+		);
+	}, [commands, plugin, syncDataFromManager]);
 
 	return (
 		<CommandStoreContext.Provider value={manager}>
 			<div className="cmdr-command-viewer">
-				<DndContext
-					sensors={sensors}
-					collisionDetection={closestCenter}
-					onDragStart={handleDragStart}
-					onDragEnd={handleDragEnd}
+				<Tree<SlashCommand>
+					ref={treeRef}
+					data={rootCommands}
+					idAccessor="id"
+					childrenAccessor={childrenAccessor}
+					onMove={handleMove}
+					onSelect={handleSelect}
+					disableDrop={disableDrop}
+					width="100%"
+					height={treeHeight}
+					indent={24}
+					rowHeight={55}
+					openByDefault={true}
+					padding={10}
+					selectionFollowsFocus={true}
+					disableMultiSelection={true}
 				>
-					<SortableContext 
-						items={commands.map(cmd => cmd.id)}
-						strategy={verticalListSortingStrategy}
-					>
-						<div className="cmdr-commands-list">
-							{rootCommands.map(cmd => (
-								<SortableCommandItem
-									key={cmd.id}
-									command={cmd}
-									commands={commands}
-									plugin={plugin}
-									setState={syncDataFromManager}
-								/>
-							))}
-						</div>
-					</SortableContext>
-					
-					{/* Overlay showing the dragged item */}
-					<DragOverlay>
-						{activeId && activeCommand ? (
-							<div className="cmdr-command-overlay">
-								<CommandListItem
-									cmd={activeCommand}
-									plugin={plugin}
-									commands={commands}
-									setState={syncDataFromManager}
-									isGroupDragging={isCommandGroup(activeCommand)}
-								/>
-								{isCommandGroup(activeCommand) && (
-									<div className="cmdr-group-badge">
-										{commands.filter(cmd => cmd.parentId === activeCommand.id).length} items
-									</div>
-								)}
-							</div>
-						) : null}
-					</DragOverlay>
-				</DndContext>
+					{CommandNode}
+				</Tree>
+				
+				{!commands.some(
+					pre => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)
+				) && (
+					<div className="cmdr-commands-empty">
+						<h3>{t("bindings.no_command.detail")}</h3>
+						<span>{t("bindings.no_command.add_now")}</span>
+					</div>
+				)}
+
+				{Platform.isMobile && <hr />}
+
+				<CommandViewerTools plugin={plugin} manager={manager} setState={syncDataFromManager} />
 			</div>
-			
-			{!commands.some(
-				pre => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)
-			) && (
-				<div className="cmdr-commands-empty">
-					<h3>{t("bindings.no_command.detail")}</h3>
-					<span>{t("bindings.no_command.add_now")}</span>
-				</div>
-			)}
-
-			{Platform.isMobile && <hr />}
-
-			<CommandViewerTools plugin={plugin} manager={manager} setState={syncDataFromManager} />
 		</CommandStoreContext.Provider>
 	);
 }
