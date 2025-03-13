@@ -64,20 +64,24 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 	
 	// Handle movement of commands in the tree
 	const handleMove = useCallback(async ({ dragIds, parentId, index }: MoveParams) => {
+		// Create a copy of the command list to work with
 		const updatedCommands = [...commands];
+		
+		// Get the dragged command
 		const draggedCmd = updatedCommands.find(cmd => cmd.id === dragIds[0]);
-		const targetParent = parentId 
-			? updatedCommands.find(cmd => cmd.id === parentId)
-			: null;
-			
 		if (!draggedCmd) return;
 		
+		// Get the new parent command (if any)
+		const newParent = parentId 
+			? updatedCommands.find(cmd => cmd.id === parentId)
+			: null;
+		
 		// Prevent nested command groups
-		if (draggedCmd.childrenIds?.length && targetParent?.childrenIds?.length) {
+		if (draggedCmd.childrenIds?.length && newParent?.childrenIds?.length) {
 			return;
 		}
 		
-		// Remove from old parent if applicable
+		// Step 1: Remove from old parent's children array
 		if (draggedCmd.parentId) {
 			const oldParent = updatedCommands.find(cmd => cmd.id === draggedCmd.parentId);
 			if (oldParent && oldParent.childrenIds) {
@@ -85,21 +89,52 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 			}
 		}
 		
-		// Add to new parent or keep at root level
-		if (targetParent) {
-			draggedCmd.parentId = targetParent.id;
-			if (!targetParent.childrenIds) targetParent.childrenIds = [];
+		// Step 2: Handle the move based on the target location
+		if (newParent) {
+			// Moving to (or within) a parent
 			
+			// Update the parent ID
+			draggedCmd.parentId = newParent.id;
+			
+			// Ensure the parent has a childrenIds array
+			if (!newParent.childrenIds) {
+				newParent.childrenIds = [];
+			}
+			
+			// Determine where to insert the command
 			if (index === undefined) {
-				targetParent.childrenIds.push(draggedCmd.id);
+				// If no index is provided, add to the end
+				newParent.childrenIds.push(draggedCmd.id);
 			} else {
-				targetParent.childrenIds.splice(index, 0, draggedCmd.id);
+				// Insert at the specified index
+				newParent.childrenIds.splice(index, 0, draggedCmd.id);
 			}
 		} else {
+			// Moving to root level
+			
+			// Clear the parent ID
 			draggedCmd.parentId = undefined;
+			
+			// Get the root commands (excluding the dragged command if it was already at root)
+			const rootCmds = updatedCommands
+				.filter(cmd => !cmd.parentId && cmd.id !== draggedCmd.id);
+			
+			// Determine where to insert the command at root level
+			let insertAt = index ?? rootCmds.length;
+			
+			// Create a new order of root commands
+			const newRootOrder = [
+				...rootCmds.slice(0, insertAt),
+				draggedCmd,
+				...rootCmds.slice(insertAt)
+			];
+			
+			// Rebuild the full command list with the new root order
+			const childCmds = updatedCommands.filter(cmd => cmd.parentId);
+			updatedCommands.splice(0, updatedCommands.length, ...newRootOrder, ...childCmds);
 		}
 		
-		// Use new updateStructure method
+		// Save the updated structure
 		await manager.updateStructure(updatedCommands);
 	}, [commands, manager]);
 	

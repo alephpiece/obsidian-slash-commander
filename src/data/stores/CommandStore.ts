@@ -35,8 +35,15 @@ class EventEmitter {
 }
 
 export default class CommandStore extends EventEmitter {
-	private commandsMap: Map<string, SlashCommand> = new Map();
+	// Primary storage: ordered array of commands
+	private commands: SlashCommand[] = [];
+	
+	// Command index map for fast lookup by ID
+	private commandIndex: Map<string, number> = new Map();
+	
+	// Set of IDs for active commands that are registered with Obsidian
 	private registeredCommands: Set<string> = new Set();
+	
 	protected plugin: SlashCommanderPlugin;
 
 	public constructor(plugin: SlashCommanderPlugin) {
@@ -45,10 +52,28 @@ export default class CommandStore extends EventEmitter {
 		this.initializeFromSettings();
 	}
 
+	// Rebuild the index mapping completely
+	private rebuildCommandIndex(): void {
+		this.commandIndex.clear();
+		this.commands.forEach((cmd, index) => {
+			this.commandIndex.set(cmd.id, index);
+		});
+	}
+
+	// Get command by ID using the index map
+	private getCommandById(id: string): SlashCommand | undefined {
+		const index = this.commandIndex.get(id);
+		return index !== undefined ? this.commands[index] : undefined;
+	}
+
 	private initializeFromSettings(): void {
 		const bindings = this.plugin.settingsStore.getSettings().bindings;
 		
-		bindings.forEach(cmd => this.commandsMap.set(cmd.id, cmd));
+		// Initialize commands array
+		this.commands = [...bindings];
+		
+		// Build the index
+		this.rebuildCommandIndex();
 		
 		// Initialize registered commands
 		this.updateActiveCommands();
@@ -99,7 +124,7 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public getAllCommands(): SlashCommand[] {
-		return Array.from(this.commandsMap.values());
+		return [...this.commands];
 	}
 	
 	public getRootCommands(): SlashCommand[] {
@@ -135,7 +160,11 @@ export default class CommandStore extends EventEmitter {
 			scmd.childrenIds = [];
 		}
 		
-		this.commandsMap.set(scmd.id, scmd);
+		// Add to the array
+		this.commands.push(scmd);
+		
+		// Update index
+		this.commandIndex.set(scmd.id, this.commands.length - 1);
 		
 		if (newlyAdded) {
 			await this.commitChanges();
@@ -143,16 +172,22 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public async removeCommand(commandId: string, save = true): Promise<void> {
-		const command = this.commandsMap.get(commandId);
-		if (!command) return;
+		const index = this.commandIndex.get(commandId);
+		if (index === undefined) return;
+		
+		const command = this.commands[index];
 		
 		// Recursively remove child commands
-		const childCommands = this.getCommandChildren(commandId);
+		const childCommands = this.getCommandChildren(command.id);
 		for (const child of childCommands) {
 			await this.removeCommand(child.id, false);
 		}
 		
-		this.commandsMap.delete(commandId);
+		// Remove from array
+		this.commands.splice(index, 1);
+		
+		// Rebuild index since positions have changed
+		this.rebuildCommandIndex();
 		
 		if (save) {
 			await this.commitChanges();
@@ -160,33 +195,32 @@ export default class CommandStore extends EventEmitter {
 	}
 	
 	public async moveCommand(commandId: string, newParentId?: string): Promise<void> {
-		const command = this.commandsMap.get(commandId);
-		if (!command) return;
+		const index = this.commandIndex.get(commandId);
+		if (index === undefined) return;
 		
+		const command = this.commands[index];
 		command.parentId = newParentId;
+		
 		await this.commitChanges();
 	}
 
 	// Update entire command structure (used for drag-drop operations)
 	public async updateStructure(commands: SlashCommand[]): Promise<void> {
-		this.commandsMap.clear();
-		for (const cmd of commands) {
-			this.commandsMap.set(cmd.id, cmd);
-		}
+		this.commands = [...commands];
+		this.rebuildCommandIndex();
 		await this.commitChanges();
 	}
 
 	public async restoreDefault(): Promise<void> {
-		this.commandsMap.clear();
-		
-		DEFAULT_SETTINGS.bindings.forEach(cmd => {
+		this.commands = DEFAULT_SETTINGS.bindings.map(cmd => {
 			const newCmd: SlashCommand = { ...cmd };
 			if (!newCmd.childrenIds) {
 				newCmd.childrenIds = [];
 			}
-			this.commandsMap.set(newCmd.id, newCmd);
+			return newCmd;
 		});
 		
+		this.rebuildCommandIndex();
 		await this.commitChanges();
 	}
 }
