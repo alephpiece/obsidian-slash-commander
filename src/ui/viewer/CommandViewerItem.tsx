@@ -37,13 +37,9 @@ export function CommandViewerItem({
 				pair={cmd}
 				plugin={plugin}
 				handleRemove={async (): Promise<void> => {
-					const confirmed = await new ConfirmDeleteModal(plugin, cmd, () =>
+					await new ConfirmDeleteModal(plugin, cmd, () =>
 						syncCommands()
 					).didChooseRemove();
-					if (confirmed) {
-						// 删除操作已在 didChooseRemove 中处理
-						// 这里不需要额外操作
-					}
 				}}
 				handleNewIcon={(): void => {
 					new ChooseIconModal(plugin, cmd, () => syncCommands()).open();

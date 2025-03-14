@@ -11,6 +11,7 @@ import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { useTranslation } from "react-i18next";
 import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils/util";
+import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 
 export interface CommandProps {
 	plugin: SlashCommanderPlugin;
@@ -106,22 +107,50 @@ export function CommandComponent({
 						aria-label={t("bindings.add_child")}
 					/>
 				)}
-				<ObsidianIcon
-					icon={triggerModeIcon}
-					className="setting-editor-extra-setting-button clickable-icon"
-					onClick={(): void => handleTriggerModeChange()}
-					aria-label={t("bindings.trigger_mode.change", {
-						current_mode: triggerModeName,
-					})}
-				/>
-				<ObsidianIcon
-					icon={deviceModeIcon}
-					className="setting-editor-extra-setting-button clickable-icon"
-					onClick={(): void => handleDeviceModeChange()}
-					aria-label={t("bindings.device_mode.change", {
-						current_mode: deviceModeName,
-					})}
-				/>
+				{Platform.isMobile ? (
+					<ObsidianIcon
+						icon="pencil"
+						className="setting-editor-extra-setting-button clickable-icon"
+						onClick={async (): Promise<void> => {
+							if (plugin) {
+								const updatedCommand = await new BindingEditorModal(
+									plugin,
+									pair
+								).awaitSelection();
+								if (updatedCommand) {
+									// Apply updates to existing command
+									pair.name = updatedCommand.name;
+									pair.icon = updatedCommand.icon;
+									pair.mode = updatedCommand.mode;
+									pair.triggerMode = updatedCommand.triggerMode;
+									
+									// Sync changes
+									handleRename(updatedCommand.name);
+								}
+							}
+						}}
+						aria-label={t("bindings.edit")}
+					/>
+				) : (
+					<>
+						<ObsidianIcon
+							icon={triggerModeIcon}
+							className="setting-editor-extra-setting-button clickable-icon"
+							onClick={(): void => handleTriggerModeChange()}
+							aria-label={t("bindings.trigger_mode.change", {
+								current_mode: triggerModeName,
+							})}
+						/>
+						<ObsidianIcon
+							icon={deviceModeIcon}
+							className="setting-editor-extra-setting-button clickable-icon"
+							onClick={(): void => handleDeviceModeChange()}
+							aria-label={t("bindings.device_mode.change", {
+								current_mode: deviceModeName,
+							})}
+						/>
+					</>
+				)}
 				<ObsidianIcon
 					icon="lucide-trash"
 					className="setting-editor-extra-setting-button clickable-icon"

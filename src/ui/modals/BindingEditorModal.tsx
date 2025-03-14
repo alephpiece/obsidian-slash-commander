@@ -11,7 +11,7 @@ import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils/util";
  * Modal for adding a new binding with all options in one interface
  * Allows users to set name, command, icon, trigger mode and device mode at once
  */
-export default class AddBindingModal extends Modal {
+export default class BindingEditorModal extends Modal {
 	private plugin: SlashCommanderPlugin;
 	private commands: Command[];
 	private filteredCommands: Command[] = [];
@@ -31,10 +31,21 @@ export default class AddBindingModal extends Modal {
 	private resolve: ((value: SlashCommand | null) => void) | null = null;
 	private reject: ((reason?: any) => void) | null = null;
 
-	constructor(plugin: SlashCommanderPlugin) {
+	constructor(plugin: SlashCommanderPlugin, existingCommand?: SlashCommand) {
 		super(plugin.app);
 		this.plugin = plugin;
 		this.commands = Object.values(plugin.app.commands.commands);
+		
+		// If editing an existing command, initialize with its values
+		if (existingCommand) {
+			this.name = existingCommand.name;
+			this.selectedIcon = existingCommand.icon;
+			this.triggerMode = existingCommand.triggerMode || "anywhere";
+			this.deviceMode = existingCommand.mode || "any";
+			
+			// Find the command by ID to populate selectedCommand
+			this.selectedCommand = this.commands.find(cmd => cmd.id === existingCommand.id) || null;
+		}
 	}
 
 	public async awaitSelection(): Promise<SlashCommand | null> {
@@ -50,8 +61,11 @@ export default class AddBindingModal extends Modal {
 		contentEl.empty();
 		contentEl.addClass("cmdr-add-binding-modal");
 
-		// Header
-		contentEl.createEl("h2", { text: t("modals.bind.title") });
+		// Header - show different title based on whether we're editing or creating
+		const isEditing = !!this.selectedCommand;
+		contentEl.createEl("h2", { 
+			text: isEditing ? t("modals.bind.title_edit") : t("modals.bind.title_add") 
+		});
 
 		// Name field
 		this.createNameField(contentEl);
@@ -114,6 +128,11 @@ export default class AddBindingModal extends Modal {
 			cls: "cmdr-input",
 			placeholder: t("modals.bind.name.placeholder"),
 		});
+		
+		// Preset input value if editing
+		if (this.name) {
+			input.value = this.name;
+		}
 
 		input.addEventListener("input", e => {
 			this.name = (e.target as HTMLInputElement).value;
@@ -135,6 +154,11 @@ export default class AddBindingModal extends Modal {
 			cls: "cmdr-input",
 			placeholder: t("modals.bind.command.placeholder"),
 		});
+		
+		// Preset input value if editing
+		if (this.selectedCommand) {
+			input.value = this.selectedCommand.name;
+		}
 
 		const suggestContainer = suggestWrapper.createDiv({ cls: "cmdr-suggest-container" });
 		suggestContainer.style.display = "none";
@@ -254,6 +278,11 @@ export default class AddBindingModal extends Modal {
 			cls: "cmdr-input cmdr-icon-input",
 			placeholder: t("modals.bind.icon.placeholder"),
 		});
+		
+		// Preset input value if editing and has an icon
+		if (this.selectedIcon) {
+			input.value = this.selectedIcon;
+		}
 
 		const suggestContainer = suggestWrapper.createDiv({ cls: "cmdr-suggest-container" });
 		suggestContainer.style.display = "none";
