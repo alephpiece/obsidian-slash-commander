@@ -2,7 +2,7 @@ import { ReactElement, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import { SlashCommand } from "@/data/models/SlashCommand";
 import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
-import { useCommandContext } from "@/ui/contexts/CommandContext";
+import { useCommandStore } from "@/data/stores/useCommandStore";
 
 interface CommandViewerItemGroupProps {
 	cmd: SlashCommand;
@@ -11,13 +11,15 @@ interface CommandViewerItemGroupProps {
 /**
  * Render a collapsible command group with its child commands.
  * This component handles the display and interaction of a command group.
- * Uses Context API for accessing commands and update functions.
+ * Uses Zustand store for accessing commands and update functions.
  */
 export function CommandViewerItemGroup({
 	cmd,
 }: CommandViewerItemGroupProps): ReactElement {
 	const [collapsed, setCollapsed] = useState(false);
-	const { commands, updateCommands, plugin, syncCommands } = useCommandContext();
+	const commands = useCommandStore(state => state.commands);
+	const updateCommands = useCommandStore(state => state.updateCommands);
+	const plugin = useCommandStore(state => state.plugin);
 	
 	const childCommands = commands.filter(c => c.parentId === cmd.id);
 
@@ -67,7 +69,7 @@ export function CommandViewerItemGroup({
 								const withoutChildren = newCommands.filter(c => !childIds.includes(c.id));
 								
 								// Add updated children
-								plugin.saveSettings();
+								plugin?.saveSettings();
 								updateCommands([...withoutChildren, ...newChildCommands]);
 							}
 						}}

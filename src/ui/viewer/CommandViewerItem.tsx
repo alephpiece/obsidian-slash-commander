@@ -3,7 +3,7 @@ import { SlashCommand, isParentCommand, isDeviceValid } from "@/data/models/Slas
 import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
-import { useCommandContext } from "@/ui/contexts/CommandContext";
+import { useCommandStore } from "@/data/stores/useCommandStore";
 
 export interface CommandViewerItemProps {
 	cmd: SlashCommand;
@@ -15,7 +15,7 @@ export interface CommandViewerItemProps {
 /**
  * Render a command viewer item if the command is visible.
  * This component is used both for regular display and as drag overlay.
- * Uses Context API for accessing commands and update functions.
+ * Uses Zustand store for accessing commands and update functions.
  */
 export function CommandViewerItem({
 	cmd,
@@ -23,10 +23,11 @@ export function CommandViewerItem({
 	onCollapse,
 	isGroupDragging,
 }: CommandViewerItemProps): ReactElement | null {
-	const { plugin, syncCommands } = useCommandContext();
+	const plugin = useCommandStore(state => state.plugin);
+	const syncCommands = useCommandStore(state => state.syncCommands);
 	
-	// Skip rendering if command is not valid for current device
-	if (!isDeviceValid(plugin, cmd.mode)) {
+	// Skip rendering if command is not valid for current device or plugin is not available
+	if (!plugin || !isDeviceValid(plugin, cmd.mode)) {
 		return null;
 	}
 
@@ -36,14 +37,14 @@ export function CommandViewerItem({
 				pair={cmd}
 				plugin={plugin}
 				handleRemove={async (): Promise<void> => {
-					const confirmed = await new ConfirmDeleteModal(plugin, cmd, syncCommands).didChooseRemove();
+					const confirmed = await new ConfirmDeleteModal(plugin, cmd, () => syncCommands()).didChooseRemove();
 					if (confirmed) {
 						// 删除操作已在 didChooseRemove 中处理
 						// 这里不需要额外操作
 					}
 				}}
 				handleNewIcon={(): void => {
-					new ChooseIconModal(plugin, cmd, syncCommands).open();
+					new ChooseIconModal(plugin, cmd, () => syncCommands()).open();
 				}}
 				handleRename={(name): void => {
 					cmd.name = name;

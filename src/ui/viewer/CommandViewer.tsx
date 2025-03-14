@@ -1,5 +1,5 @@
 import { Platform } from "obsidian";
-import { type ReactElement, useState, useEffect } from "react";
+import { type ReactElement, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { CommandTools } from "@/ui/viewer/CommandTools";
@@ -10,7 +10,7 @@ import {
 } from "@/data/models/SlashCommand";
 import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
-import { CommandProvider } from "@/ui/contexts/CommandContext";
+import { useCommandStore } from "@/data/stores/useCommandStore";
 
 interface CommandViewerProps {
 	manager: CommandStore;
@@ -21,30 +21,28 @@ interface CommandViewerProps {
  * Main command viewer component that displays all commands and provides tools to manage them
  */
 export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
-	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.getAllCommands());
 	const { t } = useTranslation();
+	
+	// Use Zustand store instead of Context
+	const commands = useCommandStore(state => state.commands);
+	const setPlugin = useCommandStore(state => state.setPlugin);
+	const setStore = useCommandStore(state => state.setStore);
+	const initialize = useCommandStore(state => state.initialize);
 
-	// Subscribe to command store changes
+	// Initialize Zustand store with plugin and manager
 	useEffect(() => {
-		const handleStoreChange = (newCommands: SlashCommand[]): void => {
-			setCommands([...newCommands]);
-		};
-		
-		// Subscribe to changes
-		const unsubscribe = manager.on('changed', handleStoreChange);
+		setPlugin(plugin);
+		const unsubscribe = setStore(manager);
+		initialize();
 		
 		// Cleanup subscription on unmount
 		return () => {
 			unsubscribe();
 		};
-	}, [manager]);
+	}, [plugin, manager, setPlugin, setStore, initialize]);
 
 	return (
-		<CommandProvider 
-			plugin={plugin} 
-			store={manager} 
-			initialCommands={commands}
-		>
+		<div>
 			<div className="cmdr-command-viewer">
 				<SortableCommandList />
 			</div>
@@ -60,6 +58,6 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 			{Platform.isMobile && <hr />}
 
 			<CommandTools />
-		</CommandProvider>
+		</div>
 	);
 }
