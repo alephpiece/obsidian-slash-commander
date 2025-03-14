@@ -39,27 +39,8 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 					<ReactSortable
 						list={childCommands}
 						setList={(newState): void => {
-							// Update depth for all child commands
-							const updatedChildCommands = newState.map(childCmd => ({
-								...childCmd,
-								depth: 1 // Child commands are at depth 1
-							}));
-
-							// Update the parent's children array
-							const updatedCmd = {
-								...cmd,
-								children: updatedChildCommands
-							};
-
-							// Update only the parent command and its children
-							const newCommands = [...commands];
-							const commandIndex = newCommands.findIndex(c => c.id === cmd.id);
-							
-							if (commandIndex !== -1) {
-								newCommands[commandIndex] = updatedCmd;
-							}
-
-							updateCommands(newCommands);
+							// React-sortablejs requires this callback,
+							// but we'll handle actual updates in onSort
 						}}
 						group="commands"
 						delay={100}
@@ -71,34 +52,37 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 						dragClass="cmdr-sortable-drag"
 						ghostClass="cmdr-sortable-ghost"
 						onSort={({ oldIndex, newIndex, from, to }): void => {
-							if (oldIndex === undefined || newIndex === undefined) return;
-							if (from === to) {
-								const newChildCommands = [...childCommands];
-								const [removed] = newChildCommands.splice(oldIndex, 1);
-								newChildCommands.splice(newIndex, 0, removed);
+							if (oldIndex === undefined || newIndex === undefined || from !== to) return;
+							
+							// Create a new array with updated order
+							const updatedChildCommands = [...childCommands];
+							const [removed] = updatedChildCommands.splice(oldIndex, 1);
+							updatedChildCommands.splice(newIndex, 0, removed);
 
-								// Update depth for all child commands
-								const updatedChildCommands = newChildCommands.map(childCmd => ({
-									...childCmd,
-									depth: 1 // Child commands are at depth 1
-								}));
-
-								// Update the parent's children array
-								const updatedCmd = {
-									...cmd,
-									children: updatedChildCommands
+							// Ensure all child commands have depth=1
+							for (let i = 0; i < updatedChildCommands.length; i++) {
+								updatedChildCommands[i] = {
+									...updatedChildCommands[i],
+									depth: 1
 								};
+							}
 
-								// Update only the parent command 
-								const newCommands = [...commands];
-								const commandIndex = newCommands.findIndex(c => c.id === cmd.id);
+							// Update the parent's children array
+							const updatedCmd = {
+								...cmd,
+								children: updatedChildCommands
+							};
+
+							// Update only the parent command in the commands array
+							const newCommands = [...commands];
+							const commandIndex = newCommands.findIndex(c => c.id === cmd.id);
+							
+							if (commandIndex !== -1) {
+								newCommands[commandIndex] = updatedCmd;
 								
-								if (commandIndex !== -1) {
-									newCommands[commandIndex] = updatedCmd;
-								}
-
-								plugin?.saveSettings();
+								// Update state and save changes
 								updateCommands(newCommands);
+								plugin?.saveSettings();
 							}
 						}}
 					>
