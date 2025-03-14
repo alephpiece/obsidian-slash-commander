@@ -18,7 +18,7 @@
 		"bindings.icon.change": "Изменить иконку",
 		"bindings.no_command.add_now": "Хотите добавить команду сейчас?",
 		"bindings.no_command.detail": "Здесь нет команд!",
-		"bindings.rename.doubleclick": "Двойной щелчок для переименования",
+		"bindings.rename.click": "Нажмите для переименования",
 		"bindings.restore_default": "Восстановить по умолчанию",
 		"bindings.source": "Из {{plugin_name}}",
 		"bindings.title": "Привязки",

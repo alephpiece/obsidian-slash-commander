@@ -64,7 +64,7 @@ export function CommandComponent({
 			<div className="setting-item-info">
 				<div className="setting-item-name">
 					<ChangeableText
-						ariaLabel={t("bindings.rename.doubleclick")}
+						ariaLabel={t("bindings.rename.click")}
 						handleChange={(e): void => {
 							handleRename(e.currentTarget.value);
 						}}

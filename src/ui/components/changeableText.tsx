@@ -26,7 +26,7 @@ export default function ChangeableText({ value, handleChange, ariaLabel }: Props
 		}
 	};
 
-	const handleDoubleClick = (e: MouseEvent<HTMLSpanElement>): void => {
+	const handleClick = (e: MouseEvent<HTMLSpanElement>): void => {
 		const span = e.currentTarget;
 		setInputWidth(span.offsetWidth);
 		setIsEditing(true);
@@ -45,7 +45,7 @@ export default function ChangeableText({ value, handleChange, ariaLabel }: Props
 					aria-label={ariaLabel}
 				/>
 			) : (
-				<span onDoubleClick={handleDoubleClick} aria-label={ariaLabel}>
+				<span onClick={handleClick} aria-label={ariaLabel}>
 					{value}
 				</span>
 			)}

@@ -51,15 +51,15 @@ export default class AddBindingModal extends Modal {
 
     // Header
     contentEl.createEl("h2", { text: t("modals.bind.title") });
-
-    // Name field
-    this.createNameField(contentEl);
     
     // Command field
     this.createCommandField(contentEl);
     
     // Icon field
     this.createIconField(contentEl);
+    
+    // Name field
+    this.createNameField(contentEl);
     
     // Trigger mode field
     this.createTriggerModeField(contentEl);
@@ -350,14 +350,14 @@ export default class AddBindingModal extends Modal {
     
     // Validate command
     if (!this.selectedCommand) {
-      const commandWrapper = this.contentEl.querySelectorAll(".cmdr-setting-item")[1] as HTMLElement;
+      const commandWrapper = this.contentEl.querySelectorAll(".cmdr-setting-item")[0] as HTMLElement;
       this.setError("command", t("modals.bind.command.required"), commandWrapper);
       isValid = false;
     }
     
     // Validate icon
     if (!this.selectedIcon) {
-      const iconWrapper = this.contentEl.querySelectorAll(".cmdr-setting-item")[2] as HTMLElement;
+      const iconWrapper = this.contentEl.querySelectorAll(".cmdr-setting-item")[1] as HTMLElement;
       this.setError("icon", t("modals.bind.icon.required"), iconWrapper);
       isValid = false;
     }

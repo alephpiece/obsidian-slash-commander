@@ -18,7 +18,7 @@
 		"bindings.icon.change": "Change icon",
 		"bindings.no_command.add_now": "Would you like to add one now?",
 		"bindings.no_command.detail": "No commands here!",
-		"bindings.rename.doubleclick": "Double click to rename",
+		"bindings.rename.click": "Click to rename",
 		"bindings.restore_default": "Restore default",
 		"bindings.source": "From {{plugin_name}}",
 		"bindings.title": "Bindings",

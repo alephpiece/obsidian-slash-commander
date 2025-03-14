@@ -18,7 +18,7 @@
 		"bindings.icon.change": "更改图标",
 		"bindings.no_command.add_now": "现在要添加一个命令吗？",
 		"bindings.no_command.detail": "目前没有任何可用命令！",
-		"bindings.rename.doubleclick": "双击以重命名",
+		"bindings.rename.click": "单击以重命名",
 		"bindings.restore_default": "恢复默认",
 		"bindings.source": "来自 {{plugin_name}}",
 		"bindings.title": "绑定",

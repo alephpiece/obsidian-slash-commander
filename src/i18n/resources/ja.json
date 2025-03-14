@@ -18,7 +18,7 @@
 		"bindings.icon.change": "アイコンを変更",
 		"bindings.no_command.add_now": "今すぐ追加しますか？",
 		"bindings.no_command.detail": "コマンドがありません！",
-		"bindings.rename.doubleclick": "ダブルクリックで名前を変更",
+		"bindings.rename.click": "クリックで名前を変更",
 		"bindings.restore_default": "デフォルトに戻す",
 		"bindings.source": "{{plugin_name}} から",
 		"bindings.title": "バインディング",
