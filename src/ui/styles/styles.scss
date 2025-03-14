@@ -154,16 +154,19 @@
 		}
 	}
 
-	&[aria-expanded="false"] {
-		.cmdr-setting-collapser-content {
-			max-height: 0 !important;
-			transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
-		}
+	.cmdr-setting-collapser-header-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		margin-bottom: 8px;
 	}
 
 	.cmdr-setting-collapser-header {
 		display: flex;
 		cursor: pointer;
+		margin: 0;
+		flex: 1;
 
 		span {
 			font-weight: 600;
@@ -171,9 +174,20 @@
 			align-self: end;
 		}
 	}
+
+	.cmdr-setting-collapser-tools {
+		display: flex;
+		align-items: center;
+		margin-left: 12px;
+	}
+
+	&[aria-expanded="false"] .cmdr-setting-collapser-content {
+		max-height: 0 !important;
+		transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+	}
 }
 
-.cmdr-add-new-wrapper {
+.cmdr-viewer-tools-bottom {
 	width: 100%;
 	margin-top: 12px;
 	margin-bottom: 2rem;
@@ -184,6 +198,11 @@
 	button {
 		margin: 0 24px;
 	}
+}
+
+.cmdr-viewer-tools-bar {
+	display: flex;
+	align-items: center;
 }
 
 .cmdr-adder {
@@ -663,7 +682,7 @@
 /* Group collapser */
 .cmdr-group-collapser {
 	width: 100%;
-	
+
 	&[aria-expanded="false"] {
 		.cmdr-group-collapser-content {
 			display: none;
@@ -674,12 +693,12 @@
 /* Group collapser content */
 .cmdr-group-collapser-content {
 	margin-left: 10px;
-	margin-top: 4px; 
+	margin-top: 4px;
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
 	position: relative;
-	
+
 	&::before {
 		content: "";
 		position: absolute;
@@ -718,7 +737,7 @@
 	display: flex;
 	align-items: center;
 	padding: 8px 0;
-	
+
 	.mobile-option-setting-item-name {
 		flex: 1;
 		overflow: hidden;

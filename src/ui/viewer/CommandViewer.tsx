@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { SortableCommandList } from "@/ui/viewer/SortableCommandList";
-import { CommandViewerTools } from "@/ui/viewer/CommandViewerTools";
+import { CommandViewerToolsBottom } from "@/ui/viewer/CommandViewerTools";
 import { useCommands } from "@/data/hooks/useCommandStore";
 
 /**
@@ -25,7 +25,7 @@ export function CommandViewer(): ReactElement {
 					<span>{t("bindings.no_command.add_now")}</span>
 				</div>
 			)}
-			<CommandViewerTools />
+			<CommandViewerToolsBottom />
 		</div>
 	);
 }

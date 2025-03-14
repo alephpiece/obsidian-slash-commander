@@ -10,7 +10,7 @@ import { confirmRestoreComponent } from "@/ui/components/confirmRestoreComponent
  */
 export default class ConfirmRestoreModal extends Modal {
 	private root: Root | null = null;
-	public restore: boolean = false;
+	public restore = false;
 	private onRestoreCallback: (() => Promise<void>) | undefined;
 
 	public constructor(

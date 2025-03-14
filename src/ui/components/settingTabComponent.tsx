@@ -5,10 +5,11 @@ import ObsidianIcon from "@ui/components/obsidianIconComponent";
 import SlashCommanderPlugin from "@/main";
 import { CommandViewer } from "@ui/viewer/CommandViewer";
 import { ToggleComponent, TextBoxComponent } from "@ui/components/settingItemComponent";
-import SettingCollapser from "@ui/components/settingHeaderComponent";
+import { SettingCollapser, SettingCollapserWithTools } from "@/ui/components/SettingHeaders";
 import TriggerViewer from "@ui/components/TriggerViewerComponent";
 import { useTranslation } from "react-i18next";
 import { CommanderSettings } from "@/data/models/Settings";
+import { CommandViewerToolsBar } from "@/ui/viewer/CommandViewerTools";
 
 interface SettingTabProps {
 	plugin: SlashCommanderPlugin;
@@ -117,9 +118,12 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					}}
 				/>
 			</div>
-			<SettingCollapser title={t("bindings.title")}>
-				<CommandViewer manager={plugin.commandStore} plugin={plugin} />
-			</SettingCollapser>
+			<SettingCollapserWithTools
+				title={t("bindings.title")}
+				tools={<CommandViewerToolsBar />}
+			>
+				<CommandViewer />
+			</SettingCollapserWithTools>
 		</div>
 	);
 }

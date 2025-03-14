@@ -9,13 +9,21 @@ import ConfirmRestoreModal from "@/ui/modals/confirmRestoreModal";
  * Render the command list tools (full version).
  * Uses Zustand store for accessing plugin, store and sync functions.
  */
-export function CommandViewerTools(): ReactElement {
+export function CommandViewerToolsBottom(): ReactElement {
 	const { t } = useTranslation();
 	const plugin = usePlugin();
 	const store = useStore();
+	
+	const handleRestoreDefault = async (): Promise<void> => {
+		if (plugin && store) {
+			await new ConfirmRestoreModal(plugin, async () => {
+				await store.restoreDefault();
+			}).didChooseRestore();
+		}
+	};
 
 	return (
-		<div className="cmdr-add-new-wrapper">
+		<div className="cmdr-viewer-tools-bottom">
 			<button
 				className="mod-cta"
 				onClick={async (): Promise<void> => {
@@ -27,7 +35,6 @@ export function CommandViewerTools(): ReactElement {
 					}
 				}}
 			>
-				<ObsidianIcon icon="plus-with-circle" />
 				{t("bindings.add")}
 			</button>
 			<ObsidianIcon
@@ -35,15 +42,7 @@ export function CommandViewerTools(): ReactElement {
 				icon="rotate-ccw"
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
-				onClick={async (): Promise<void> => {
-					if (plugin && store) {
-						const confirmed = await new ConfirmRestoreModal(plugin, async () => {
-							if (store) {
-								await store.restoreDefault();
-							}
-						}).didChooseRestore();
-					}
-				}}
+				onClick={handleRestoreDefault}
 			/>
 		</div>
 	);
@@ -54,13 +53,21 @@ export function CommandViewerTools(): ReactElement {
  * Uses Zustand store for accessing plugin, store and sync functions.
  * This is a more compact version used in different contexts than CommandTools.
  */
-export function CommandViewerToolsShort(): ReactElement {
+export function CommandViewerToolsBar(): ReactElement {
 	const { t } = useTranslation();
 	const plugin = usePlugin();
 	const store = useStore();
+	
+	const handleRestoreDefault = async (): Promise<void> => {
+		if (plugin && store) {
+			await new ConfirmRestoreModal(plugin, async () => {
+				await store.restoreDefault();
+			}).didChooseRestore();
+		}
+	};
 
 	return (
-		<div className="cmdr-add-new-wrapper">
+		<div className="cmdr-viewer-tools-bar">
 			<ObsidianIcon
 				className="cmdr-icon clickable-icon"
 				icon="plus-circle"
@@ -80,15 +87,7 @@ export function CommandViewerToolsShort(): ReactElement {
 				icon="rotate-ccw"
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
-				onClick={async (): Promise<void> => {
-					if (plugin && store) {
-						const confirmed = await new ConfirmRestoreModal(plugin, async () => {
-							if (store) {
-								await store.restoreDefault();
-							}
-						}).didChooseRestore();
-					}
-				}}
+				onClick={handleRestoreDefault}
 			/>
 		</div>
 	);
