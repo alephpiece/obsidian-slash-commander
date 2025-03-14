@@ -54,9 +54,7 @@ export function SettingCollapserWithTools({
 				>
 					{title}
 				</div>
-				<div className="cmdr-setting-collapser-tools">
-					{tools}
-				</div>
+				<div className="cmdr-setting-collapser-tools">{tools}</div>
 			</h2>
 			<div className="cmdr-setting-collapser-content">{children}</div>
 		</div>

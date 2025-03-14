@@ -25,7 +25,7 @@ export function CommandViewerItem({
 }: CommandViewerItemProps): ReactElement | null {
 	const plugin = usePlugin();
 	const syncCommands = useCommandStore(state => state.syncCommands);
-	
+
 	// Skip rendering if command is not valid for current device or plugin is not available
 	if (!plugin || !isDeviceValid(plugin, cmd.mode)) {
 		return null;
@@ -37,7 +37,9 @@ export function CommandViewerItem({
 				pair={cmd}
 				plugin={plugin}
 				handleRemove={async (): Promise<void> => {
-					const confirmed = await new ConfirmDeleteModal(plugin, cmd, () => syncCommands()).didChooseRemove();
+					const confirmed = await new ConfirmDeleteModal(plugin, cmd, () =>
+						syncCommands()
+					).didChooseRemove();
 					if (confirmed) {
 						// 删除操作已在 didChooseRemove 中处理
 						// 这里不需要额外操作
@@ -58,7 +60,8 @@ export function CommandViewerItem({
 				}}
 				handleTriggerModeChange={(mode?: string): void => {
 					const modes = ["anywhere", "newline", "inline"];
-					const nextIndex = (modes.indexOf(cmd.triggerMode ?? "anywhere") + 1) % modes.length;
+					const nextIndex =
+						(modes.indexOf(cmd.triggerMode ?? "anywhere") + 1) % modes.length;
 					cmd.triggerMode = mode || modes[nextIndex];
 					syncCommands();
 				}}
@@ -67,4 +70,4 @@ export function CommandViewerItem({
 			/>
 		</div>
 	);
-} 
+}

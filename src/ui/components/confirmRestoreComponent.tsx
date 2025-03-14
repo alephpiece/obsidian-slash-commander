@@ -19,7 +19,7 @@ export function confirmRestoreComponent({ modal }: ConfirmRestoreProps): ReactEl
 			<p>{t("modals.viewer.restore_default.detail")}</p>
 			<div className="modal-button-container">
 				<button
-					className="mod-warning"
+					className="mod-cta"
 					onClick={(): void => {
 						modal.restore = true;
 						modal.close();
@@ -38,4 +38,4 @@ export function confirmRestoreComponent({ modal }: ConfirmRestoreProps): ReactEl
 			</div>
 		</>
 	);
-} 
+}

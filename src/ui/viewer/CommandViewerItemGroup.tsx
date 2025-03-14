@@ -2,7 +2,12 @@ import { ReactElement, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import { SlashCommand } from "@/data/models/SlashCommand";
 import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
-import { useCommands, usePlugin, useCommandStore, useChildCommands } from "@/data/hooks/useCommandStore";
+import {
+	useCommands,
+	usePlugin,
+	useCommandStore,
+	useChildCommands,
+} from "@/data/hooks/useCommandStore";
 
 interface CommandViewerItemGroupProps {
 	cmd: SlashCommand;
@@ -13,14 +18,12 @@ interface CommandViewerItemGroupProps {
  * This component handles the display and interaction of a command group.
  * Uses Zustand store for accessing commands and update functions.
  */
-export function CommandViewerItemGroup({
-	cmd,
-}: CommandViewerItemGroupProps): ReactElement {
+export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): ReactElement {
 	const [collapsed, setCollapsed] = useState(false);
 	const commands = useCommands();
 	const updateCommands = useCommandStore(state => state.updateCommands);
 	const plugin = usePlugin();
-	
+
 	// Use the specialized hook for child commands
 	const childCommands = useChildCommands(cmd.id);
 
@@ -39,10 +42,12 @@ export function CommandViewerItemGroup({
 							// Update only the child commands
 							const newCommands = [...commands];
 							const childIds = childCommands.map(c => c.id);
-							
+
 							// Remove old children
-							const withoutChildren = newCommands.filter(c => !childIds.includes(c.id));
-							
+							const withoutChildren = newCommands.filter(
+								c => !childIds.includes(c.id)
+							);
+
 							// Add updated children
 							updateCommands([...withoutChildren, ...newState]);
 						}}
@@ -61,14 +66,16 @@ export function CommandViewerItemGroup({
 								const newChildCommands = [...childCommands];
 								const [removed] = newChildCommands.splice(oldIndex, 1);
 								newChildCommands.splice(newIndex, 0, removed);
-								
+
 								// Update only the child commands
 								const newCommands = [...commands];
 								const childIds = childCommands.map(c => c.id);
-								
+
 								// Remove old children
-								const withoutChildren = newCommands.filter(c => !childIds.includes(c.id));
-								
+								const withoutChildren = newCommands.filter(
+									c => !childIds.includes(c.id)
+								);
+
 								// Add updated children
 								plugin?.saveSettings();
 								updateCommands([...withoutChildren, ...newChildCommands]);
@@ -87,4 +94,4 @@ export function CommandViewerItemGroup({
 			)}
 		</div>
 	);
-} 
+}

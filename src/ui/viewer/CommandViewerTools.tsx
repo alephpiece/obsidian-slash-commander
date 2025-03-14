@@ -13,7 +13,7 @@ export function CommandViewerToolsBottom(): ReactElement {
 	const { t } = useTranslation();
 	const plugin = usePlugin();
 	const store = useStore();
-	
+
 	const handleRestoreDefault = async (): Promise<void> => {
 		if (plugin && store) {
 			await new ConfirmRestoreModal(plugin, async () => {
@@ -57,7 +57,7 @@ export function CommandViewerToolsBar(): ReactElement {
 	const { t } = useTranslation();
 	const plugin = usePlugin();
 	const store = useStore();
-	
+
 	const handleRestoreDefault = async (): Promise<void> => {
 		if (plugin && store) {
 			await new ConfirmRestoreModal(plugin, async () => {

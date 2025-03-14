@@ -12,11 +12,7 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 	private command: SlashCommand | undefined;
 	private onSyncCallback: (() => void) | undefined;
 
-	public constructor(
-		plugin: SlashCommanderPlugin, 
-		command?: SlashCommand, 
-		onSync?: () => void
-	) {
+	public constructor(plugin: SlashCommanderPlugin, command?: SlashCommand, onSync?: () => void) {
 		super(plugin.app);
 		this.command = command;
 		this.onSyncCallback = onSync;

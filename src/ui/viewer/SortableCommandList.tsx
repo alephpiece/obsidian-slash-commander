@@ -11,9 +11,9 @@ import { useCommands, usePlugin, useCommandStore } from "@/data/hooks/useCommand
  */
 export function SortableCommandList(): ReactElement {
 	const commands = useCommands();
-	const updateCommands = useCommandStore((state) => state.updateCommands);
+	const updateCommands = useCommandStore(state => state.updateCommands);
 	const plugin = usePlugin();
-	
+
 	return (
 		<ReactSortable
 			list={commands}
@@ -40,17 +40,11 @@ export function SortableCommandList(): ReactElement {
 		>
 			{commands.map(cmd => {
 				return isCommandGroup(cmd) ? (
-					<CommandViewerItemGroup
-						key={cmd.id}
-						cmd={cmd}
-					/>
+					<CommandViewerItemGroup key={cmd.id} cmd={cmd} />
 				) : (
-					<CommandViewerItem
-						key={cmd.id}
-						cmd={cmd}
-					/>
+					<CommandViewerItem key={cmd.id} cmd={cmd} />
 				);
 			})}
 		</ReactSortable>
 	);
-} 
+}

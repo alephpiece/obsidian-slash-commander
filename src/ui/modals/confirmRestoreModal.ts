@@ -25,9 +25,11 @@ export default class ConfirmRestoreModal extends Modal {
 		this.titleEl.innerText = t("modals.viewer.restore_default.title");
 		this.containerEl.style.zIndex = "99";
 		this.root = createRoot(this.contentEl);
-		this.root.render(createElement(confirmRestoreComponent, { 
-			modal: this
-		}));
+		this.root.render(
+			createElement(confirmRestoreComponent, {
+				modal: this,
+			})
+		);
 	}
 
 	public async didChooseRestore(): Promise<boolean> {
@@ -48,4 +50,4 @@ export default class ConfirmRestoreModal extends Modal {
 			this.root = null;
 		}
 	}
-} 
+}

@@ -11,10 +11,10 @@ export interface SlashCommand {
 	mode?: DeviceMode;
 	triggerMode?: TriggerMode;
 	color?: string;
-	
+
 	// Field for command groups
 	parentId?: string;
-	
+
 	// Direct reference to child commands for tree structure
 	children?: SlashCommand[];
 }
@@ -54,13 +54,14 @@ export function getCommandSourceName(plugin: SlashCommanderPlugin, cmd: Command)
 export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
 	const settings = plugin.settingsStore.getSettings();
 	const commands = settings.bindings;
-	
+
 	// Get all active commands including children
 	const activeCommands = commands.filter(cmd => isCommandActive(plugin, cmd));
-	const activeCommandsWithChildren = activeCommands.flatMap(cmd => 
-		[cmd, ...getChildCommands(commands, cmd.id)]
-	);
-	
+	const activeCommandsWithChildren = activeCommands.flatMap(cmd => [
+		cmd,
+		...getChildCommands(commands, cmd.id),
+	]);
+
 	const matches = activeCommandsWithChildren.filter(cmd => cmd.name === scmd.name);
 	return matches.length === 1;
 }
@@ -79,7 +80,5 @@ export function getChildCommands(commands: SlashCommand[], parentId: string): Sl
 
 export function getDescendantCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
 	const children = getChildCommands(commands, parentId);
-	return children.concat(
-		...children.flatMap(child => getDescendantCommands(commands, child.id))
-	);
+	return children.concat(...children.flatMap(child => getDescendantCommands(commands, child.id)));
 }

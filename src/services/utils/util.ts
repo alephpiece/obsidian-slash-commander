@@ -26,7 +26,7 @@ export async function chooseNewCommand(plugin: SlashCommanderPlugin): Promise<Sl
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		icon: icon ?? command.icon!,
 		name: name || command.name,
-		mode: "any"
+		mode: "any",
 	};
 }
 

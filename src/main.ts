@@ -89,7 +89,7 @@ export default class SlashCommanderPlugin extends Plugin {
 	public onunload(): void {
 		document.head.querySelector("style#cmdr")?.remove();
 		this.menuSuggest?.close();
-		
+
 		if (this.storeUnsubscribe) {
 			this.storeUnsubscribe();
 		}
