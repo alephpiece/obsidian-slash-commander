@@ -1,11 +1,19 @@
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import ConfirmDeleteModal from "../modals/confirmDeleteModal";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
+/**
+ * Props for the confirm delete component
+ */
 interface ConfirmDeleteProps {
 	modal: ConfirmDeleteModal;
+	command?: SlashCommand;
 }
 
+/**
+ * Component that renders the confirmation dialog for deleting a command
+ */
 export function confirmDeleteComponent({ modal }: ConfirmDeleteProps): ReactElement {
 	const { t } = useTranslation();
 	return (

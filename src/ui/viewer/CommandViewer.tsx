@@ -1,5 +1,5 @@
 import { Platform } from "obsidian";
-import { createContext, type ReactElement, useState, useCallback, useEffect } from "react";
+import { type ReactElement, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { CommandTools } from "@/ui/viewer/CommandTools";
@@ -10,14 +10,16 @@ import {
 } from "@/data/models/SlashCommand";
 import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
-
-export const CommandStoreContext = createContext<CommandStore>(null!);
+import { CommandProvider } from "@/ui/contexts/CommandContext";
 
 interface CommandViewerProps {
 	manager: CommandStore;
 	plugin: SlashCommanderPlugin;
 }
 
+/**
+ * Main command viewer component that displays all commands and provides tools to manage them
+ */
 export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
 	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.getAllCommands());
 	const { t } = useTranslation();
@@ -37,25 +39,14 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 		};
 	}, [manager]);
 
-	// Update state and commit changes to store
-	const updateCommands = useCallback((newCommands: SlashCommand[]): void => {
-		setCommands([...newCommands]);
-		manager.updateStructure(newCommands);
-	}, [manager]);
-
-	// Sync with store
-	const syncWithStore = useCallback((): void => {
-		manager.commitChanges();
-	}, [manager]);
-
 	return (
-		<CommandStoreContext.Provider value={manager}>
+		<CommandProvider 
+			plugin={plugin} 
+			store={manager} 
+			initialCommands={commands}
+		>
 			<div className="cmdr-command-viewer">
-				<SortableCommandList 
-					plugin={plugin} 
-					commands={commands} 
-					setState={updateCommands} 
-				/>
+				<SortableCommandList />
 			</div>
 			{!commands.some(
 				(pre) => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)
@@ -68,7 +59,7 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 
 			{Platform.isMobile && <hr />}
 
-			<CommandTools plugin={plugin} manager={manager} setState={syncWithStore} />
-		</CommandStoreContext.Provider>
+			<CommandTools />
+		</CommandProvider>
 	);
 }

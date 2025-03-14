@@ -562,27 +562,6 @@
 	}
 }
 
-.cmdr-group-children {
-	margin-left: 1.5rem;
-	margin-top: 4px;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	position: relative;
-
-	// Add a vertical line to show hierarchy
-	&::before {
-		content: "";
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: -0.75rem;
-		width: 2px;
-		background-color: var(--background-modifier-border);
-		border-radius: 1px;
-	}
-}
-
 /* Command viewer styles */
 .cmdr-command-viewer {
 	display: flex;
@@ -695,6 +674,10 @@
 /* Group collapser content */
 .cmdr-group-collapser-content {
 	margin-left: 10px;
+	margin-top: 4px; 
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
 	position: relative;
 	
 	&::before {
@@ -705,6 +688,7 @@
 		left: -0.75rem;
 		width: 2px;
 		background-color: var(--background-modifier-border);
+		border-radius: 1px;
 	}
 }
 

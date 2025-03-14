@@ -2,10 +2,24 @@ import { ICON_LIST } from "@/data/constants/icons";
 import { setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
 import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
+/**
+ * Modal for choosing an icon for a command
+ * Allows users to search and select from available icons
+ */
 export default class ChooseIconModal extends FuzzySuggestModal<string> {
-	public constructor(plugin: SlashCommanderPlugin) {
+	private command: SlashCommand | undefined;
+	private onSyncCallback: (() => void) | undefined;
+
+	public constructor(
+		plugin: SlashCommanderPlugin, 
+		command?: SlashCommand, 
+		onSync?: () => void
+	) {
 		super(plugin.app);
+		this.command = command;
+		this.onSyncCallback = onSync;
 		this.setPlaceholder(t("modals.new_icon.placeholder"));
 
 		this.setInstructions([
@@ -56,5 +70,12 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 		return item;
 	}
 
-	public onChooseItem(_: string, __: MouseEvent | KeyboardEvent): void {}
+	public onChooseItem(item: string, _: MouseEvent | KeyboardEvent): void {
+		if (this.command) {
+			this.command.icon = item;
+			if (this.onSyncCallback) {
+				this.onSyncCallback();
+			}
+		}
+	}
 }

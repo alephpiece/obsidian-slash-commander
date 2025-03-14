@@ -1,33 +1,27 @@
 import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import CommandStore from "@/data/stores/CommandStore";
-import SlashCommanderPlugin from "@/main";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { chooseNewCommand } from "@/services/utils/util";
-
-export interface CommandToolsProps {
-	plugin: SlashCommanderPlugin;
-	manager: CommandStore;
-	setState: () => void;
-}
+import { useCommandContext } from "@/ui/contexts/CommandContext";
 
 /**
  * Render the command list tools (full version).
- * @param plugin - The plugin instance.
- * @param manager - The command manager instance.
- * @param setState - The state updater function.
- * @returns The rendered command list tools.
+ * Uses Context API for accessing plugin, store and sync functions.
  */
-export function CommandTools({ plugin, manager, setState }: CommandToolsProps): ReactElement {
+export function CommandTools(): ReactElement {
 	const { t } = useTranslation();
+	const { plugin, store, syncCommands } = useCommandContext();
+	
 	return (
 		<div className="cmdr-add-new-wrapper">
 			<button
 				className="mod-cta"
 				onClick={async (): Promise<void> => {
 					const pair = await chooseNewCommand(plugin);
-					await manager.addCommand(pair);
-					setState();
+					if (pair) {
+						await store.addCommand(pair);
+						// store.addCommand 会触发 'changed' 事件，Context 会自动更新
+					}
 				}}
 			>
 				{t("bindings.add")}
@@ -38,8 +32,8 @@ export function CommandTools({ plugin, manager, setState }: CommandToolsProps): 
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
-					await manager.restoreDefault();
-					setState();
+					await store.restoreDefault();
+					syncCommands();
 				}}
 			/>
 		</div>
@@ -48,17 +42,13 @@ export function CommandTools({ plugin, manager, setState }: CommandToolsProps): 
 
 /**
  * Render the command list tools (short version).
- * @param plugin - The plugin instance.
- * @param manager - The command manager instance.
- * @param setState - The state updater function.
- * @returns The rendered command list tools short.
+ * Uses Context API for accessing plugin, store and sync functions.
+ * This is a more compact version used in different contexts than CommandTools.
  */
-export function CommandToolsShort({
-	plugin,
-	manager,
-	setState,
-}: CommandToolsProps): ReactElement {
+export function CommandToolsShort(): ReactElement {
 	const { t } = useTranslation();
+	const { plugin, store, syncCommands } = useCommandContext();
+	
 	return (
 		<div className="cmdr-add-new-wrapper">
 			<ObsidianIcon
@@ -68,8 +58,8 @@ export function CommandToolsShort({
 				aria-label={t("bindings.add")}
 				onClick={async (): Promise<void> => {
 					const pair = await chooseNewCommand(plugin);
-					await manager.addCommand(pair);
-					setState();
+					await store.addCommand(pair);
+					syncCommands();
 				}}
 			/>
 			<ObsidianIcon
@@ -78,8 +68,8 @@ export function CommandToolsShort({
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
-					await manager.restoreDefault();
-					setState();
+					await store.restoreDefault();
+					syncCommands();
 				}}
 			/>
 		</div>

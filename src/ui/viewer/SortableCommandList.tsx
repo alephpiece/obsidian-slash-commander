@@ -1,32 +1,21 @@
 import { ReactElement } from "react";
 import { ReactSortable } from "react-sortablejs";
-import SlashCommanderPlugin from "@/main";
 import { SlashCommand, isCommandGroup } from "@/data/models/SlashCommand";
 import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
 import { CommandViewerItemGroup } from "@/ui/viewer/CommandViewerItemGroup";
-
-interface SortableCommandListProps {
-	plugin: SlashCommanderPlugin;
-	commands: SlashCommand[];
-	setState: (commands: SlashCommand[]) => void;
-}
+import { useCommandContext } from "@/ui/contexts/CommandContext";
 
 /**
  * Render a sortable list of command components.
- * @param plugin - The plugin instance.
- * @param commands - The commands to render.
- * @param setState - The state updater function.
- * @returns The rendered sortable command list.
+ * Uses Context API for accessing commands and update functions.
  */
-export function SortableCommandList({
-	plugin,
-	commands,
-	setState,
-}: SortableCommandListProps): ReactElement {
+export function SortableCommandList(): ReactElement {
+	const { commands, updateCommands, plugin, syncCommands } = useCommandContext();
+	
 	return (
 		<ReactSortable
 			list={commands}
-			setList={(newState): void => setState(newState)}
+			setList={(newState): void => updateCommands(newState)}
 			group="root"
 			delay={100}
 			delayOnTouchOnly={true}
@@ -39,10 +28,11 @@ export function SortableCommandList({
 			onSort={({ oldIndex, newIndex, from, to }): void => {
 				if (oldIndex === undefined || newIndex === undefined) return;
 				if (from === to) {
-					const [removed] = commands.splice(oldIndex, 1);
-					commands.splice(newIndex, 0, removed);
+					const newCommands = [...commands];
+					const [removed] = newCommands.splice(oldIndex, 1);
+					newCommands.splice(newIndex, 0, removed);
 					plugin.saveSettings();
-					setState(commands);
+					updateCommands(newCommands);
 				}
 			}}
 		>
@@ -51,32 +41,14 @@ export function SortableCommandList({
 					<CommandViewerItemGroup
 						key={cmd.id}
 						cmd={cmd}
-						plugin={plugin}
-						parentCommands={commands}
-						setState={setState}
 					/>
 				) : (
 					<CommandViewerItem
 						key={cmd.id}
 						cmd={cmd}
-						plugin={plugin}
-						commands={commands}
-						setState={(): void => syncCommands(plugin, commands, setState)}
 					/>
 				);
 			})}
 		</ReactSortable>
 	);
-}
-
-/**
- * Helper function to sync commands with the plugin settings
- */
-function syncCommands(
-	plugin: SlashCommanderPlugin, 
-	commands: SlashCommand[], 
-	setState: (commands: SlashCommand[]) => void
-): void {
-	plugin.saveSettings();
-	setState([...commands]);
 } 
