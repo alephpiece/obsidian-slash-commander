@@ -39,17 +39,27 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 					<ReactSortable
 						list={childCommands}
 						setList={(newState): void => {
-							// Update only the child commands
+							// Update depth for all child commands
+							const updatedChildCommands = newState.map(childCmd => ({
+								...childCmd,
+								depth: 1 // Child commands are at depth 1
+							}));
+
+							// Update the parent's children array
+							const updatedCmd = {
+								...cmd,
+								children: updatedChildCommands
+							};
+
+							// Update only the parent command and its children
 							const newCommands = [...commands];
-							const childIds = childCommands.map(c => c.id);
+							const commandIndex = newCommands.findIndex(c => c.id === cmd.id);
+							
+							if (commandIndex !== -1) {
+								newCommands[commandIndex] = updatedCmd;
+							}
 
-							// Remove old children
-							const withoutChildren = newCommands.filter(
-								c => !childIds.includes(c.id)
-							);
-
-							// Add updated children
-							updateCommands([...withoutChildren, ...newState]);
+							updateCommands(newCommands);
 						}}
 						group="commands"
 						delay={100}
@@ -67,18 +77,28 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 								const [removed] = newChildCommands.splice(oldIndex, 1);
 								newChildCommands.splice(newIndex, 0, removed);
 
-								// Update only the child commands
+								// Update depth for all child commands
+								const updatedChildCommands = newChildCommands.map(childCmd => ({
+									...childCmd,
+									depth: 1 // Child commands are at depth 1
+								}));
+
+								// Update the parent's children array
+								const updatedCmd = {
+									...cmd,
+									children: updatedChildCommands
+								};
+
+								// Update only the parent command 
 								const newCommands = [...commands];
-								const childIds = childCommands.map(c => c.id);
+								const commandIndex = newCommands.findIndex(c => c.id === cmd.id);
+								
+								if (commandIndex !== -1) {
+									newCommands[commandIndex] = updatedCmd;
+								}
 
-								// Remove old children
-								const withoutChildren = newCommands.filter(
-									c => !childIds.includes(c.id)
-								);
-
-								// Add updated children
 								plugin?.saveSettings();
-								updateCommands([...withoutChildren, ...newChildCommands]);
+								updateCommands(newCommands);
 							}
 						}}
 					>

@@ -503,6 +503,7 @@ export default class BindingEditorModal extends Modal {
 			name: name,
 			mode: this.deviceMode,
 			triggerMode: this.triggerMode,
+			depth: 0, // Set as root level command by default
 		};
 
 		if (this.resolve) {

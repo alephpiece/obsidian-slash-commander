@@ -4,7 +4,6 @@ import {
 	SlashCommand,
 	isCommandActive,
 	isValidSuggestItem,
-	getChildCommands,
 } from "@/data/models/SlashCommand";
 
 // Simple EventEmitter implementation
@@ -52,36 +51,12 @@ export default class CommandStore extends EventEmitter {
 		this.initializeFromSettings();
 	}
 
-	// Build the tree structure from flat commands array
-	private buildTreeStructure(): void {
-		// Clear existing children arrays
-		this.commands.forEach(cmd => {
-			cmd.children = [];
-		});
-
-		// Build parent-child relationships
-		this.commands.forEach(cmd => {
-			if (cmd.parentId) {
-				const parent = this.commandIndex.get(cmd.parentId);
-				if (parent) {
-					if (!parent.children) {
-						parent.children = [];
-					}
-					parent.children.push(cmd);
-				}
-			}
-		});
-	}
-
-	// Rebuild the index mapping completely
+	// Update the command index mapping
 	private rebuildCommandIndex(): void {
 		this.commandIndex.clear();
 		this.commands.forEach(cmd => {
 			this.commandIndex.set(cmd.id, cmd);
 		});
-
-		// Build tree structure after updating index
-		this.buildTreeStructure();
 	}
 
 	// Get command by ID using the index map
@@ -95,7 +70,7 @@ export default class CommandStore extends EventEmitter {
 		// Initialize commands array
 		this.commands = [...bindings];
 
-		// Build the index and tree structure
+		// Build the index
 		this.rebuildCommandIndex();
 
 		// Initialize registered commands
@@ -151,7 +126,7 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public getRootCommands(): SlashCommand[] {
-		return this.getAllCommands().filter(cmd => !cmd.parentId);
+		return this.getAllCommands().filter(cmd => cmd.depth === 0 || cmd.depth === undefined);
 	}
 
 	public getCommandChildren(parentId: string): SlashCommand[] {
@@ -183,24 +158,16 @@ export default class CommandStore extends EventEmitter {
 		if (!scmd.children) {
 			scmd.children = [];
 		}
-
-		// Add to the array
-		this.commands.push(scmd);
-
-		// Update index and tree structure
-		this.commandIndex.set(scmd.id, scmd);
-
-		// If this command has a parent, add it to parent's children
-		if (scmd.parentId) {
-			const parent = this.getCommandById(scmd.parentId);
-			if (parent) {
-				if (!parent.children) {
-					parent.children = [];
-				}
-				parent.children.push(scmd);
-			}
+		
+		// Set depth to 0 (root level) if not specified
+		if (scmd.depth === undefined) {
+			scmd.depth = 0;
 		}
 
+		// Add to the array and index
+		this.commands.push(scmd);
+		this.commandIndex.set(scmd.id, scmd);
+		
 		if (newlyAdded) {
 			await this.commitChanges();
 		}
@@ -211,24 +178,21 @@ export default class CommandStore extends EventEmitter {
 		if (!command) return;
 
 		// Recursively remove child commands
-		if (command.children) {
+		if (command.children && command.children.length > 0) {
 			for (const child of [...command.children]) {
 				await this.removeCommand(child.id, false);
 			}
 		}
 
-		// Remove from parent's children array if it has a parent
-		if (command.parentId) {
-			const parent = this.getCommandById(command.parentId);
-			if (parent && parent.children) {
-				parent.children = parent.children.filter(child => child.id !== commandId);
+		// Remove command from parent's children array
+		for (const cmd of this.commands) {
+			if (cmd.children) {
+				cmd.children = cmd.children.filter(child => child.id !== commandId);
 			}
 		}
 
-		// Remove from array
+		// Remove from array and index
 		this.commands = this.commands.filter(cmd => cmd.id !== commandId);
-
-		// Remove from index
 		this.commandIndex.delete(commandId);
 
 		if (save) {
@@ -236,36 +200,35 @@ export default class CommandStore extends EventEmitter {
 		}
 	}
 
-	public async moveCommand(commandId: string, newParentId?: string): Promise<void> {
+	public async moveCommand(commandId: string, targetDepth: number = 0, targetParentId?: string): Promise<void> {
 		const command = this.getCommandById(commandId);
 		if (!command) return;
 
-		// Remove from old parent's children array
-		if (command.parentId) {
-			const oldParent = this.getCommandById(command.parentId);
-			if (oldParent && oldParent.children) {
-				oldParent.children = oldParent.children.filter(child => child.id !== commandId);
+		// Remove this command from any parent's children array
+		for (const cmd of this.commands) {
+			if (cmd.children) {
+				cmd.children = cmd.children.filter(child => child.id !== commandId);
 			}
 		}
 
-		// Update parent ID
-		command.parentId = newParentId;
+		// Update depth
+		command.depth = targetDepth;
 
-		// Add to new parent's children array
-		if (newParentId) {
-			const newParent = this.getCommandById(newParentId);
-			if (newParent) {
-				if (!newParent.children) {
-					newParent.children = [];
+		// Add to target parent's children if specified
+		if (targetParentId) {
+			const targetParent = this.getCommandById(targetParentId);
+			if (targetParent) {
+				if (!targetParent.children) {
+					targetParent.children = [];
 				}
-				newParent.children.push(command);
+				targetParent.children.push(command);
 			}
 		}
 
 		await this.commitChanges();
 	}
 
-	// Update entire command structure (used for drag-drop operations)
+	// Update entire command structure
 	public async updateStructure(commands: SlashCommand[]): Promise<void> {
 		this.commands = [...commands];
 		this.rebuildCommandIndex();
@@ -276,6 +239,7 @@ export default class CommandStore extends EventEmitter {
 		this.commands = DEFAULT_SETTINGS.bindings.map(cmd => {
 			const newCmd: SlashCommand = { ...cmd };
 			newCmd.children = [];
+			newCmd.depth = 0;
 			return newCmd;
 		});
 

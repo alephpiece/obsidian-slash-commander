@@ -17,7 +17,14 @@ export function SortableCommandList(): ReactElement {
 	return (
 		<ReactSortable
 			list={commands}
-			setList={(newState): void => updateCommands(newState)}
+			setList={(newState): void => {
+				// Ensure all root commands have depth=0
+				const updatedState = newState.map(cmd => ({
+					...cmd,
+					depth: 0
+				}));
+				updateCommands(updatedState);
+			}}
 			group="root"
 			delay={100}
 			delayOnTouchOnly={true}
@@ -33,8 +40,15 @@ export function SortableCommandList(): ReactElement {
 					const newCommands = [...commands];
 					const [removed] = newCommands.splice(oldIndex, 1);
 					newCommands.splice(newIndex, 0, removed);
+					
+					// Ensure all commands at root level have depth=0
+					const updatedCommands = newCommands.map(cmd => ({
+						...cmd,
+						depth: 0
+					}));
+					
 					plugin?.saveSettings();
-					updateCommands(newCommands);
+					updateCommands(updatedCommands);
 				}
 			}}
 		>

@@ -3,6 +3,7 @@ import { SlashCommand, isParentCommand, isDeviceValid } from "@/data/models/Slas
 import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
+import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 import { usePlugin, useCommandStore } from "@/data/hooks/useCommandStore";
 
 export interface CommandViewerItemProps {
@@ -25,6 +26,7 @@ export function CommandViewerItem({
 }: CommandViewerItemProps): ReactElement | null {
 	const plugin = usePlugin();
 	const syncCommands = useCommandStore(state => state.syncCommands);
+	const store = useCommandStore(state => state.store);
 
 	// Skip rendering if command is not valid for current device or plugin is not available
 	if (!plugin || !isDeviceValid(plugin, cmd.mode)) {
@@ -60,6 +62,26 @@ export function CommandViewerItem({
 						(modes.indexOf(cmd.triggerMode ?? "anywhere") + 1) % modes.length;
 					cmd.triggerMode = mode || modes[nextIndex];
 					syncCommands();
+				}}
+				handleAddChild={async (): Promise<void> => {
+					if (plugin && store) {
+						const newCommand = await new BindingEditorModal(plugin).awaitSelection();
+						if (newCommand) {
+							// Set depth for new child command
+							newCommand.depth = 1;
+							
+							// Add to store
+							await store.addCommand(newCommand, false);
+							
+							// Update parent's children array
+							if (!cmd.children) {
+								cmd.children = [];
+							}
+							cmd.children.push(newCommand);
+							
+							await syncCommands();
+						}
+					}
 				}}
 				isCollapsed={isCollapsed}
 				handleCollapse={onCollapse}

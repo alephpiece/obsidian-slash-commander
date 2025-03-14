@@ -12,8 +12,8 @@ export interface SlashCommand {
 	triggerMode?: TriggerMode;
 	color?: string;
 
-	// Field for command groups
-	parentId?: string;
+	// Depth level in command hierarchy (0 = root level)
+	depth?: number;
 
 	// Direct reference to child commands for tree structure
 	children?: SlashCommand[];
@@ -54,20 +54,28 @@ export function getCommandSourceName(plugin: SlashCommanderPlugin, cmd: Command)
 export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
 	const settings = plugin.settingsStore.getSettings();
 	const commands = settings.bindings;
-
-	// Get all active commands including children
-	const activeCommands = commands.filter(cmd => isCommandActive(plugin, cmd));
-	const activeCommandsWithChildren = activeCommands.flatMap(cmd => [
-		cmd,
-		...getChildCommands(commands, cmd.id),
-	]);
-
-	const matches = activeCommandsWithChildren.filter(cmd => cmd.name === scmd.name);
+	
+	// Find all active commands with matching name
+	const matches: SlashCommand[] = [];
+	
+	function findMatches(cmds: SlashCommand[]): void {
+		for (const cmd of cmds) {
+			if (isCommandActive(plugin, cmd) && cmd.name === scmd.name) {
+				matches.push(cmd);
+			}
+			
+			if (cmd.children?.length) {
+				findMatches(cmd.children);
+			}
+		}
+	}
+	
+	findMatches(commands);
 	return matches.length === 1;
 }
 
 export function isParentCommand(scmd: SlashCommand): boolean {
-	return scmd.parentId === undefined;
+	return scmd.depth === 0 || scmd.depth === undefined;
 }
 
 export function isCommandGroup(scmd: SlashCommand): boolean {
@@ -75,10 +83,20 @@ export function isCommandGroup(scmd: SlashCommand): boolean {
 }
 
 export function getChildCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
-	return commands.filter(cmd => cmd.parentId === parentId);
+	const parentCmd = commands.find(cmd => cmd.id === parentId);
+	return parentCmd?.children || [];
 }
 
-export function getDescendantCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
-	const children = getChildCommands(commands, parentId);
-	return children.concat(...children.flatMap(child => getDescendantCommands(commands, child.id)));
+/**
+ * Generates a new command with default values and optional overrides
+ */
+export function generateNewCommand(options: Partial<SlashCommand> = {}): SlashCommand {
+	return {
+		id: crypto.randomUUID(),
+		name: "New Command",
+		icon: "command",
+		depth: 0,
+		children: [],
+		...options
+	};
 }
