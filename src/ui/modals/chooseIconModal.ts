@@ -16,7 +16,7 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 		super(plugin.app);
 		this.command = command;
 		this.onSyncCallback = onSync;
-		this.setPlaceholder(t("modals.new_icon.placeholder"));
+		this.setPlaceholder(t("modals.bind.icon.placeholder"));
 
 		this.setInstructions([
 			{

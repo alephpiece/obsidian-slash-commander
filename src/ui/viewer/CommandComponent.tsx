@@ -9,7 +9,6 @@ import {
 } from "@/data/models/SlashCommand";
 import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
-import MobileModifyModal from "@/ui/modals/mobileModifyModal";
 import { useTranslation } from "react-i18next";
 
 export interface CommandProps {
@@ -53,131 +52,85 @@ export function CommandComponent({
 	const { deviceModeIcon, deviceModeName } = getDeviceModeInfo(pair.mode);
 	const { triggerModeIcon, triggerModeName } = getTriggerModeInfo(pair.triggerMode);
 
-	if (Platform.isDesktop) {
-		return (
-			<div className="setting-item mod-toggle">
-				<ObsidianIcon
-					icon={pair.icon}
-					size="var(--icon-l)"
-					aria-label={t("bindings.icon.change")}
-					onClick={handleNewIcon}
-					className="cmdr-icon clickable-icon"
-				/>
-				<div className="setting-item-info">
-					<div className="setting-item-name">
-						<ChangeableText
-							ariaLabel={t("bindings.rename.doubleclick")}
-							handleChange={(e): void => {
-								handleRename(e.currentTarget.value);
-							}}
-							value={pair.name}
-						/>
-					</div>
-					{cmd && (
-						<div className="setting-item-description">
-							{t("bindings.source", {
-								plugin_name: getCommandSourceName(plugin, cmd),
-							})}
-							{pair.name !== cmd.name ? ` "${cmd.name}"` : "."}
-							{/* {" "} */}
-							{/* {isChecked
+	return (
+		<div className="setting-item mod-toggle">
+			<ObsidianIcon
+				icon={pair.icon}
+				size="var(--icon-l) + 4px"
+				aria-label={t("bindings.icon.change")}
+				onClick={handleNewIcon}
+				className="cmdr-icon clickable-icon"
+			/>
+			<div className="setting-item-info">
+				<div className="setting-item-name">
+					<ChangeableText
+						ariaLabel={t("bindings.rename.doubleclick")}
+						handleChange={(e): void => {
+							handleRename(e.currentTarget.value);
+						}}
+						value={pair.name}
+					/>
+				</div>
+				{cmd && Platform.isDesktop && (
+					<div className="setting-item-description">
+						{t("bindings.source", {
+							plugin_name: getCommandSourceName(plugin, cmd),
+						})}
+						{pair.name !== cmd.name ? ` "${cmd.name}"` : "."}
+						{/* {" "} */}
+						{/* {isChecked
 								? t(
 									"bindings.device_mode.warn"
 								)
 								: ""} */}
-						</div>
-					)}
-				</div>
-				<div className="setting-item-control">
-					{isCollapsed !== undefined && handleCollapse && (
-						<ObsidianIcon
-							icon={isCollapsed ? "chevron-right" : "chevron-down"}
-							className="cmdr-group-collapser-button clickable-icon"
-							onClick={handleCollapse}
-							aria-label={
-								isCollapsed
-									? t("bindings.group.expand")
-									: t("bindings.group.collapse")
-							}
-						/>
-					)}
-					{handleAddChild && (
-						<ObsidianIcon
-							icon="plus-circle"
-							className="setting-editor-extra-setting-button clickable-icon"
-							onClick={handleAddChild}
-							aria-label={t("bindings.add_child")}
-						/>
-					)}
-					<ObsidianIcon
-						icon={triggerModeIcon}
-						className="setting-editor-extra-setting-button clickable-icon"
-						onClick={(): void => handleTriggerModeChange()}
-						aria-label={t("bindings.trigger_mode.change", {
-							current_mode: triggerModeName,
-						})}
-					/>
-					<ObsidianIcon
-						icon={deviceModeIcon}
-						className="setting-editor-extra-setting-button clickable-icon"
-						onClick={(): void => handleDeviceModeChange()}
-						aria-label={t("bindings.device_mode.change", {
-							current_mode: deviceModeName,
-						})}
-					/>
-					<ObsidianIcon
-						icon="lucide-trash"
-						className="setting-editor-extra-setting-button clickable-icon"
-						style={{ color: "var(--text-error)" }}
-						onClick={handleRemove}
-						aria-label={t("common.delete")}
-					/>
-				</div>
+					</div>
+				)}
 			</div>
-		);
-	} else if (Platform.isMobile) {
-		const openMobileModifyModal = (): void => {
-			new MobileModifyModal(
-				plugin,
-				pair,
-				handleRename,
-				handleNewIcon,
-				handleDeviceModeChange,
-				handleTriggerModeChange
-			).open();
-		};
-
-		return (
-			<div className="mobile-option-setting-item">
-				<span className="mobile-option-setting-item-remove-icon" onClick={handleRemove}>
+			<div className="setting-item-control">
+				{isCollapsed !== undefined && handleCollapse && (
 					<ObsidianIcon
-						icon="minus-with-circle"
-						size="var(--icon-l)"
-						style={{ color: "var(--text-error)" }}
+						icon={isCollapsed ? "chevron-right" : "chevron-down"}
+						className="cmdr-group-collapser-button clickable-icon"
+						onClick={handleCollapse}
+						aria-label={
+							isCollapsed ? t("bindings.group.expand") : t("bindings.group.collapse")
+						}
 					/>
-				</span>
-				<span className="mobile-option-setting-item-option-icon">
+				)}
+				{handleAddChild && (
 					<ObsidianIcon
-						icon={pair.icon}
-						size="var(--icon-l)"
-						onClick={openMobileModifyModal}
+						icon="plus-circle"
+						className="setting-editor-extra-setting-button clickable-icon"
+						onClick={handleAddChild}
+						aria-label={t("bindings.add_child")}
 					/>
-				</span>
-				<span className="mobile-option-setting-item-name" onClick={openMobileModifyModal}>
-					{pair.name}
-				</span>
-				<span className="mobile-option-setting-item-option-icon">
-					<ObsidianIcon
-						icon="three-horizontal-bars"
-						className="clickable-icon"
-						onClick={openMobileModifyModal}
-					/>
-				</span>
+				)}
+				<ObsidianIcon
+					icon={triggerModeIcon}
+					className="setting-editor-extra-setting-button clickable-icon"
+					onClick={(): void => handleTriggerModeChange()}
+					aria-label={t("bindings.trigger_mode.change", {
+						current_mode: triggerModeName,
+					})}
+				/>
+				<ObsidianIcon
+					icon={deviceModeIcon}
+					className="setting-editor-extra-setting-button clickable-icon"
+					onClick={(): void => handleDeviceModeChange()}
+					aria-label={t("bindings.device_mode.change", {
+						current_mode: deviceModeName,
+					})}
+				/>
+				<ObsidianIcon
+					icon="lucide-trash"
+					className="setting-editor-extra-setting-button clickable-icon"
+					style={{ color: "var(--text-error)" }}
+					onClick={handleRemove}
+					aria-label={t("common.delete")}
+				/>
 			</div>
-		);
-	} else {
-		return <></>;
-	}
+		</div>
+	);
 }
 
 /**
@@ -232,53 +185,28 @@ function UnavailableCommandComponent({
 	handleRemove: () => void;
 }): ReactElement {
 	const { t } = useTranslation();
-	if (Platform.isDesktop) {
-		return (
-			<div className="setting-item mod-toggle">
+	return (
+		<div className="setting-item mod-toggle">
+			<ObsidianIcon
+				icon="alert-triangle"
+				size="var(--icon-l) + 4px"
+				className="cmdr-icon clickable-icon mod-warning"
+			/>
+			<div className="setting-item-info">
+				<div className="setting-item-name">{pair.name}</div>
+				<div className="setting-item-description">
+					{t("bindings.device_mode.unavailable")}
+				</div>
+			</div>
+			<div className="setting-item-control">
 				<ObsidianIcon
-					icon="alert-triangle"
-					size="var(--icon-m)"
-					className="cmdr-icon clickable-icon mod-warning"
+					icon="lucide-trash"
+					className="setting-editor-extra-setting-button clickable-icon"
+					style={{ color: "var(--text-error)" }}
+					onClick={handleRemove}
+					aria-label={t("common.delete")}
 				/>
-				<div className="setting-item-info">
-					<div className="setting-item-name">{pair.name}</div>
-					<div className="setting-item-description">
-						{t("bindings.device_mode.unavailable")}
-					</div>
-				</div>
-				<div className="setting-item-control">
-					<ObsidianIcon
-						icon="lucide-trash"
-						className="setting-editor-extra-setting-button clickable-icon"
-						style={{ color: "var(--text-error)" }}
-						onClick={handleRemove}
-						aria-label={t("common.delete")}
-					/>
-				</div>
 			</div>
-		);
-	} else if (Platform.isMobile) {
-		return (
-			<div
-				className="mobile-option-setting-item"
-				onClick={(): void => {
-					new Notice(t("bindings.device_mode.unavailable"));
-				}}
-			>
-				<span className="mobile-option-setting-item-remove-icon" onClick={handleRemove}>
-					<ObsidianIcon
-						icon="minus-with-circle"
-						size="var(--icon-l)"
-						style={{ color: "var(--text-error)" }}
-					/>
-				</span>
-				<span className="mobile-option-setting-item-option-icon mod-warning">
-					<ObsidianIcon icon="alert-triangle" size="var(--icon-l)" />
-				</span>
-				<span className="mobile-option-setting-item-name">{pair.name}</span>
-			</div>
-		);
-	} else {
-		return <></>;
-	}
+		</div>
+	);
 }

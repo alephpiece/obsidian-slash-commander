@@ -64,7 +64,8 @@ export default function TriggerViewer({ plugin, children }: TriggerViewerProps):
 					/>
 					<ObsidianIcon
 						className="cmdr-icon clickable-icon"
-						icon="trash-2"
+						style={{ color: "var(--text-error)" }}
+						icon="lucide-trash"
 						size="var(--icon-s)"
 						aria-label={t("common.delete")}
 						onClick={(): void => {

@@ -10,7 +10,7 @@ export default class ChooseCustomNameModal extends SuggestModal<string> {
 		private defaultName: string
 	) {
 		super(plugin.app);
-		this.setPlaceholder(t("modals.new_name.placeholder"));
+		this.setPlaceholder(t("modals.bind.name.placeholder"));
 		this.resultContainerEl.style.display = "none";
 
 		this.setInstructions([

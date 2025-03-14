@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
-import { chooseNewCommand } from "@/services/utils/util";
 import { usePlugin, useStore } from "@/data/hooks/useCommandStore";
 import ConfirmRestoreModal from "@/ui/modals/confirmRestoreModal";
+import AddBindingModal from "@/ui/bind/AddBindingModal";
 
 /**
  * Render the command list tools (full version).
@@ -28,9 +28,9 @@ export function CommandViewerToolsBottom(): ReactElement {
 				className="mod-cta"
 				onClick={async (): Promise<void> => {
 					if (plugin) {
-						const pair = await chooseNewCommand(plugin);
-						if (pair && store) {
-							await store.addCommand(pair);
+						const command = await new AddBindingModal(plugin).awaitSelection();
+						if (command && store) {
+							await store.addCommand(command);
 						}
 					}
 				}}
@@ -75,9 +75,9 @@ export function CommandViewerToolsBar(): ReactElement {
 				aria-label={t("bindings.add")}
 				onClick={async (): Promise<void> => {
 					if (plugin) {
-						const pair = await chooseNewCommand(plugin);
-						if (pair && store) {
-							await store.addCommand(pair);
+						const command = await new AddBindingModal(plugin).awaitSelection();
+						if (command && store) {
+							await store.addCommand(command);
 						}
 					}
 				}}

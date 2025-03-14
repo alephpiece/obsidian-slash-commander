@@ -52,7 +52,7 @@ export default function MobileModifyComponent({
 				<input
 					onBlur={handleNameChange}
 					type="text"
-					placeholder={t("modals.new_name.placeholder")}
+					placeholder={t("modals.bind.name.placeholder")}
 					value={controller.pair.name}
 				/>
 			</div>
