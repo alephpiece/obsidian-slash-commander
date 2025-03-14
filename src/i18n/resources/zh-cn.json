@@ -11,7 +11,7 @@
 		"bindings.device_mode.mobile": "移动端",
 		"bindings.device_mode.this.detail": "仅添加命令到此设备",
 		"bindings.device_mode.this": "此设备",
-		"bindings.device_mode.unavailable": "该命令在此设备上不可用。",
+		"bindings.device_mode.unavailable": "该命令目前不可用。",
 		"bindings.device_mode.warn": "警告：该命令可能无法适用于所有情况。",
 		"bindings.group.collapse": "折叠",
 		"bindings.group.expand": "展开",

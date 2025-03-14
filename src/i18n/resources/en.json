@@ -11,7 +11,7 @@
 		"bindings.device_mode.mobile": "Mobile",
 		"bindings.device_mode.this.detail": "Add command only to this device",
 		"bindings.device_mode.this": "This device",
-		"bindings.device_mode.unavailable": "This command is not available on this device.",
+		"bindings.device_mode.unavailable": "This command is not available currently.",
 		"bindings.device_mode.warn": "Warning: This command might not run under every circumstance.",
 		"bindings.group.collapse": "Collapse",
 		"bindings.group.expand": "Expand",

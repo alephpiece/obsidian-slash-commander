@@ -11,7 +11,7 @@
 		"bindings.device_mode.mobile": "Мобильное устройство",
 		"bindings.device_mode.this.detail": "Добавить команду только для этого устройства",
 		"bindings.device_mode.this": "Это устройство",
-		"bindings.device_mode.unavailable": "Эта команда недоступна на данном устройстве.",
+		"bindings.device_mode.unavailable": "Эта команда сейчас недоступна.",
 		"bindings.device_mode.warn": "Предупреждение: эта команда может работать не при всех обстоятельствах.",
 		"bindings.group.collapse": "Свернуть",
 		"bindings.group.expand": "Развернуть",

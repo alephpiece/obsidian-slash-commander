@@ -11,7 +11,7 @@
 		"bindings.device_mode.mobile": "モバイル端",
 		"bindings.device_mode.this.detail": "このデバイスのみにコマンドを追加",
 		"bindings.device_mode.this": "このデバイス",
-		"bindings.device_mode.unavailable": "このコマンドは現在のデバイスでは利用できません。",
+		"bindings.device_mode.unavailable": "このコマンドは現在利用できません。",
 		"bindings.device_mode.warn": "警告: このコマンドはすべての状況で実行できるとは限りません。",
 		"bindings.group.collapse": "折り畳む",
 		"bindings.group.expand": "展開",
