@@ -872,3 +872,17 @@
 		}
 	}
 }
+
+/* Title with tip container */
+.cmdr-setting-title-with-tip {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* Tip text styling */
+.cmdr-setting-item-tip {
+	font-size: 0.8em;
+	color: var(--text-muted);
+	font-style: italic;
+}

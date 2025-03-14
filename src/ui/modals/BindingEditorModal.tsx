@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FuzzyMatch, Modal, setIcon } from "obsidian";
-import { SlashCommand, DeviceMode, TriggerMode } from "@/data/models/SlashCommand";
+import { SlashCommand, DeviceMode, TriggerMode, isCommandGroup } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
 import { ICON_LIST } from "@/data/constants/icons";
@@ -20,6 +20,7 @@ export default class BindingEditorModal extends Modal {
 	private filteredIcons: string[] = [];
 	private iconSearchValue = "";
 
+	private isGroup = false;
 	private name = "";
 	private selectedCommand: Command | null = null;
 	private selectedIcon = "";
@@ -42,6 +43,7 @@ export default class BindingEditorModal extends Modal {
 			this.selectedIcon = existingCommand.icon;
 			this.triggerMode = existingCommand.triggerMode || "anywhere";
 			this.deviceMode = existingCommand.mode || "any";
+			this.isGroup = isCommandGroup(existingCommand);
 			
 			// Find the command by ID to populate selectedCommand
 			this.selectedCommand = this.commands.find(cmd => cmd.id === existingCommand.id) || null;
@@ -66,6 +68,9 @@ export default class BindingEditorModal extends Modal {
 		contentEl.createEl("h2", { 
 			text: isEditing ? t("modals.bind.title_edit") : t("modals.bind.title_add") 
 		});
+
+		// Command group switch
+		this.createGroupSwitch(contentEl);
 
 		// Name field
 		this.createNameField(contentEl);
@@ -103,6 +108,9 @@ export default class BindingEditorModal extends Modal {
 			}
 			this.close();
 		});
+		
+		// 确保初始状态的提示显示正确
+		this.updateCommandFieldTip();
 	}
 
 	onClose() {
@@ -116,6 +124,38 @@ export default class BindingEditorModal extends Modal {
 			this.reject = null;
 			this.resolve = null;
 		}
+	}
+
+	private createGroupSwitch(container: HTMLElement) {
+		const wrapper = container.createDiv({ cls: "cmdr-setting-item mod-toggle" });
+		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
+		
+		// Add label for group switch
+		titleContainer.createDiv({ 
+			cls: "cmdr-setting-item-name", 
+			text: t("modals.bind.is_group.field") 
+		});
+		
+		// Add toggle to the same line as text (as a child of titleContainer)
+		const toggleEl = titleContainer.createDiv({ 
+			cls: `checkbox-container ${this.isGroup ? "is-enabled" : ""}`,
+			attr: { style: "margin-left: auto;" } // Position toggle to the right
+		});
+		
+		// Handle click on toggle
+		toggleEl.addEventListener("click", () => {
+			this.isGroup = !this.isGroup;
+			
+			// Update toggle appearance
+			if (this.isGroup) {
+				toggleEl.addClass("is-enabled");
+			} else {
+				toggleEl.removeClass("is-enabled");
+			}
+			
+			// Update command field tip visibility
+			this.updateCommandFieldTip();
+		});
 	}
 
 	private createNameField(container: HTMLElement) {
@@ -146,7 +186,22 @@ export default class BindingEditorModal extends Modal {
 	private createCommandField(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		titleContainer.createDiv({ cls: "cmdr-setting-item-name", text: t("modals.bind.command.field") });
+		
+		// Create container for title and optional tip
+		const titleWithTip = titleContainer.createDiv({ cls: "cmdr-setting-title-with-tip" });
+		titleWithTip.createDiv({ 
+			cls: "cmdr-setting-item-name", 
+			text: t("modals.bind.command.field") 
+		});
+		
+		// Add optional tip text (initially may be hidden)
+		const tipEl = titleWithTip.createDiv({ 
+			cls: "cmdr-setting-item-tip",
+			text: t("modals.bind.command.tip_optional"),
+			attr: { 
+				style: this.isGroup ? "display: inline;" : "display: none;" 
+			}
+		});
 		
 		const suggestWrapper = wrapper.createDiv({ cls: "cmdr-suggest-wrapper" });
 		const input = suggestWrapper.createEl("input", {
@@ -468,11 +523,11 @@ export default class BindingEditorModal extends Modal {
 		this.clearAllErrors();
 		let isValid = true;
 
-		// Validate command
-		if (!this.selectedCommand) {
+		// Validate command (not required for command groups)
+		if (!this.isGroup && !this.selectedCommand) {
 			const commandWrapper = this.contentEl.querySelectorAll(
 				".cmdr-setting-item"
-			)[1] as HTMLElement;
+			)[2] as HTMLElement;
 			this.setError("command", t("modals.bind.command.required"), commandWrapper);
 			isValid = false;
 		}
@@ -481,7 +536,7 @@ export default class BindingEditorModal extends Modal {
 		if (!this.selectedIcon) {
 			const iconWrapper = this.contentEl.querySelectorAll(
 				".cmdr-setting-item"
-			)[2] as HTMLElement;
+			)[3] as HTMLElement;
 			this.setError("icon", t("modals.bind.icon.required"), iconWrapper);
 			isValid = false;
 		}
@@ -495,15 +550,24 @@ export default class BindingEditorModal extends Modal {
 			return;
 		}
 
-		const name = this.name || this.selectedCommand!.name;
+		const name = this.name || (this.selectedCommand ? this.selectedCommand.name : "New Group");
+		
+		let commandId = "";
+		if (this.selectedCommand) {
+			commandId = this.selectedCommand.id;
+		} else if (this.isGroup) {
+			// Generate a random ID for command groups if no command selected
+			commandId = crypto.randomUUID();
+		}
 
 		const newCommand: SlashCommand = {
-			id: this.selectedCommand!.id,
+			id: commandId,
 			icon: this.selectedIcon,
 			name: name,
 			mode: this.deviceMode,
 			triggerMode: this.triggerMode,
 			depth: 0, // Set as root level command by default
+			children: this.isGroup ? [] : undefined,
 		};
 
 		if (this.resolve) {
@@ -513,5 +577,14 @@ export default class BindingEditorModal extends Modal {
 		}
 
 		this.close();
+	}
+
+	// Method to update command field tip visibility
+	private updateCommandFieldTip(): void {
+		// Find the tip element
+		const tipEl = this.contentEl.querySelector(".cmdr-setting-item-tip") as HTMLElement;
+		if (tipEl) {
+			tipEl.style.display = this.isGroup ? "inline" : "none";
+		}
 	}
 }
