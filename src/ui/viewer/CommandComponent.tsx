@@ -74,7 +74,7 @@ export function CommandComponent({
 						value={pair.name}
 					/>
 				</div>
-				{cmd && Platform.isDesktop && (
+				{cmd && Platform.isDesktop && !isCommandGroup(pair) && (
 					<div className="setting-item-description">
 						{t("bindings.source", {
 							plugin_name: getCommandSourceName(plugin, cmd),
@@ -124,7 +124,7 @@ export function CommandComponent({
 									pair.icon = updatedCommand.icon;
 									pair.mode = updatedCommand.mode;
 									pair.triggerMode = updatedCommand.triggerMode;
-									
+
 									// Sync changes
 									handleRename(updatedCommand.name);
 								}
@@ -133,24 +133,26 @@ export function CommandComponent({
 						aria-label={t("bindings.edit")}
 					/>
 				) : (
-					<>
-						<ObsidianIcon
-							icon={triggerModeIcon}
-							className="setting-editor-extra-setting-button clickable-icon"
-							onClick={(): void => handleTriggerModeChange()}
-							aria-label={t("bindings.trigger_mode.change", {
-								current_mode: triggerModeName,
-							})}
-						/>
-						<ObsidianIcon
-							icon={deviceModeIcon}
-							className="setting-editor-extra-setting-button clickable-icon"
-							onClick={(): void => handleDeviceModeChange()}
-							aria-label={t("bindings.device_mode.change", {
-								current_mode: deviceModeName,
-							})}
-						/>
-					</>
+					!isCommandGroup(pair) && (
+						<>
+							<ObsidianIcon
+								icon={triggerModeIcon}
+								className="setting-editor-extra-setting-button clickable-icon"
+								onClick={(): void => handleTriggerModeChange()}
+								aria-label={t("bindings.trigger_mode.change", {
+									current_mode: triggerModeName,
+								})}
+							/>
+							<ObsidianIcon
+								icon={deviceModeIcon}
+								className="setting-editor-extra-setting-button clickable-icon"
+								onClick={(): void => handleDeviceModeChange()}
+								aria-label={t("bindings.device_mode.change", {
+									current_mode: deviceModeName,
+								})}
+							/>
+						</>
+					)
 				)}
 				<ObsidianIcon
 					icon="lucide-trash"
