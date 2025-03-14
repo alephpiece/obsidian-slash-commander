@@ -10,6 +10,7 @@ import {
 import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { useTranslation } from "react-i18next";
+import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils/util";
 
 export interface CommandProps {
 	plugin: SlashCommanderPlugin;
@@ -131,45 +132,6 @@ export function CommandComponent({
 			</div>
 		</div>
 	);
-}
-
-/**
- * Get the icon and name for the device mode.
- * @param mode - The device mode to get the icon and name for.
- */
-function getDeviceModeInfo(mode = "any"): { deviceModeIcon: string; deviceModeName: string } {
-	const { t } = useTranslation();
-	const icons: { [iconName: string]: string } = {
-		mobile: "smartphone",
-		desktop: "monitor",
-		any: "cmdr-all-devices",
-	};
-	const deviceModeIcon = icons[mode] ?? "airplay";
-	const deviceModeName = mode.match(/desktop|mobile|any/)
-		? t(`bindings.device_mode.${mode}`)
-		: t("bindings.device_mode.this");
-
-	return { deviceModeIcon, deviceModeName };
-}
-
-/**
- * Get the icon and name for the trigger mode.
- * @param mode - The trigger mode to get the icon and name for.
- */
-function getTriggerModeInfo(mode = "anywhere"): {
-	triggerModeIcon: string;
-	triggerModeName: string;
-} {
-	const { t } = useTranslation();
-	const icons: { [iconName: string]: string } = {
-		newline: "cmdr-triggered-newline",
-		inline: "cmdr-triggered-inline",
-		anywhere: "regex",
-	};
-	const triggerModeIcon = icons[mode] ?? "regex";
-	const triggerModeName = t(`bindings.trigger_mode.${mode}`);
-
-	return { triggerModeIcon, triggerModeName };
 }
 
 /**

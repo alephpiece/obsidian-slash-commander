@@ -766,9 +766,27 @@
 		}
 	}
 
+	.cmdr-setting-item-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px;
+	}
+
 	.cmdr-setting-item-name {
 		font-weight: 600;
-		margin-bottom: 8px;
+	}
+	
+	.cmdr-icon-preview {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-left: 8px;
+		
+		svg {
+			width: 20px;
+			height: 20px;
+		}
 	}
 
 	.cmdr-input {
