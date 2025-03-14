@@ -87,6 +87,10 @@
 		border-bottom: 1px solid var(--interactive-accent);
 		border-radius: 0;
 	}
+
+	&:hover {
+		background-color: var(--background-modifier-hover);
+	}
 }
 
 .cmdr-setting-content {

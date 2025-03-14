@@ -125,14 +125,13 @@ export function CommandComponent({
 							current_mode: deviceModeName,
 						})}
 					/>
-					<button
-						className="mod-warning"
-						style={{ display: "flex" }}
+					<ObsidianIcon
+						icon="lucide-trash"
+						className="setting-editor-extra-setting-button clickable-icon"
+						style={{ color: "var(--text-error)" }}
 						onClick={handleRemove}
 						aria-label={t("common.delete")}
-					>
-						<ObsidianIcon icon="lucide-trash" />
-					</button>
+					/>
 				</div>
 			</div>
 		);
@@ -248,14 +247,13 @@ function UnavailableCommandComponent({
 					</div>
 				</div>
 				<div className="setting-item-control">
-					<button
-						className="mod-warning"
-						style={{ display: "flex" }}
+					<ObsidianIcon
+						icon="lucide-trash"
+						className="setting-editor-extra-setting-button clickable-icon"
+						style={{ color: "var(--text-error)" }}
 						onClick={handleRemove}
 						aria-label={t("common.delete")}
-					>
-						<ObsidianIcon icon="lucide-trash" />
-					</button>
+					/>
 				</div>
 			</div>
 		);
