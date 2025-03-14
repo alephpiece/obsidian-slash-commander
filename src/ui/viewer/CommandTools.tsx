@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { chooseNewCommand } from "@/services/utils/util";
-import { useCommandStore } from "@/data/stores/useCommandStore";
+import { usePlugin, useStore } from "@/data/hooks/useCommandStore";
 
 /**
  * Render the command list tools (full version).
@@ -10,8 +10,8 @@ import { useCommandStore } from "@/data/stores/useCommandStore";
  */
 export function CommandTools(): ReactElement {
 	const { t } = useTranslation();
-	const plugin = useCommandStore(state => state.plugin);
-	const store = useCommandStore(state => state.store);
+	const plugin = usePlugin();
+	const store = useStore();
 	
 	return (
 		<div className="cmdr-add-new-wrapper">
@@ -53,8 +53,8 @@ export function CommandTools(): ReactElement {
  */
 export function CommandToolsShort(): ReactElement {
 	const { t } = useTranslation();
-	const plugin = useCommandStore(state => state.plugin);
-	const store = useCommandStore(state => state.store);
+	const plugin = usePlugin();
+	const store = useStore();
 	
 	return (
 		<div className="cmdr-add-new-wrapper">

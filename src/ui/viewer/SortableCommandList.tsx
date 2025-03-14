@@ -3,16 +3,16 @@ import { ReactSortable } from "react-sortablejs";
 import { SlashCommand, isCommandGroup } from "@/data/models/SlashCommand";
 import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
 import { CommandViewerItemGroup } from "@/ui/viewer/CommandViewerItemGroup";
-import { useCommandStore } from "@/data/stores/useCommandStore";
+import { useCommands, usePlugin, useCommandStore } from "@/data/hooks/useCommandStore";
 
 /**
  * Render a sortable list of command components.
  * Uses Zustand store for accessing commands and update functions.
  */
 export function SortableCommandList(): ReactElement {
-	const commands = useCommandStore((state) => state.commands);
+	const commands = useCommands();
 	const updateCommands = useCommandStore((state) => state.updateCommands);
-	const plugin = useCommandStore((state) => state.plugin);
+	const plugin = usePlugin();
 	
 	return (
 		<ReactSortable

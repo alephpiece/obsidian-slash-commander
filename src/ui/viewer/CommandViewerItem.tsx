@@ -3,7 +3,7 @@ import { SlashCommand, isParentCommand, isDeviceValid } from "@/data/models/Slas
 import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
-import { useCommandStore } from "@/data/stores/useCommandStore";
+import { usePlugin, useCommandStore } from "@/data/hooks/useCommandStore";
 
 export interface CommandViewerItemProps {
 	cmd: SlashCommand;
@@ -23,7 +23,7 @@ export function CommandViewerItem({
 	onCollapse,
 	isGroupDragging,
 }: CommandViewerItemProps): ReactElement | null {
-	const plugin = useCommandStore(state => state.plugin);
+	const plugin = usePlugin();
 	const syncCommands = useCommandStore(state => state.syncCommands);
 	
 	// Skip rendering if command is not valid for current device or plugin is not available

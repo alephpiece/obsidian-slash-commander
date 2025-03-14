@@ -2,7 +2,7 @@ import { ReactElement, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import { SlashCommand } from "@/data/models/SlashCommand";
 import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
-import { useCommandStore } from "@/data/stores/useCommandStore";
+import { useCommands, usePlugin, useCommandStore, useChildCommands } from "@/data/hooks/useCommandStore";
 
 interface CommandViewerItemGroupProps {
 	cmd: SlashCommand;
@@ -17,11 +17,12 @@ export function CommandViewerItemGroup({
 	cmd,
 }: CommandViewerItemGroupProps): ReactElement {
 	const [collapsed, setCollapsed] = useState(false);
-	const commands = useCommandStore(state => state.commands);
+	const commands = useCommands();
 	const updateCommands = useCommandStore(state => state.updateCommands);
-	const plugin = useCommandStore(state => state.plugin);
+	const plugin = usePlugin();
 	
-	const childCommands = commands.filter(c => c.parentId === cmd.id);
+	// Use the specialized hook for child commands
+	const childCommands = useChildCommands(cmd.id);
 
 	return (
 		<div className="cmdr-group-collapser" aria-expanded={!collapsed}>

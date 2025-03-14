@@ -10,12 +10,14 @@ import registerCustomIcons from "@/assets/icons";
 import CommandStore from "@/data/stores/CommandStore";
 import SettingsStore from "@/data/stores/SettingsStore";
 import i18n from "@/i18n"; // initialize i18n
+import { useCommandStore } from "@/data/hooks/useCommandStore";
 
 export default class SlashCommanderPlugin extends Plugin {
 	public settingsStore: SettingsStore;
 	public commandStore: CommandStore;
 	public scrollArea?: Element | undefined;
 	public menuSuggest?: MenuSuggest;
+	private storeUnsubscribe?: () => void;
 
 	public get settings(): CommanderSettings {
 		return this.settingsStore.getSettings();
@@ -44,6 +46,11 @@ export default class SlashCommanderPlugin extends Plugin {
 
 	private initializePlugin(): void {
 		this.commandStore = new CommandStore(this);
+
+		const { setPlugin, setStore, initialize } = useCommandStore.getState();
+		setPlugin(this);
+		this.storeUnsubscribe = setStore(this.commandStore);
+		initialize();
 
 		this.addCommand({
 			name: i18n.t("settings.open"),
@@ -82,6 +89,10 @@ export default class SlashCommanderPlugin extends Plugin {
 	public onunload(): void {
 		document.head.querySelector("style#cmdr")?.remove();
 		this.menuSuggest?.close();
+		
+		if (this.storeUnsubscribe) {
+			this.storeUnsubscribe();
+		}
 	}
 
 	public async saveSettings(): Promise<void> {
