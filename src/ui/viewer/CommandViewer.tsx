@@ -1,7 +1,15 @@
 import { Platform } from "obsidian";
-import { createContext, type ReactElement, useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { createContext, type ReactElement, useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Tree, NodeApi, NodeRendererProps } from "react-arborist";
+import {
+	UncontrolledTreeEnvironment,
+	Tree,
+	StaticTreeDataProvider,
+	TreeItem,
+	TreeItemIndex,
+	TreeRenderProps,
+	InteractionMode
+} from 'react-complex-tree';
 
 import {
 	SlashCommand,
@@ -13,6 +21,7 @@ import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
 import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
 import { CommandTools } from "@/ui/viewer/CommandTools";
+import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 
 export const CommandStoreContext = createContext<CommandStore>(null!);
 
@@ -21,26 +30,58 @@ interface CommandViewerProps {
 	plugin: SlashCommanderPlugin;
 }
 
-interface MoveParams {
-	dragIds: string[];
-	parentId: string | null;
-	index: number | undefined;
+// Define the tree item data structure
+interface CommandTreeItem extends TreeItem {
+	data: SlashCommand;
 }
 
-interface DropParams {
-	parentNode: NodeApi<SlashCommand> | null;
-	dragNodes: NodeApi<SlashCommand>[];
+type CommandTreeItems = Record<TreeItemIndex, CommandTreeItem>;
+
+/**
+ * Convert SlashCommand array to tree items format required by react-complex-tree
+ */
+function convertCommandsToTreeItems(commands: SlashCommand[]): CommandTreeItems {
+	const treeItems: CommandTreeItems = {
+		root: {
+			index: 'root',
+			isFolder: true,
+			children: [],
+			data: {
+				id: 'root',
+				name: 'Root',
+				icon: 'folder',
+				childrenIds: [],
+				children: []
+			}
+		}
+	};
+	
+	// Add all commands as tree items
+	commands.forEach(cmd => {
+		treeItems[cmd.id] = {
+			index: cmd.id,
+			isFolder: !!(cmd.children && cmd.children.length > 0),
+			children: cmd.children?.map(child => child.id) || [],
+			data: cmd
+		};
+	});
+	
+	// Set root node children
+	treeItems.root.children = commands
+		.filter(cmd => !cmd.parentId)
+		.map(cmd => cmd.id);
+		
+	return treeItems;
 }
 
 /**
  * CommandViewer component renders a tree of commands with drag-and-drop capabilities.
- * Uses react-arborist for efficient tree rendering and handling of drag-drop operations.
+ * Uses react-complex-tree for efficient tree rendering and handling of drag-drop operations.
  */
 export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
 	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.getAllCommands());
 	const { t } = useTranslation();
-	const treeRef = useRef<any>(null);
-
+	
 	// Subscribe to command store changes
 	useEffect(() => {
 		const handleStoreChange = (newCommands: SlashCommand[]): void => {
@@ -55,172 +96,154 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 			unsubscribe();
 		};
 	}, [manager]);
-
-	// Get root-level commands for the tree
-	const rootCommands = useMemo(() => 
-		commands.filter(cmd => !cmd.parentId),
+	
+	// Convert commands to tree items format
+	const treeItems = useMemo(() => 
+		convertCommandsToTreeItems(commands),
 		[commands]
 	);
 	
-	// Handle movement of commands in the tree
-	const handleMove = useCallback(async ({ dragIds, parentId, index }: MoveParams) => {
-		// Create a copy of the command list to work with
-		const updatedCommands = [...commands];
-		
-		// Get the dragged command
-		const draggedCmd = updatedCommands.find(cmd => cmd.id === dragIds[0]);
-		if (!draggedCmd) return;
-		
-		// Get the new parent command (if any)
-		const newParent = parentId 
-			? updatedCommands.find(cmd => cmd.id === parentId)
-			: null;
-		
-		// Prevent nested command groups
-		if (draggedCmd.childrenIds?.length && newParent?.childrenIds?.length) {
-			return;
-		}
-		
-		// Step 1: Remove from old parent's children array
-		if (draggedCmd.parentId) {
-			const oldParent = updatedCommands.find(cmd => cmd.id === draggedCmd.parentId);
-			if (oldParent && oldParent.childrenIds) {
-				oldParent.childrenIds = oldParent.childrenIds.filter(id => id !== draggedCmd.id);
-			}
-		}
-		
-		// Step 2: Handle the move based on the target location
-		if (newParent) {
-			// Moving to (or within) a parent
-			
-			// Update the parent ID
-			draggedCmd.parentId = newParent.id;
-			
-			// Ensure the parent has a childrenIds array
-			if (!newParent.childrenIds) {
-				newParent.childrenIds = [];
-			}
-			
-			// Determine where to insert the command
-			if (index === undefined) {
-				// If no index is provided, add to the end
-				newParent.childrenIds.push(draggedCmd.id);
-			} else {
-				// Insert at the specified index
-				newParent.childrenIds.splice(index, 0, draggedCmd.id);
-			}
-		} else {
-			// Moving to root level
-			
-			// Clear the parent ID
-			draggedCmd.parentId = undefined;
-			
-			// Get the root commands (excluding the dragged command if it was already at root)
-			const rootCmds = updatedCommands
-				.filter(cmd => !cmd.parentId && cmd.id !== draggedCmd.id);
-			
-			// Determine where to insert the command at root level
-			let insertAt = index ?? rootCmds.length;
-			
-			// Create a new order of root commands
-			const newRootOrder = [
-				...rootCmds.slice(0, insertAt),
-				draggedCmd,
-				...rootCmds.slice(insertAt)
-			];
-			
-			// Rebuild the full command list with the new root order
-			const childCmds = updatedCommands.filter(cmd => cmd.parentId);
-			updatedCommands.splice(0, updatedCommands.length, ...newRootOrder, ...childCmds);
-		}
-		
-		// Save the updated structure
-		await manager.updateStructure(updatedCommands);
-	}, [commands, manager]);
+	// Create data provider for the tree
+	const dataProvider = useMemo(() => 
+		new StaticTreeDataProvider(treeItems),
+		[treeItems]
+	);
 	
-	// Handle selection events from the tree
-	const handleSelect = useCallback((nodes: NodeApi<SlashCommand>[]) => {
-		// Optional: Handle selection behavior
-	}, []);
-	
-	// Convert our flat data structure to tree format
-	const childrenAccessor = useCallback((cmd: SlashCommand) => {
-		if (!cmd.childrenIds || cmd.childrenIds.length === 0) return null;
-		return commands.filter(c => cmd.childrenIds?.includes(c.id));
-	}, [commands]);
-	
-	// Prevent command groups from being nested
-	const disableDrop = useCallback(({ parentNode, dragNodes }: DropParams) => {
-		if (!parentNode) return false;
-		
-		return dragNodes.some(node => {
-			const nodeChildrenIds = node.data.childrenIds;
-			const parentChildrenIds = parentNode.data.childrenIds;
-			return (nodeChildrenIds && nodeChildrenIds.length > 0) && 
-				(parentChildrenIds && parentChildrenIds.length > 0);
-		});
-	}, []);
-	
-	// Calculate appropriate tree height
-	const treeHeight = useMemo(() => {
-		const rowCount = commands.length;
-		const minHeight = 400;
-		const rowHeight = 55;
-		const calculatedHeight = Math.min(rowCount * rowHeight, 600);
-		return Math.max(calculatedHeight, minHeight);
-	}, [commands.length]);
-	
-	// Simplified sync function that just triggers changes from manager
+	// Sync data from manager
 	const syncDataFromManager = useCallback(() => {
 		manager.commitChanges();
 	}, [manager]);
 	
-	// Custom tree node renderer
-	const CommandNode = useCallback((props: NodeRendererProps<SlashCommand>) => {
-		const { node, dragHandle, style } = props;
-		const command = node.data;
-		const isGroup = command.childrenIds && command.childrenIds.length > 0;
+	// Handle drag and drop operations
+	const handleDrop = useCallback((items: CommandTreeItem[], target: any) => {
+		// Create a copy of the command list to work with
+		const updatedCommands = [...commands];
+		
+		// Get the dragged commands
+		const draggedCommands = items
+			.map(item => updatedCommands.find(cmd => cmd.id === item.index.toString()))
+			.filter(Boolean) as SlashCommand[];
+		
+		if (draggedCommands.length === 0) return;
+		
+		// Get the target parent ID based on the drop target type
+		let targetParentId: string | undefined;
+		
+		if (target.targetType === 'item') {
+			// Dropping on an item - make it a child of that item
+			targetParentId = target.targetItem;
+		} else if (target.targetType === 'between-items') {
+			// Dropping between items - add to the same parent
+			targetParentId = target.parentItem === 'root' ? undefined : target.parentItem;
+		} else if (target.targetType === 'root') {
+			// Dropping on root
+			targetParentId = undefined;
+		}
+		
+		// Prevent nested command groups
+		const hasCommandGroup = draggedCommands.some(cmd => cmd.children?.length);
+		const targetIsGroup = targetParentId && updatedCommands.find(
+			cmd => cmd.id === targetParentId && cmd.children?.length
+		);
+		
+		if (hasCommandGroup && targetIsGroup) {
+			return;
+		}
+		
+		// Update each dragged command
+		for (const draggedCmd of draggedCommands) {
+			// Remove from old parent's children array
+			if (draggedCmd.parentId) {
+				const oldParent = updatedCommands.find(cmd => cmd.id === draggedCmd.parentId);
+				if (oldParent && oldParent.children) {
+					oldParent.children = oldParent.children.filter(child => child.id !== draggedCmd.id);
+				}
+			}
+			
+			// Update parent ID
+			draggedCmd.parentId = targetParentId;
+		}
+		
+		// Add to new parent's children array
+		if (targetParentId) {
+			const targetParent = updatedCommands.find(cmd => cmd.id === targetParentId);
+			if (targetParent) {
+				if (!targetParent.children) {
+					targetParent.children = [];
+				}
+				
+				// Add all dragged commands to the target parent
+				for (const draggedCmd of draggedCommands) {
+					targetParent.children.push(draggedCmd);
+				}
+			}
+		}
+		
+		// Save the updated structure
+		manager.updateStructure(updatedCommands);
+	}, [commands, manager]);
+	
+	// Custom renderer for tree items
+	const renderItemTitle = useCallback(({ item }: { item: CommandTreeItem }) => {
+		const command = item.data;
 		
 		return (
-			<div 
-				ref={dragHandle}
-				style={style}
-				className={`cmdr-command-wrapper ${isGroup ? 'is-group' : ''} ${node.state.isSelected ? 'is-selected' : ''}`}
-			>
+			<div className={`cmdr-command-wrapper ${item.isFolder ? 'is-group' : ''}`}>
 				<CommandViewerItem
 					cmd={command}
 					plugin={plugin}
 					commands={commands}
 					setState={syncDataFromManager}
-					isCollapsed={!node.isOpen}
-					onCollapse={isGroup ? () => node.toggle() : undefined}
+					isCollapsed={false}
+					onCollapse={undefined}
 				/>
 			</div>
 		);
 	}, [commands, plugin, syncDataFromManager]);
-
+	
+	// Calculate appropriate tree height - 不再需要固定高度
+	const treeHeight = useMemo(() => {
+		return 'auto'; // 让树形结构自适应高度
+	}, []);
+	
+	// Custom arrow renderer
+	const renderItemArrow = useCallback(({ item, context }: { item: CommandTreeItem, context: any }) => {
+		if (!item.isFolder) return null;
+		
+		return (
+			<ObsidianIcon
+				icon={context.isExpanded ? "chevron-down" : "chevron-right"}
+				className="cmdr-group-collapser-button clickable-icon"
+			/>
+		);
+	}, []);
+	
 	return (
 		<CommandStoreContext.Provider value={manager}>
 			<div className="cmdr-command-viewer">
-				<Tree<SlashCommand>
-					ref={treeRef}
-					data={rootCommands}
-					idAccessor="id"
-					childrenAccessor={childrenAccessor}
-					onMove={handleMove}
-					onSelect={handleSelect}
-					disableDrop={disableDrop}
-					width="100%"
-					height={treeHeight}
-					indent={24}
-					rowHeight={55}
-					openByDefault={true}
-					padding={10}
-					selectionFollowsFocus={true}
-					disableMultiSelection={true}
+				<UncontrolledTreeEnvironment
+					dataProvider={dataProvider}
+					getItemTitle={(item: CommandTreeItem) => item.data.name}
+					canDragAndDrop={true}
+					canDropOnFolder={true}
+					canReorderItems={true}
+					onDrop={handleDrop}
+					renderItemTitle={renderItemTitle}
+					renderItemArrow={renderItemArrow}
+					defaultInteractionMode={InteractionMode.DoubleClickItemToExpand}
+					viewState={{
+						'command-tree': {
+							expandedItems: commands
+								.filter(cmd => cmd.children && cmd.children.length > 0)
+								.map(cmd => cmd.id)
+						}
+					}}
 				>
-					{CommandNode}
-				</Tree>
+					<Tree
+						treeId="command-tree"
+						rootItem="root"
+					/>
+				</UncontrolledTreeEnvironment>
 				
 				{!commands.some(
 					pre => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)

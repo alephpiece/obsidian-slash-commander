@@ -15,6 +15,9 @@ export interface SlashCommand {
 	// Fields for command groups
 	parentId?: string;
 	childrenIds?: string[];
+	
+	// Direct reference to child commands for tree structure
+	children?: SlashCommand[];
 }
 
 export function getCommandFromId(plugin: SlashCommanderPlugin, id: string): Command | null {

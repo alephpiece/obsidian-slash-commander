@@ -98,16 +98,12 @@
 }
 
 .cmdr-commands-empty {
+	margin-top: 16px;
 	display: flex;
 	place-items: center;
 	flex-flow: column;
 	margin: 2.5rem 0 1.25rem 0;
-
 	place-content: center;
-
-	svg {
-		width: 100%;
-	}
 
 	h3 {
 		margin: 8px 0px;
@@ -562,15 +558,6 @@
 	}
 }
 
-.cmdr-command-wrapper {
-	position: relative;
-	touch-action: none;
-	
-	&.is-group {
-		font-weight: 500;
-	}
-}
-
 .cmdr-group-children {
 	margin-left: 1.5rem;
 	margin-top: 4px;
@@ -578,7 +565,7 @@
 	flex-direction: column;
 	gap: 4px;
 	position: relative;
-	
+
 	// Add a vertical line to show hierarchy
 	&::before {
 		content: "";
@@ -593,82 +580,164 @@
 }
 
 .cmdr-command-viewer {
-	.react-arborist {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	font-family: var(--font-interface);
+	font-size: var(--font-ui-small);
+	color: var(--text-normal);
+
+	.rct-tree-root {
+		min-height: 30px;
+		position: relative;
 		width: 100%;
-		height: 400px;
-		overflow: auto;
-		border-radius: var(--radius-m);
-		background-color: var(--background-primary);
 	}
 
-	.react-arborist-node {
-		margin-bottom: 6px;
-		
-		&[aria-selected="true"] {
+	.rct-tree-items-container {
+		padding: 0;
+		border: none;
+
+		&[aria-hidden="true"] {
+			display: none;
+		}
+	}
+
+	.rct-tree-item-li {
+		list-style-type: none;
+		margin-left: 0;
+		height: fit-content;
+	}
+
+	.rct-tree-item-title-container {
+		padding: 0;
+		margin: 0;
+		height: fit-content;
+
+		&:hover {
 			background-color: var(--background-modifier-hover);
 		}
 
-		&.is-drop-target {
-			background-color: var(--background-modifier-border);
+		&.rct-tree-item-selected {
+			background-color: var(--background-modifier-active);
+		}
+
+		&.rct-tree-item-title-container-focused {
+			outline: none;
+		}
+
+		&.rct-tree-item-dragging-over {
+			background-color: var(--background-modifier-hover);
+			box-shadow: inset 0 0 0 2px var(--interactive-accent);
+		}
+	}
+
+	.rct-tree-drag-between-line {
+		background-color: var(--interactive-accent);
+		height: 2px;
+		position: absolute;
+		width: 100%;
+		z-index: 1;
+	}
+
+	.rct-tree-item-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		padding: 0;
+		width: 100%;
+		height: fit-content;
+
+		&:focus {
+			outline: none;
 		}
 	}
 
 	.cmdr-command-wrapper {
-		display: flex;
-		align-items: center;
 		width: 100%;
-		transition: background-color 0.1s ease;
-		
+
 		&.is-group {
 			font-weight: var(--font-bold);
 		}
-		
-		&.is-selected {
-			background-color: var(--background-modifier-hover);
-		}
-		
+
 		.setting-item {
-			width: 100%;
-			padding: 10px 12px;
-			margin: 0;
 			display: flex;
-			flex-direction: row;
 			align-items: center;
-			
-			.cmdr-icon {
-				margin-right: 6px;
+			padding: 6px 12px;
+			border-top: none;
+			margin: 0;
+			width: 100%;
+
+			&.mod-toggle {
+				border-top: none;
+				padding-top: 6px;
+				padding-bottom: 6px;
 			}
-			
-			.setting-item-info {
-				overflow: hidden;
-				
-				.setting-item-name {
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-				}
-			}
-			
-			.setting-item-control {
-				display: flex;
-				justify-content: flex-end;
-				align-items: center;
-				gap: 6px;
-				margin-left: auto;
+		}
+
+		.cmdr-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.setting-item-info {
+			overflow: hidden;
+			margin: 0 8px;
+			max-width: 80%;
+			text-align: left;
+
+			.setting-item-name {
+				font-weight: var(--font-normal);
 				white-space: nowrap;
-				flex-shrink: 0;
-				
-				button, .clickable-icon {
-					margin-left: 2px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			.setting-item-description {
+				color: var(--text-muted);
+				font-size: var(--font-smaller);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
+
+		.setting-item-control {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+
+			button {
+				margin: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.setting-editor-extra-setting-button {
+				padding: 4px;
+				border-radius: var(--radius-s);
+
+				&:hover {
+					background-color: var(--background-modifier-hover);
 				}
+			}
+		}
+
+		.cmdr-group-collapser-button {
+			margin-right: 4px;
+			color: var(--text-muted);
+
+			&:hover {
+				color: var(--text-normal);
 			}
 		}
 	}
 
-	// Add visual indication for hierarchy
-	.react-arborist-tree-node-children {
-		margin-left: 1.5rem;
-		margin-top: 8px;
+	.rct-tree-items-container .rct-tree-items-container {
+		margin-left: 10px;
 		position: relative;
 
 		&::before {
@@ -679,36 +748,29 @@
 			left: -0.75rem;
 			width: 2px;
 			background-color: var(--background-modifier-border);
-			border-radius: 1px;
 		}
 	}
 
-	// Style for dragged items preview
-	.react-arborist-drag-preview {
+	.rct-tree-drag-preview {
+		opacity: 0.8;
 		background-color: var(--background-primary);
-		border-radius: 4px;
-		box-shadow: 0 0 0 1px var(--background-modifier-border),
-					0 2px 8px var(--background-modifier-box-shadow);
-		padding: 2px;
-		opacity: 0.9;
-		
-		.cmdr-command-wrapper {
-			background-color: var(--background-primary);
-		}
+		border: 1px solid var(--background-modifier-border);
+		border-radius: var(--radius-s);
+		box-shadow: var(--shadow-s);
+		pointer-events: none;
+		z-index: 1000;
 	}
 
-	// Badge for dragged groups
-	.react-arborist-drag-badge {
-		position: absolute;
-		right: -8px;
-		top: -8px;
-		background-color: var(--interactive-accent);
-		color: var(--text-on-accent);
-		border-radius: 12px;
-		padding: 1px 8px;
-		font-size: 0.7rem;
-		font-weight: 600;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-		z-index: 1;
+	.mobile-option-setting-item {
+		display: flex;
+		align-items: center;
+		padding: 8px 0;
+
+		.mobile-option-setting-item-name {
+			flex: 1;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
 	}
 }

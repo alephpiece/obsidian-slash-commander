@@ -58,7 +58,7 @@ export function CommandComponent({
 			<div className="setting-item mod-toggle">
 				<ObsidianIcon
 					icon={pair.icon}
-					size="var(--icon-m)"
+					size="var(--icon-l)"
 					aria-label={t("bindings.icon.change")}
 					onClick={handleNewIcon}
 					className="cmdr-icon clickable-icon"
