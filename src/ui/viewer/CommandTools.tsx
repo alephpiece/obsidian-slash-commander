@@ -4,7 +4,6 @@ import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { chooseNewCommand } from "@/services/utils/util";
-import { SlashCommand } from "@/data/models/SlashCommand";
 
 export interface CommandToolsProps {
 	plugin: SlashCommanderPlugin;

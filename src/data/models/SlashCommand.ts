@@ -12,9 +12,8 @@ export interface SlashCommand {
 	triggerMode?: TriggerMode;
 	color?: string;
 	
-	// Fields for command groups
+	// Field for command groups
 	parentId?: string;
-	childrenIds?: string[];
 	
 	// Direct reference to child commands for tree structure
 	children?: SlashCommand[];
@@ -71,7 +70,7 @@ export function isParentCommand(scmd: SlashCommand): boolean {
 }
 
 export function isCommandGroup(scmd: SlashCommand): boolean {
-	return isParentCommand(scmd) && (scmd.childrenIds?.length ?? 0) > 0;
+	return isParentCommand(scmd) && (scmd.children?.length ?? 0) > 0;
 }
 
 export function getChildCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {

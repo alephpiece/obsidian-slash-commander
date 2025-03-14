@@ -98,12 +98,16 @@
 }
 
 .cmdr-commands-empty {
-	margin-top: 16px;
 	display: flex;
 	place-items: center;
 	flex-flow: column;
 	margin: 2.5rem 0 1.25rem 0;
+
 	place-content: center;
+
+	svg {
+		width: 100%;
+	}
 
 	h3 {
 		margin: 8px 0px;
@@ -579,6 +583,7 @@
 	}
 }
 
+/* Command viewer styles */
 .cmdr-command-viewer {
 	display: flex;
 	flex-direction: column;
@@ -586,191 +591,154 @@
 	font-family: var(--font-interface);
 	font-size: var(--font-ui-small);
 	color: var(--text-normal);
+}
 
-	.rct-tree-root {
-		min-height: 30px;
-		position: relative;
-		width: 100%;
+/* Command wrapper */
+.cmdr-command-wrapper {
+	width: 100%;
+
+	&.is-group {
+		font-weight: var(--font-bold);
 	}
 
-	.rct-tree-items-container {
-		padding: 0;
-		border: none;
-
-		&[aria-hidden="true"] {
-			display: none;
-		}
-	}
-
-	.rct-tree-item-li {
-		list-style-type: none;
-		margin-left: 0;
-		height: fit-content;
-	}
-
-	.rct-tree-item-title-container {
-		padding: 0;
-		margin: 0;
-		height: fit-content;
-
-		&:hover {
-			background-color: var(--background-modifier-hover);
-		}
-
-		&.rct-tree-item-selected {
-			background-color: var(--background-modifier-active);
-		}
-
-		&.rct-tree-item-title-container-focused {
-			outline: none;
-		}
-
-		&.rct-tree-item-dragging-over {
-			background-color: var(--background-modifier-hover);
-			box-shadow: inset 0 0 0 2px var(--interactive-accent);
-		}
-	}
-
-	.rct-tree-drag-between-line {
-		background-color: var(--interactive-accent);
-		height: 2px;
-		position: absolute;
-		width: 100%;
-		z-index: 1;
-	}
-
-	.rct-tree-item-button {
-		background: none;
-		border: none;
-		cursor: pointer;
+	/* Setting item */
+	.setting-item {
 		display: flex;
 		align-items: center;
-		padding: 0;
+		padding: 6px 12px;
+		border-top: none;
+		margin: 0;
 		width: 100%;
-		height: fit-content;
 
-		&:focus {
-			outline: none;
+		&.mod-toggle {
+			border-top: none;
+			padding-top: 6px;
+			padding-bottom: 6px;
 		}
 	}
 
-	.cmdr-command-wrapper {
-		width: 100%;
+	/* Icon */
+	.cmdr-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-		&.is-group {
-			font-weight: var(--font-bold);
+	/* Setting item info */
+	.setting-item-info {
+		overflow: hidden;
+		margin: 0 8px;
+		max-width: 80%;
+		text-align: left;
+
+		.setting-item-name {
+			font-weight: var(--font-normal);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
-		.setting-item {
-			display: flex;
-			align-items: center;
-			padding: 6px 12px;
-			border-top: none;
+		.setting-item-description {
+			color: var(--text-muted);
+			font-size: var(--font-smaller);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	/* Setting item control */
+	.setting-item-control {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+
+		button {
 			margin: 0;
-			width: 100%;
-
-			&.mod-toggle {
-				border-top: none;
-				padding-top: 6px;
-				padding-bottom: 6px;
-			}
-		}
-
-		.cmdr-icon {
 			display: flex;
 			align-items: center;
 			justify-content: center;
 		}
 
-		.setting-item-info {
-			overflow: hidden;
-			margin: 0 8px;
-			max-width: 80%;
-			text-align: left;
-
-			.setting-item-name {
-				font-weight: var(--font-normal);
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-
-			.setting-item-description {
-				color: var(--text-muted);
-				font-size: var(--font-smaller);
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-		}
-
-		.setting-item-control {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-
-			button {
-				margin: 0;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			.setting-editor-extra-setting-button {
-				padding: 4px;
-				border-radius: var(--radius-s);
-
-				&:hover {
-					background-color: var(--background-modifier-hover);
-				}
-			}
-		}
-
-		.cmdr-group-collapser-button {
-			margin-right: 4px;
-			color: var(--text-muted);
+		.setting-editor-extra-setting-button {
+			padding: 4px;
+			border-radius: var(--radius-s);
 
 			&:hover {
-				color: var(--text-normal);
+				background-color: var(--background-modifier-hover);
 			}
 		}
 	}
 
-	.rct-tree-items-container .rct-tree-items-container {
-		margin-left: 10px;
-		position: relative;
+	/* Group collapser button */
+	.cmdr-group-collapser-button {
+		margin-right: 4px;
+		color: var(--text-muted);
 
-		&::before {
-			content: "";
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: -0.75rem;
-			width: 2px;
-			background-color: var(--background-modifier-border);
+		&:hover {
+			color: var(--text-normal);
 		}
 	}
+}
 
-	.rct-tree-drag-preview {
-		opacity: 0.8;
-		background-color: var(--background-primary);
-		border: 1px solid var(--background-modifier-border);
-		border-radius: var(--radius-s);
-		box-shadow: var(--shadow-s);
-		pointer-events: none;
-		z-index: 1000;
-	}
-
-	.mobile-option-setting-item {
-		display: flex;
-		align-items: center;
-		padding: 8px 0;
-
-		.mobile-option-setting-item-name {
-			flex: 1;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
+/* Group collapser */
+.cmdr-group-collapser {
+	width: 100%;
+	
+	&[aria-expanded="false"] {
+		.cmdr-group-collapser-content {
+			display: none;
 		}
+	}
+}
+
+/* Group collapser content */
+.cmdr-group-collapser-content {
+	margin-left: 10px;
+	position: relative;
+	
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: -0.75rem;
+		width: 2px;
+		background-color: var(--background-modifier-border);
+	}
+}
+
+/* Sortable styles */
+.sortable-fallback {
+	opacity: 0.8;
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow-s);
+	pointer-events: none;
+	z-index: 1000;
+}
+
+.cmdr-sortable-drag {
+	opacity: 0.8;
+}
+
+.cmdr-sortable-ghost {
+	background-color: var(--background-modifier-hover);
+	border: 1px dashed var(--interactive-accent);
+	border-radius: var(--radius-s);
+}
+
+/* Mobile styles */
+.mobile-option-setting-item {
+	display: flex;
+	align-items: center;
+	padding: 8px 0;
+	
+	.mobile-option-setting-item-name {
+		flex: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 }

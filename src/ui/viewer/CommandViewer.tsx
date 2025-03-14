@@ -1,27 +1,17 @@
 import { Platform } from "obsidian";
-import { createContext, type ReactElement, useState, useMemo, useCallback, useEffect } from "react";
+import { createContext, type ReactElement, useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-	UncontrolledTreeEnvironment,
-	Tree,
-	StaticTreeDataProvider,
-	TreeItem,
-	TreeItemIndex,
-	TreeRenderProps,
-	InteractionMode
-} from 'react-complex-tree';
+import { ReactSortable } from "react-sortablejs";
 
+import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
+import { CommandTools } from "@/ui/viewer/CommandTools";
 import {
 	SlashCommand,
 	isCommandGroup,
 	isCommandActive,
-	isDeviceValid,
 } from "@/data/models/SlashCommand";
 import CommandStore from "@/data/stores/CommandStore";
 import SlashCommanderPlugin from "@/main";
-import { CommandViewerItem } from "@/ui/viewer/CommandViewerItem";
-import { CommandTools } from "@/ui/viewer/CommandTools";
-import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 
 export const CommandStoreContext = createContext<CommandStore>(null!);
 
@@ -30,58 +20,10 @@ interface CommandViewerProps {
 	plugin: SlashCommanderPlugin;
 }
 
-// Define the tree item data structure
-interface CommandTreeItem extends TreeItem {
-	data: SlashCommand;
-}
-
-type CommandTreeItems = Record<TreeItemIndex, CommandTreeItem>;
-
-/**
- * Convert SlashCommand array to tree items format required by react-complex-tree
- */
-function convertCommandsToTreeItems(commands: SlashCommand[]): CommandTreeItems {
-	const treeItems: CommandTreeItems = {
-		root: {
-			index: 'root',
-			isFolder: true,
-			children: [],
-			data: {
-				id: 'root',
-				name: 'Root',
-				icon: 'folder',
-				childrenIds: [],
-				children: []
-			}
-		}
-	};
-	
-	// Add all commands as tree items
-	commands.forEach(cmd => {
-		treeItems[cmd.id] = {
-			index: cmd.id,
-			isFolder: !!(cmd.children && cmd.children.length > 0),
-			children: cmd.children?.map(child => child.id) || [],
-			data: cmd
-		};
-	});
-	
-	// Set root node children
-	treeItems.root.children = commands
-		.filter(cmd => !cmd.parentId)
-		.map(cmd => cmd.id);
-		
-	return treeItems;
-}
-
-/**
- * CommandViewer component renders a tree of commands with drag-and-drop capabilities.
- * Uses react-complex-tree for efficient tree rendering and handling of drag-drop operations.
- */
 export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactElement {
 	const [commands, setCommands] = useState<SlashCommand[]>(() => manager.getAllCommands());
 	const { t } = useTranslation();
-	
+
 	// Subscribe to command store changes
 	useEffect(() => {
 		const handleStoreChange = (newCommands: SlashCommand[]): void => {
@@ -96,168 +38,200 @@ export function CommandViewer({ manager, plugin }: CommandViewerProps): ReactEle
 			unsubscribe();
 		};
 	}, [manager]);
-	
-	// Convert commands to tree items format
-	const treeItems = useMemo(() => 
-		convertCommandsToTreeItems(commands),
-		[commands]
-	);
-	
-	// Create data provider for the tree
-	const dataProvider = useMemo(() => 
-		new StaticTreeDataProvider(treeItems),
-		[treeItems]
-	);
-	
-	// Sync data from manager
-	const syncDataFromManager = useCallback(() => {
+
+	// Update state and commit changes to store
+	const updateCommands = useCallback((newCommands: SlashCommand[]): void => {
+		setCommands([...newCommands]);
+		manager.updateStructure(newCommands);
+	}, [manager]);
+
+	// Sync with store
+	const syncWithStore = useCallback((): void => {
 		manager.commitChanges();
 	}, [manager]);
-	
-	// Handle drag and drop operations
-	const handleDrop = useCallback((items: CommandTreeItem[], target: any) => {
-		// Create a copy of the command list to work with
-		const updatedCommands = [...commands];
-		
-		// Get the dragged commands
-		const draggedCommands = items
-			.map(item => updatedCommands.find(cmd => cmd.id === item.index.toString()))
-			.filter(Boolean) as SlashCommand[];
-		
-		if (draggedCommands.length === 0) return;
-		
-		// Get the target parent ID based on the drop target type
-		let targetParentId: string | undefined;
-		
-		if (target.targetType === 'item') {
-			// Dropping on an item - make it a child of that item
-			targetParentId = target.targetItem;
-		} else if (target.targetType === 'between-items') {
-			// Dropping between items - add to the same parent
-			targetParentId = target.parentItem === 'root' ? undefined : target.parentItem;
-		} else if (target.targetType === 'root') {
-			// Dropping on root
-			targetParentId = undefined;
-		}
-		
-		// Prevent nested command groups
-		const hasCommandGroup = draggedCommands.some(cmd => cmd.children?.length);
-		const targetIsGroup = targetParentId && updatedCommands.find(
-			cmd => cmd.id === targetParentId && cmd.children?.length
-		);
-		
-		if (hasCommandGroup && targetIsGroup) {
-			return;
-		}
-		
-		// Update each dragged command
-		for (const draggedCmd of draggedCommands) {
-			// Remove from old parent's children array
-			if (draggedCmd.parentId) {
-				const oldParent = updatedCommands.find(cmd => cmd.id === draggedCmd.parentId);
-				if (oldParent && oldParent.children) {
-					oldParent.children = oldParent.children.filter(child => child.id !== draggedCmd.id);
-				}
-			}
-			
-			// Update parent ID
-			draggedCmd.parentId = targetParentId;
-		}
-		
-		// Add to new parent's children array
-		if (targetParentId) {
-			const targetParent = updatedCommands.find(cmd => cmd.id === targetParentId);
-			if (targetParent) {
-				if (!targetParent.children) {
-					targetParent.children = [];
-				}
-				
-				// Add all dragged commands to the target parent
-				for (const draggedCmd of draggedCommands) {
-					targetParent.children.push(draggedCmd);
-				}
-			}
-		}
-		
-		// Save the updated structure
-		manager.updateStructure(updatedCommands);
-	}, [commands, manager]);
-	
-	// Custom renderer for tree items
-	const renderItemTitle = useCallback(({ item }: { item: CommandTreeItem }) => {
-		const command = item.data;
-		
-		return (
-			<div className={`cmdr-command-wrapper ${item.isFolder ? 'is-group' : ''}`}>
-				<CommandViewerItem
-					cmd={command}
-					plugin={plugin}
-					commands={commands}
-					setState={syncDataFromManager}
-					isCollapsed={false}
-					onCollapse={undefined}
-				/>
-			</div>
-		);
-	}, [commands, plugin, syncDataFromManager]);
-	
-	// Calculate appropriate tree height - 不再需要固定高度
-	const treeHeight = useMemo(() => {
-		return 'auto'; // 让树形结构自适应高度
-	}, []);
-	
-	// Custom arrow renderer
-	const renderItemArrow = useCallback(({ item, context }: { item: CommandTreeItem, context: any }) => {
-		if (!item.isFolder) return null;
-		
-		return (
-			<ObsidianIcon
-				icon={context.isExpanded ? "chevron-down" : "chevron-right"}
-				className="cmdr-group-collapser-button clickable-icon"
-			/>
-		);
-	}, []);
-	
+
 	return (
 		<CommandStoreContext.Provider value={manager}>
 			<div className="cmdr-command-viewer">
-				<UncontrolledTreeEnvironment
-					dataProvider={dataProvider}
-					getItemTitle={(item: CommandTreeItem) => item.data.name}
-					canDragAndDrop={true}
-					canDropOnFolder={true}
-					canReorderItems={true}
-					onDrop={handleDrop}
-					renderItemTitle={renderItemTitle}
-					renderItemArrow={renderItemArrow}
-					defaultInteractionMode={InteractionMode.DoubleClickItemToExpand}
-					viewState={{
-						'command-tree': {
-							expandedItems: commands
-								.filter(cmd => cmd.children && cmd.children.length > 0)
-								.map(cmd => cmd.id)
-						}
-					}}
-				>
-					<Tree
-						treeId="command-tree"
-						rootItem="root"
-					/>
-				</UncontrolledTreeEnvironment>
-				
-				{!commands.some(
-					pre => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)
-				) && (
-					<div className="cmdr-commands-empty">
-						<h3>{t("bindings.no_command.detail")}</h3>
-						<span>{t("bindings.no_command.add_now")}</span>
-					</div>
-				)}
-
-				{Platform.isMobile && <hr />}
-
-				<CommandTools plugin={plugin} manager={manager} setState={syncDataFromManager} />
+				<SortableCommandList 
+					plugin={plugin} 
+					commands={commands} 
+					setState={updateCommands} 
+				/>
 			</div>
+			{!commands.some(
+				(pre) => isCommandActive(plugin, pre) || pre.mode?.match(/mobile|desktop/)
+			) && (
+				<div className="cmdr-commands-empty">
+					<h3>{t("bindings.no_command.detail")}</h3>
+					<span>{t("bindings.no_command.add_now")}</span>
+				</div>
+			)}
+
+			{Platform.isMobile && <hr />}
+
+			<CommandTools plugin={plugin} manager={manager} setState={syncWithStore} />
 		</CommandStoreContext.Provider>
 	);
-} 
+}
+
+interface SortableCommandListProps {
+	plugin: SlashCommanderPlugin;
+	commands: SlashCommand[];
+	setState: (commands: SlashCommand[]) => void;
+}
+
+/**
+ * Render a sortable list of command components.
+ * @param plugin - The plugin instance.
+ * @param commands - The commands to render.
+ * @param setState - The state updater function.
+ * @returns The rendered sortable command list.
+ */
+function SortableCommandList({
+	plugin,
+	commands,
+	setState,
+}: SortableCommandListProps): ReactElement {
+	return (
+		<ReactSortable
+			list={commands}
+			setList={(newState): void => setState(newState)}
+			group="root"
+			delay={100}
+			delayOnTouchOnly={true}
+			animation={200}
+			forceFallback={true}
+			swapThreshold={0.7}
+			fallbackClass="sortable-fallback"
+			dragClass="cmdr-sortable-drag"
+			ghostClass="cmdr-sortable-ghost"
+			onSort={({ oldIndex, newIndex, from, to }): void => {
+				if (oldIndex === undefined || newIndex === undefined) return;
+				if (from === to) {
+					const [removed] = commands.splice(oldIndex, 1);
+					commands.splice(newIndex, 0, removed);
+					plugin.saveSettings();
+					setState(commands);
+				}
+			}}
+		>
+			{commands.map(cmd => {
+				return isCommandGroup(cmd) ? (
+					<CollapsibleCommandGroup
+						key={cmd.id}
+						cmd={cmd}
+						plugin={plugin}
+						parentCommands={commands}
+						setState={setState}
+					/>
+				) : (
+					<CommandViewerItem
+						key={cmd.id}
+						cmd={cmd}
+						plugin={plugin}
+						commands={commands}
+						setState={(): void => syncCommands(plugin, commands, setState)}
+					/>
+				);
+			})}
+		</ReactSortable>
+	);
+}
+
+interface CollapsibleCommandGroupProps {
+	cmd: SlashCommand;
+	plugin: SlashCommanderPlugin;
+	parentCommands: SlashCommand[];
+	setState: (commands: SlashCommand[]) => void;
+}
+
+/**
+ * Render a collapsible command group if the command is a group, otherwise render a command list item.
+ * This component should not parent any sortable list.
+ * @param cmd - The command to render.
+ * @param plugin - The plugin instance.
+ * @param parentCommands - The parent commands.
+ * @param setState - The state updater function.
+ * @returns The rendered command group or command list item.
+ */
+function CollapsibleCommandGroup({
+	cmd,
+	plugin,
+	parentCommands,
+	setState,
+}: CollapsibleCommandGroupProps): ReactElement {
+	const [collapsed, setCollapsed] = useState(false);
+	const childCommands = parentCommands.filter(c => c.parentId === cmd.id);
+
+	return (
+		<div className="cmdr-group-collapser" aria-expanded={!collapsed}>
+			<CommandViewerItem
+				cmd={cmd}
+				plugin={plugin}
+				commands={childCommands}
+				setState={(): void => syncCommands(plugin, parentCommands, setState)}
+				isCollapsed={collapsed}
+				onCollapse={(): void => setCollapsed(!collapsed)}
+			/>
+			<ReactSortable
+				list={childCommands}
+				setList={(newState): void => setState(newState)}
+				group="root"
+				delay={100}
+				delayOnTouchOnly={true}
+				animation={200}
+				forceFallback={true}
+				swapThreshold={0.7}
+				fallbackClass="sortable-fallback"
+				className="cmdr-group-collapser-content"
+				dragClass="cmdr-sortable-drag"
+				ghostClass="cmdr-sortable-ghost"
+				onSort={({ oldIndex, newIndex, from, to }): void => {
+					if (oldIndex === undefined || newIndex === undefined) return;
+
+					// Moving within the same child list
+					if (from === to) {
+						const [removed] = childCommands.splice(oldIndex, 1);
+						childCommands.splice(newIndex, 0, removed);
+					}
+					// Moving from child to parent list
+					else if (from.classList.contains("cmdr-group-collapser-content")) {
+						const [removed] = childCommands.splice(oldIndex, 1);
+						parentCommands.splice(newIndex, 0, removed);
+					}
+					// Moving from parent to child list
+					else if (to.classList.contains("cmdr-group-collapser-content")) {
+						const [removed] = parentCommands.splice(oldIndex, 1);
+						childCommands.splice(newIndex, 0, removed);
+					}
+
+					plugin.saveSettings();
+					setState(parentCommands);
+				}}
+			>
+				{childCommands.map(cmd => (
+					<CommandViewerItem
+						key={cmd.id}
+						cmd={cmd}
+						plugin={plugin}
+						commands={childCommands}
+						setState={(): void => syncCommands(plugin, parentCommands, setState)}
+					/>
+				))}
+			</ReactSortable>
+		</div>
+	);
+}
+
+/**
+ * Helper function to sync commands with the plugin settings
+ */
+function syncCommands(
+	plugin: SlashCommanderPlugin, 
+	commands: SlashCommand[], 
+	setState: (commands: SlashCommand[]) => void
+): void {
+	plugin.saveSettings();
+	setState([...commands]);
+}

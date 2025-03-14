@@ -71,15 +71,6 @@ export default class CommandStore extends EventEmitter {
 				}
 			}
 		});
-		
-		// Update childrenIds arrays to match children
-		this.commands.forEach(cmd => {
-			if (cmd.children && cmd.children.length > 0) {
-				cmd.childrenIds = cmd.children.map(child => child.id);
-			} else {
-				cmd.childrenIds = [];
-			}
-		});
 	}
 
 	// Rebuild the index mapping completely
@@ -182,7 +173,6 @@ export default class CommandStore extends EventEmitter {
 					.map(child => ({...child}));
 				
 				cmd.children = validChildren;
-				cmd.childrenIds = validChildren.map(child => child.id);
 			}
 		});
 		
@@ -190,10 +180,6 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public async addCommand(scmd: SlashCommand, newlyAdded = true): Promise<void> {
-		if (!scmd.childrenIds) {
-			scmd.childrenIds = [];
-		}
-		
 		if (!scmd.children) {
 			scmd.children = [];
 		}
@@ -212,7 +198,6 @@ export default class CommandStore extends EventEmitter {
 					parent.children = [];
 				}
 				parent.children.push(scmd);
-				parent.childrenIds = parent.children.map(child => child.id);
 			}
 		}
 		
@@ -237,7 +222,6 @@ export default class CommandStore extends EventEmitter {
 			const parent = this.getCommandById(command.parentId);
 			if (parent && parent.children) {
 				parent.children = parent.children.filter(child => child.id !== commandId);
-				parent.childrenIds = parent.children.map(child => child.id);
 			}
 		}
 		
@@ -261,7 +245,6 @@ export default class CommandStore extends EventEmitter {
 			const oldParent = this.getCommandById(command.parentId);
 			if (oldParent && oldParent.children) {
 				oldParent.children = oldParent.children.filter(child => child.id !== commandId);
-				oldParent.childrenIds = oldParent.children.map(child => child.id);
 			}
 		}
 		
@@ -276,7 +259,6 @@ export default class CommandStore extends EventEmitter {
 					newParent.children = [];
 				}
 				newParent.children.push(command);
-				newParent.childrenIds = newParent.children.map(child => child.id);
 			}
 		}
 		
@@ -293,9 +275,6 @@ export default class CommandStore extends EventEmitter {
 	public async restoreDefault(): Promise<void> {
 		this.commands = DEFAULT_SETTINGS.bindings.map(cmd => {
 			const newCmd: SlashCommand = { ...cmd };
-			if (!newCmd.childrenIds) {
-				newCmd.childrenIds = [];
-			}
 			newCmd.children = [];
 			return newCmd;
 		});
