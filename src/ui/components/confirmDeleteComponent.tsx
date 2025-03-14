@@ -18,7 +18,7 @@ export function confirmDeleteComponent({ modal }: ConfirmDeleteProps): ReactElem
 	const { t } = useTranslation();
 	return (
 		<>
-			<p>{t("modal.remove_command.detail")}</p>
+			<p>{t("modals.remove_command.detail")}</p>
 			<div className="modal-button-container">
 				<button
 					className="mod-warning"
@@ -30,7 +30,7 @@ export function confirmDeleteComponent({ modal }: ConfirmDeleteProps): ReactElem
 						modal.close();
 					}}
 				>
-					{t("modal.remove_command.dont_ask")}
+					{t("modals.remove_command.dont_ask")}
 				</button>
 				<button
 					className="mod-warning"

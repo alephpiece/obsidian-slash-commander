@@ -3,16 +3,17 @@ import { useTranslation } from "react-i18next";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { chooseNewCommand } from "@/services/utils/util";
 import { usePlugin, useStore } from "@/data/hooks/useCommandStore";
+import ConfirmRestoreModal from "@/ui/modals/confirmRestoreModal";
 
 /**
  * Render the command list tools (full version).
  * Uses Zustand store for accessing plugin, store and sync functions.
  */
-export function CommandTools(): ReactElement {
+export function CommandViewerTools(): ReactElement {
 	const { t } = useTranslation();
 	const plugin = usePlugin();
 	const store = useStore();
-	
+
 	return (
 		<div className="cmdr-add-new-wrapper">
 			<button
@@ -22,7 +23,6 @@ export function CommandTools(): ReactElement {
 						const pair = await chooseNewCommand(plugin);
 						if (pair && store) {
 							await store.addCommand(pair);
-							// store.addCommand 会触发 'changed' 事件，Zustand store 会自动更新
 						}
 					}
 				}}
@@ -36,9 +36,12 @@ export function CommandTools(): ReactElement {
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
-					if (store) {
-						await store.restoreDefault();
-						// restoreDefault 会触发 'changed' 事件，Zustand store 会自动更新
+					if (plugin && store) {
+						const confirmed = await new ConfirmRestoreModal(plugin, async () => {
+							if (store) {
+								await store.restoreDefault();
+							}
+						}).didChooseRestore();
 					}
 				}}
 			/>
@@ -51,11 +54,11 @@ export function CommandTools(): ReactElement {
  * Uses Zustand store for accessing plugin, store and sync functions.
  * This is a more compact version used in different contexts than CommandTools.
  */
-export function CommandToolsShort(): ReactElement {
+export function CommandViewerToolsShort(): ReactElement {
 	const { t } = useTranslation();
 	const plugin = usePlugin();
 	const store = useStore();
-	
+
 	return (
 		<div className="cmdr-add-new-wrapper">
 			<ObsidianIcon
@@ -68,7 +71,6 @@ export function CommandToolsShort(): ReactElement {
 						const pair = await chooseNewCommand(plugin);
 						if (pair && store) {
 							await store.addCommand(pair);
-							// store.addCommand 会触发 'changed' 事件，Zustand store 会自动更新
 						}
 					}
 				}}
@@ -79,12 +81,15 @@ export function CommandToolsShort(): ReactElement {
 				size="var(--icon-m)"
 				aria-label={t("bindings.restore_default")}
 				onClick={async (): Promise<void> => {
-					if (store) {
-						await store.restoreDefault();
-						// restoreDefault 会触发 'changed' 事件，Zustand store 会自动更新
+					if (plugin && store) {
+						const confirmed = await new ConfirmRestoreModal(plugin, async () => {
+							if (store) {
+								await store.restoreDefault();
+							}
+						}).didChooseRestore();
 					}
 				}}
 			/>
 		</div>
 	);
-} 
+}
