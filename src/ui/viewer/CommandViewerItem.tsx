@@ -75,17 +75,13 @@ export function CommandViewerItem({
 					if (plugin && store) {
 						const newCommand = await new BindingEditorModal(plugin).awaitSelection();
 						if (newCommand) {
-							// Set parentId and add to parent's children array
-							newCommand.parentId = cmd.id;
-							
-							// Ensure parent has a children array
-							if (!cmd.children) {
-								cmd.children = [];
-							}
-							cmd.children.push(newCommand);
-							
-							// Add command to store and save
+							// Add command to store first (will be at root level)
 							await store.addCommand(newCommand, false);
+							
+							// Then move it to be a child of the parent command
+							await store.moveCommand(newCommand.id, cmd.id);
+							
+							// Sync changes to UI and save settings
 							await syncCommands();
 						}
 					}

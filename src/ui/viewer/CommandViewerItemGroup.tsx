@@ -98,40 +98,44 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 								const draggedId = evt.item.dataset.id;
 								if (!draggedId) return;
 								
-								// Find the dragged command
-								const movedCommand = commands.find(c => c.id === draggedId);
-								// Only proceed if command exists and is a root command
-								if (!movedCommand || movedCommand.parentId) return;
+								// Get the store from Zustand
+								const store = useCommandStore.getState().store;
+								if (!store) return;
 								
-								// Create updated command list and remove from root level
-								const updatedCommands = commands.filter(c => c.id !== draggedId);
+								// Get new index for proper ordering
+								const newIndex = evt.newDraggableIndex;
 								
-								// Prepare command with updated parent reference
-								const updatedCommand = {
-									...movedCommand,
-									parentId: cmd.id
-								};
-								
-								// Find and update the parent group command
-								const parentIndex = updatedCommands.findIndex(c => c.id === cmd.id);
-								if (parentIndex !== -1) {
-									// Clone parent and its children
-									const updatedParent = {...updatedCommands[parentIndex]};
-									const updatedChildCommands = [...(updatedParent.children || [])];
-									
-									// Insert dragged command at target position
-									updatedChildCommands.splice(evt.newDraggableIndex || 0, 0, updatedCommand);
-									
-									// Update parent with new children array
-									updatedCommands[parentIndex] = {
-										...updatedParent,
-										children: updatedChildCommands
-									};
-									
-									// Update state and save
-									updateCommands(updatedCommands);
-									plugin?.saveSettings();
-								}
+								// Move command to this parent using CommandStore's moveCommand
+								store.moveCommand(draggedId, cmd.id).then(() => {
+									// After moving, ensure correct order within parent's children
+									if (newIndex !== undefined && cmd.children && cmd.children.length > 0) {
+										// Get updated parent command after the move operation
+										const updatedCmd = store.getAllCommands().find(c => c.id === cmd.id);
+										if (updatedCmd && updatedCmd.children) {
+											// Find the moved command in children
+											const movedCmdIndex = updatedCmd.children.findIndex(c => c.id === draggedId);
+											if (movedCmdIndex !== -1 && movedCmdIndex !== newIndex) {
+												// Reorder children array
+												const updatedChildren = [...updatedCmd.children];
+												const [removed] = updatedChildren.splice(movedCmdIndex, 1);
+												updatedChildren.splice(newIndex, 0, removed);
+												
+												// Update parent with reordered children
+												const updatedCommands = store.getAllCommands();
+												const rootIndex = updatedCommands.findIndex(c => c.id === cmd.id);
+												if (rootIndex !== -1) {
+													updatedCommands[rootIndex] = {
+														...updatedCommands[rootIndex],
+														children: updatedChildren
+													};
+													
+													// Update command structure with reordered children
+													store.updateStructure(updatedCommands);
+												}
+											}
+										}
+									}
+								});
 							}
 						}}
 					>

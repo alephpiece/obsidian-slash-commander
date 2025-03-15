@@ -134,7 +134,24 @@ export const useStore = () => useCommandStore(state => state.store);
  */
 export const useChildCommands = (parentId: string) =>
 	useCommandStore(state => {
-		const parent = state.commands.find(cmd => cmd.id === parentId);
+		if (state.store) {
+			// Use the store's method to get child commands
+			return state.store.getCommandChildren(parentId);
+		}
+		
+		// Fallback if store is not available
+		const findParentCommand = (commands: SlashCommand[]): SlashCommand | undefined => {
+			for (const cmd of commands) {
+				if (cmd.id === parentId) return cmd;
+				if (cmd.children?.length) {
+					const found = findParentCommand(cmd.children);
+					if (found) return found;
+				}
+			}
+			return undefined;
+		};
+		
+		const parent = findParentCommand(state.commands);
 		return parent?.children || [];
 	});
 

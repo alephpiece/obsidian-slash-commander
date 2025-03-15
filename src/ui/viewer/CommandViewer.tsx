@@ -75,40 +75,43 @@ export function CommandViewer(): ReactElement {
 								// Get dragged command ID
 								const draggedId = evt.item.dataset.id;
 								if (!draggedId) return;
-								
-								// Find the dragged command among all commands
+
+								// Get the store from Zustand
+								const store = useCommandStore.getState().store;
+								if (!store) return;
+
+								// Find the dragged command among all commands (including children)
 								const allCommands = commands.flatMap(cmd => 
 									cmd.children ? [cmd, ...cmd.children] : [cmd]
 								);
 								const movedCommand = allCommands.find(cmd => cmd.id === draggedId);
+								
+								// Only proceed if it's a child command (has parentId)
 								if (!movedCommand || !movedCommand.parentId) return;
 								
-								// Create updated command list
-								const updatedCommands = [...commands];
+								// Get the target position in root list
+								const newIndex = evt.newDraggableIndex;
 								
-								// Update parent by removing the child command
-								const parentIndex = updatedCommands.findIndex(cmd => cmd.id === movedCommand.parentId);
-								if (parentIndex !== -1 && updatedCommands[parentIndex].children) {
-									updatedCommands[parentIndex] = {
-										...updatedCommands[parentIndex],
-										children: updatedCommands[parentIndex].children.filter(
-											child => child.id !== draggedId
-										)
-									};
-								}
-								
-								// Create new root command (remove parentId)
-								const newRootCommand = {
-									...movedCommand,
-									parentId: undefined
-								};
-								
-								// Add to root command list
-								updatedCommands.splice(evt.newDraggableIndex || 0, 0, newRootCommand);
-								
-								// Update state and save
-								updateCommands(updatedCommands);
-								plugin?.saveSettings();
+								// Move command to root level (no parentId)
+								store.moveCommand(draggedId, undefined).then(() => {
+									// After moving, ensure correct order at root level
+									if (newIndex !== undefined) {
+										// Get updated root commands
+										const updatedRootCmds = store.getRootCommands();
+										
+										// Find the moved command in root commands
+										const movedCmdIndex = updatedRootCmds.findIndex(c => c.id === draggedId);
+										if (movedCmdIndex !== -1 && movedCmdIndex !== newIndex) {
+											// Create a new array with the correct order
+											const reorderedCommands = [...updatedRootCmds];
+											const [removed] = reorderedCommands.splice(movedCmdIndex, 1);
+											reorderedCommands.splice(newIndex, 0, removed);
+											
+											// Update the command structure with the new order
+											store.updateStructure(reorderedCommands);
+										}
+									}
+								});
 							}
 						}}
 					>

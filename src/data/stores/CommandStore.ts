@@ -55,9 +55,18 @@ export default class CommandStore extends EventEmitter {
 	// Update the command index mapping
 	private rebuildCommandIndex(): void {
 		this.commandIndex.clear();
-		this.commands.forEach(cmd => {
-			this.commandIndex.set(cmd.id, cmd);
-		});
+		
+		// Index all commands recursively (including children)
+		const indexCommands = (cmds: SlashCommand[]): void => {
+			cmds.forEach(cmd => {
+				this.commandIndex.set(cmd.id, cmd);
+				if (cmd.children && cmd.children.length > 0) {
+					indexCommands(cmd.children);
+				}
+			});
+		};
+		
+		indexCommands(this.commands);
 	}
 
 	// Get command by ID using the index map
@@ -123,7 +132,21 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public getAllCommands(): SlashCommand[] {
-		return [...this.commands];
+		// Create a deep copy of commands
+		const rootCommands = [...this.commands];
+		
+		// Return a complete command tree (root commands and their children)
+		const getAllCommandsRecursive = (cmds: SlashCommand[]): SlashCommand[] => {
+			return cmds.map(cmd => {
+				const cmdCopy = { ...cmd };
+				if (cmdCopy.children && cmdCopy.children.length > 0) {
+					cmdCopy.children = getAllCommandsRecursive(cmdCopy.children);
+				}
+				return cmdCopy;
+			});
+		};
+		
+		return getAllCommandsRecursive(rootCommands);
 	}
 
 	public getRootCommands(): SlashCommand[] {
@@ -131,6 +154,7 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public getCommandChildren(parentId: string): SlashCommand[] {
+		// Find the parent command using commandIndex (which includes all commands)
 		const parent = this.getCommandById(parentId);
 		return parent?.children || [];
 	}
@@ -210,7 +234,7 @@ export default class CommandStore extends EventEmitter {
 		// Update parentId
 		command.parentId = targetParentId;
 
-		// Add to target parent's children if specified
+		// If there's a parent, add to parent's children and remove from root commands
 		if (targetParentId) {
 			const targetParent = this.getCommandById(targetParentId);
 			if (targetParent) {
@@ -218,15 +242,27 @@ export default class CommandStore extends EventEmitter {
 					targetParent.children = [];
 				}
 				targetParent.children.push(command);
+				
+				// Remove from root commands if it's being moved to a parent
+				this.commands = this.commands.filter(cmd => cmd.id !== commandId);
 			}
+		} else if (!this.commands.some(cmd => cmd.id === commandId)) {
+			// If it's being moved to root level and not already in root commands, add it
+			this.commands.push(command);
 		}
 
+		// Rebuild index to ensure consistency
+		this.rebuildCommandIndex();
 		await this.commitChanges();
 	}
 
 	// Update entire command structure
 	public async updateStructure(commands: SlashCommand[]): Promise<void> {
-		this.commands = [...commands];
+		// Ensure we're only storing root commands in the main array
+		// Child commands should only exist in their parent's children array
+		this.commands = commands.filter(cmd => !cmd.parentId);
+		
+		// Rebuild the index to include all commands (root and children)
 		this.rebuildCommandIndex();
 		await this.commitChanges();
 	}
