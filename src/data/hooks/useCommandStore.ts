@@ -17,8 +17,8 @@ interface CommandState {
 	setStore: (store: CommandStore) => () => void;
 	updateCommands: (commands: SlashCommand[]) => Promise<void>;
 	addCommand: (command: SlashCommand) => Promise<void>;
-	removeCommand: (commandId: string) => Promise<void>;
-	moveCommand: (commandId: string, targetParentId?: string) => Promise<void>;
+	removeCommand: (commandId: string, parentId?: string) => Promise<void>;
+	moveCommand: (commandId: string, sourceParentId: string | undefined, targetParentId: string | undefined) => Promise<void>;
 	syncCommands: () => Promise<void>;
 	restoreDefault: () => Promise<void>;
 
@@ -73,18 +73,18 @@ export const useCommandStore = create<CommandState>((set, get) => ({
 	},
 
 	// Remove a command
-	removeCommand: async commandId => {
+	removeCommand: async (commandId, parentId) => {
 		const { store } = get();
 		if (store) {
-			await store.removeCommand(commandId);
+			await store.removeCommand(commandId, parentId);
 		}
 	},
 
 	// Move a command
-	moveCommand: async (commandId, targetParentId) => {
+	moveCommand: async (commandId, sourceParentId, targetParentId) => {
 		const { store } = get();
 		if (store) {
-			await store.moveCommand(commandId, targetParentId);
+			await store.moveCommand(commandId, sourceParentId, targetParentId);
 		}
 	},
 
@@ -134,26 +134,32 @@ export const useStore = () => useCommandStore(state => state.store);
  */
 export const useChildCommands = (parentId: string) =>
 	useCommandStore(state => {
-		if (state.store) {
-			// Use the store's method to get child commands
-			return state.store.getCommandChildren(parentId);
-		}
-		
-		// Fallback if store is not available
-		const findParentCommand = (commands: SlashCommand[]): SlashCommand | undefined => {
-			for (const cmd of commands) {
-				if (cmd.id === parentId) return cmd;
-				if (cmd.children?.length) {
-					const found = findParentCommand(cmd.children);
-					if (found) return found;
-				}
-			}
-			return undefined;
-		};
-		
-		const parent = findParentCommand(state.commands);
+		// Get parent command from commands array
+		const parent = state.commands.find(cmd => cmd.id === parentId);
+		// Return children or empty array
 		return parent?.children || [];
 	});
+
+/**
+ * Hook to find a command by ID with optional parent context
+ */
+export const useFindCommand = (commandId: string, parentId?: string) =>
+	useCommandStore(state => {
+		if (parentId) {
+			// Find within a specific parent
+			const parent = state.commands.find(cmd => cmd.id === parentId);
+			return parent?.children?.find(child => child.id === commandId);
+		} else {
+			// Find at root level
+			return state.commands.find(cmd => cmd.id === commandId);
+		}
+	});
+
+/**
+ * Hook to get root commands
+ */
+export const useRootCommands = () => 
+	useCommandStore(state => state.commands);
 
 /**
  * Helper function to add a new command
@@ -185,9 +191,6 @@ export function addChildCommand(
 		parentId
 	});
 	
-	// Add the command first
-	return store.addCommand(newCommand).then(() => {
-		// Then move it under the parent
-		return store.moveCommand(newCommand.id, parentId);
-	});
+	// Add command directly with parentId set
+	return store.addCommand(newCommand);
 }

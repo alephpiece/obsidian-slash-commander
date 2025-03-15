@@ -35,11 +35,8 @@ class EventEmitter {
 }
 
 export default class CommandStore extends EventEmitter {
-	// Primary storage: ordered array of commands
+	// Primary storage: ordered array of root commands
 	private commands: SlashCommand[] = [];
-
-	// Command index map for fast lookup by ID
-	private commandIndex: Map<string, SlashCommand> = new Map();
 
 	// Set of IDs for active commands that are registered with Obsidian
 	private registeredCommands: Set<string> = new Set();
@@ -52,26 +49,23 @@ export default class CommandStore extends EventEmitter {
 		this.initializeFromSettings();
 	}
 
-	// Update the command index mapping
-	private rebuildCommandIndex(): void {
-		this.commandIndex.clear();
-		
-		// Index all commands recursively (including children)
-		const indexCommands = (cmds: SlashCommand[]): void => {
-			cmds.forEach(cmd => {
-				this.commandIndex.set(cmd.id, cmd);
-				if (cmd.children && cmd.children.length > 0) {
-					indexCommands(cmd.children);
-				}
-			});
-		};
-		
-		indexCommands(this.commands);
+	// Find a root command by ID
+	private findRootCommand(id: string): SlashCommand | undefined {
+		return this.commands.find(cmd => cmd.id === id);
 	}
 
-	// Get command by ID using the index map
-	private getCommandById(id: string): SlashCommand | undefined {
-		return this.commandIndex.get(id);
+	// Find a child command within a specific parent
+	private findChildCommand(parentId: string, childId: string): SlashCommand | undefined {
+		const parent = this.findRootCommand(parentId);
+		return parent?.children?.find(child => child.id === childId);
+	}
+
+	// Find a command with optional context (parent ID)
+	public findCommand(id: string, parentId?: string): SlashCommand | undefined {
+		if (parentId) {
+			return this.findChildCommand(parentId, id);
+		}
+		return this.findRootCommand(id);
 	}
 
 	private initializeFromSettings(): void {
@@ -80,21 +74,28 @@ export default class CommandStore extends EventEmitter {
 		// Initialize commands array
 		this.commands = [...bindings];
 
-		// Build the index
-		this.rebuildCommandIndex();
-
 		// Initialize registered commands
 		this.updateActiveCommands();
 	}
 
 	// Update which commands should be active based on current state
 	private updateActiveCommands(): void {
-		// Get currently active command IDs
-		const shouldBeActive = new Set(
-			this.getAllCommands()
-				.filter(cmd => isCommandActive(this.plugin, cmd))
-				.map(cmd => cmd.id)
-		);
+		// Get currently active command IDs from all levels
+		const shouldBeActive = new Set<string>();
+		
+		// Function to collect active command IDs
+		const collectActiveIds = (cmds: SlashCommand[]): void => {
+			for (const cmd of cmds) {
+				if (isCommandActive(this.plugin, cmd)) {
+					shouldBeActive.add(cmd.id);
+				}
+				if (cmd.children && cmd.children.length > 0) {
+					collectActiveIds(cmd.children);
+				}
+			}
+		};
+		
+		collectActiveIds(this.commands);
 
 		// Find commands to register
 		const toRegister = new Set(
@@ -108,7 +109,7 @@ export default class CommandStore extends EventEmitter {
 
 		// Register new commands
 		for (const id of toRegister) {
-			this.plugin.register(() => this.removeCommand(id, false));
+			this.plugin.register(() => this.removeCommand(id, undefined, false));
 			this.registeredCommands.add(id);
 		}
 
@@ -119,7 +120,10 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	private async saveToSettings(): Promise<void> {
+		// Get all commands including child commands in a format suitable for serialization
 		const commands = this.getAllCommands();
+		
+		// Save to settings
 		await this.plugin.settingsStore.updateSettings({
 			bindings: commands,
 		});
@@ -132,36 +136,21 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public getAllCommands(): SlashCommand[] {
-		// Create a deep copy of commands
-		const rootCommands = [...this.commands];
-		
-		// Return a complete command tree (root commands and their children)
-		const getAllCommandsRecursive = (cmds: SlashCommand[]): SlashCommand[] => {
-			return cmds.map(cmd => {
-				const cmdCopy = { ...cmd };
-				if (cmdCopy.children && cmdCopy.children.length > 0) {
-					cmdCopy.children = getAllCommandsRecursive(cmdCopy.children);
-				}
-				return cmdCopy;
-			});
-		};
-		
-		return getAllCommandsRecursive(rootCommands);
-	}
-
-	public getRootCommands(): SlashCommand[] {
-		return this.getAllCommands().filter(cmd => isRootCommand(cmd));
-	}
-
-	public getCommandChildren(parentId: string): SlashCommand[] {
-		// Find the parent command using commandIndex (which includes all commands)
-		const parent = this.getCommandById(parentId);
-		return parent?.children || [];
+		// Return a deep copy of commands
+		return this.commands.map(cmd => {
+			const result = { ...cmd };
+			
+			if (cmd.children && cmd.children.length > 0) {
+				result.children = cmd.children.map(child => ({ ...child }));
+			}
+			
+			return result;
+		});
 	}
 
 	public getValidCommands(): SlashCommand[] {
 		// Filter and clone root commands
-		const validRootCommands = this.getRootCommands()
+		const validRootCommands = this.getAllCommands()
 			.filter(cmd => isValidSuggestItem(this.plugin, cmd))
 			.map(cmd => ({ ...cmd }));
 
@@ -184,87 +173,144 @@ export default class CommandStore extends EventEmitter {
 			scmd.children = [];
 		}
 
-		// Add to the array and index
-		this.commands.push(scmd);
-		this.commandIndex.set(scmd.id, scmd);
+		// If it's a root command, check for duplicate IDs at root level
+		if (!scmd.parentId) {
+			if (this.findRootCommand(scmd.id)) {
+				throw new Error(`Root command with ID ${scmd.id} already exists`);
+			}
+			this.commands.push(scmd);
+		} else {
+			// If it's a child command, check for duplicate IDs within the parent
+			const parent = this.findRootCommand(scmd.parentId);
+			if (parent) {
+				if (!parent.children) {
+					parent.children = [];
+				}
+				
+				// Check for duplicate child ID within this parent
+				if (parent.children.some(child => child.id === scmd.id)) {
+					throw new Error(`Child command with ID ${scmd.id} already exists in parent ${scmd.parentId}`);
+				}
+				
+				parent.children.push(scmd);
+			}
+		}
 		
 		if (newlyAdded) {
 			await this.commitChanges();
 		}
 	}
 
-	public async removeCommand(commandId: string, save = true): Promise<void> {
-		const command = this.getCommandById(commandId);
-		if (!command) return;
-
-		// Recursively remove child commands
-		if (command.children && command.children.length > 0) {
-			for (const child of [...command.children]) {
-				await this.removeCommand(child.id, false);
+	public async removeCommand(commandId: string, parentId?: string, save = true): Promise<void> {
+		if (parentId) {
+			// Remove a child command
+			const parent = this.findRootCommand(parentId);
+			if (parent?.children) {
+				parent.children = parent.children.filter(child => child.id !== commandId);
 			}
+		} else {
+			// Remove a root command and all its children
+			this.commands = this.commands.filter(cmd => cmd.id !== commandId);
 		}
-
-		// Remove command from parent's children array
-		for (const cmd of this.commands) {
-			if (cmd.children) {
-				cmd.children = cmd.children.filter(child => child.id !== commandId);
-			}
-		}
-
-		// Remove from array and index
-		this.commands = this.commands.filter(cmd => cmd.id !== commandId);
-		this.commandIndex.delete(commandId);
 
 		if (save) {
 			await this.commitChanges();
 		}
 	}
 
-	public async moveCommand(commandId: string, targetParentId?: string): Promise<void> {
-		const command = this.getCommandById(commandId);
-		if (!command) return;
-
-		// Remove this command from any parent's children array
-		for (const cmd of this.commands) {
-			if (cmd.children) {
-				cmd.children = cmd.children.filter(child => child.id !== commandId);
+	/**
+	 * Move a command from one location to another
+	 * @param commandId ID of the command to move
+	 * @param sourceParentId Source parent ID or undefined if from root
+	 * @param targetParentId Target parent ID or undefined if moving to root
+	 */
+	public async moveCommand(commandId: string, sourceParentId: string | undefined, targetParentId: string | undefined): Promise<void> {
+		// Find the source command
+		let sourceCommand: SlashCommand | undefined;
+		
+		if (sourceParentId) {
+			// From parent command
+			const sourceParent = this.findRootCommand(sourceParentId);
+			if (sourceParent?.children) {
+				const childIndex = sourceParent.children.findIndex(c => c.id === commandId);
+				if (childIndex !== -1) {
+					sourceCommand = { ...sourceParent.children[childIndex] };
+					sourceParent.children.splice(childIndex, 1);
+				}
+			}
+		} else {
+			// From root level
+			const rootIndex = this.commands.findIndex(c => c.id === commandId);
+			if (rootIndex !== -1) {
+				sourceCommand = { ...this.commands[rootIndex] };
+				this.commands.splice(rootIndex, 1);
 			}
 		}
-
+		
+		if (!sourceCommand) return;
+		
 		// Update parentId
-		command.parentId = targetParentId;
-
-		// If there's a parent, add to parent's children and remove from root commands
+		sourceCommand.parentId = targetParentId;
+		
 		if (targetParentId) {
-			const targetParent = this.getCommandById(targetParentId);
+			// Move to parent command
+			const targetParent = this.findRootCommand(targetParentId);
 			if (targetParent) {
 				if (!targetParent.children) {
 					targetParent.children = [];
 				}
-				targetParent.children.push(command);
 				
-				// Remove from root commands if it's being moved to a parent
-				this.commands = this.commands.filter(cmd => cmd.id !== commandId);
+				// Check for duplicate ID within target parent
+				if (targetParent.children.some(child => child.id === commandId)) {
+					throw new Error(`Child command with ID ${commandId} already exists in target parent ${targetParentId}`);
+				}
+				
+				targetParent.children.push(sourceCommand);
 			}
-		} else if (!this.commands.some(cmd => cmd.id === commandId)) {
-			// If it's being moved to root level and not already in root commands, add it
-			this.commands.push(command);
+		} else {
+			// Move to root level
+			// Check for duplicate ID at root level
+			if (this.findRootCommand(commandId)) {
+				throw new Error(`Root command with ID ${commandId} already exists`);
+			}
+			
+			this.commands.push(sourceCommand);
 		}
-
-		// Rebuild index to ensure consistency
-		this.rebuildCommandIndex();
+		
 		await this.commitChanges();
 	}
 
 	// Update entire command structure
 	public async updateStructure(commands: SlashCommand[]): Promise<void> {
-		// Ensure we're only storing root commands in the main array
-		// Child commands should only exist in their parent's children array
-		this.commands = commands.filter(cmd => !cmd.parentId);
+		// Validate the command structure for duplicate IDs at same level
+		this.validateCommandStructure(commands);
 		
-		// Rebuild the index to include all commands (root and children)
-		this.rebuildCommandIndex();
+		// Update commands
+		this.commands = [...commands];
 		await this.commitChanges();
+	}
+
+	// Validate command structure for duplicate IDs at same level
+	private validateCommandStructure(commands: SlashCommand[]): void {
+		// Check for duplicate IDs at root level
+		const rootIds = new Set<string>();
+		for (const cmd of commands) {
+			if (rootIds.has(cmd.id)) {
+				throw new Error(`Duplicate root command ID: ${cmd.id}`);
+			}
+			rootIds.add(cmd.id);
+			
+			// Check for duplicate IDs within each parent's children
+			if (cmd.children && cmd.children.length > 0) {
+				const childIds = new Set<string>();
+				for (const child of cmd.children) {
+					if (childIds.has(child.id)) {
+						throw new Error(`Duplicate child command ID: ${child.id} in parent ${cmd.id}`);
+					}
+					childIds.add(child.id);
+				}
+			}
+		}
 	}
 
 	public async restoreDefault(): Promise<void> {
@@ -275,7 +321,6 @@ export default class CommandStore extends EventEmitter {
 			return newCmd;
 		});
 
-		this.rebuildCommandIndex();
 		await this.commitChanges();
 	}
 }

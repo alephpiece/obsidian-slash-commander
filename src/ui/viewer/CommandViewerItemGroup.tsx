@@ -6,7 +6,7 @@ import {
 	useCommands,
 	usePlugin,
 	useCommandStore,
-	useChildCommands,
+	useChildCommands
 } from "@/data/hooks/useCommandStore";
 
 interface CommandViewerItemGroupProps {
@@ -98,42 +98,40 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 								const draggedId = evt.item.dataset.id;
 								if (!draggedId) return;
 								
-								// Get the store from Zustand
-								const store = useCommandStore.getState().store;
-								if (!store) return;
+								// Find the command in the root commands
+								const rootCommand = commands.find(c => c.id === draggedId);
+								// Only proceed if command exists and is a root command
+								if (!rootCommand || rootCommand.parentId) return;
 								
 								// Get new index for proper ordering
 								const newIndex = evt.newDraggableIndex;
 								
-								// Move command to this parent using CommandStore's moveCommand
-								store.moveCommand(draggedId, cmd.id).then(() => {
-									// After moving, ensure correct order within parent's children
-									if (newIndex !== undefined && cmd.children && cmd.children.length > 0) {
-										// Get updated parent command after the move operation
-										const updatedCmd = store.getAllCommands().find(c => c.id === cmd.id);
-										if (updatedCmd && updatedCmd.children) {
-											// Find the moved command in children
-											const movedCmdIndex = updatedCmd.children.findIndex(c => c.id === draggedId);
-											if (movedCmdIndex !== -1 && movedCmdIndex !== newIndex) {
-												// Reorder children array
-												const updatedChildren = [...updatedCmd.children];
-												const [removed] = updatedChildren.splice(movedCmdIndex, 1);
-												updatedChildren.splice(newIndex, 0, removed);
+								// Move the command to this parent using explicit source and target params
+								// Source is undefined (from root) and target is this group's ID
+								const moveCommand = useCommandStore.getState().moveCommand;
+								moveCommand(draggedId, undefined, cmd.id).then(() => {
+									// Handle reordering if needed after move is complete
+									if (newIndex !== undefined) {
+										// Get updated commands after the move
+										const updatedCommands = commands.map(c => {
+											if (c.id === cmd.id && c.children) {
+												// Find the newly moved command in children
+												const children = [...c.children];
+												const movedIndex = children.findIndex(child => child.id === draggedId);
 												
-												// Update parent with reordered children
-												const updatedCommands = store.getAllCommands();
-												const rootIndex = updatedCommands.findIndex(c => c.id === cmd.id);
-												if (rootIndex !== -1) {
-													updatedCommands[rootIndex] = {
-														...updatedCommands[rootIndex],
-														children: updatedChildren
-													};
-													
-													// Update command structure with reordered children
-													store.updateStructure(updatedCommands);
+												// If the command is not at the desired index, reorder
+												if (movedIndex !== -1 && movedIndex !== newIndex) {
+													const [movedChild] = children.splice(movedIndex, 1);
+													children.splice(newIndex, 0, movedChild);
 												}
+												
+												return { ...c, children };
 											}
-										}
+											return c;
+										});
+										
+										// Update the commands with the new order
+										updateCommands(updatedCommands);
 									}
 								});
 							}

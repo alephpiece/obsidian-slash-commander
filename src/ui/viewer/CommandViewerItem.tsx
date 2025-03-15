@@ -4,7 +4,7 @@ import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
-import { usePlugin, useCommandStore, addChildCommand } from "@/data/hooks/useCommandStore";
+import { usePlugin, useCommandStore } from "@/data/hooks/useCommandStore";
 
 export interface CommandViewerItemProps {
 	cmd: SlashCommand;
@@ -26,7 +26,7 @@ export function CommandViewerItem({
 }: CommandViewerItemProps): ReactElement | null {
 	const plugin = usePlugin();
 	const syncCommands = useCommandStore(state => state.syncCommands);
-	const store = useCommandStore(state => state.store);
+	const addCommand = useCommandStore(state => state.addCommand);
 
 	// Skip rendering if command is not valid for current device or plugin is not available
 	if (!plugin || !isDeviceValid(plugin, cmd.mode)) {
@@ -72,14 +72,14 @@ export function CommandViewerItem({
 					// Only allow adding children to top-level commands
 					if (!isRootCommand(cmd)) return;
 					
-					if (plugin && store) {
+					if (plugin) {
 						const newCommand = await new BindingEditorModal(plugin).awaitSelection();
 						if (newCommand) {
-							// Add command to store first (will be at root level)
-							await store.addCommand(newCommand, false);
+							// Set the parentId to indicate this command belongs to the parent
+							newCommand.parentId = cmd.id;
 							
-							// Then move it to be a child of the parent command
-							await store.moveCommand(newCommand.id, cmd.id);
+							// Add command to store with parentId already set
+							await addCommand(newCommand);
 							
 							// Sync changes to UI and save settings
 							await syncCommands();
