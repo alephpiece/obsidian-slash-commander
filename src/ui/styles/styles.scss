@@ -696,11 +696,13 @@
 
 /* Group collapser content */
 .cmdr-group-collapser-content {
-	margin-left: 10px;
-	margin-top: 4px;
+	margin-left: 18px;
+	margin-top: 6px;
+	margin-bottom: 6px;
+	padding-left: 24px;
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 6px;
 	position: relative;
 
 	&::before {
@@ -708,10 +710,27 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: -0.75rem;
+		left: 0;
 		width: 2px;
 		background-color: var(--background-modifier-border);
 		border-radius: 1px;
+	}
+	
+	/* Add highlight on hover to improve visual hierarchy */
+	&:hover::before {
+		background-color: var(--interactive-accent);
+		opacity: 0.5;
+	}
+	
+	/* Style for child commands to make them visually distinct */
+	.cmdr-command-item {
+		position: relative;
+
+		/* Highlight connector on hover */
+		&:hover::before {
+			background-color: var(--interactive-accent);
+			opacity: 0.5;
+		}
 	}
 }
 
