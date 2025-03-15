@@ -4,6 +4,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Table",
 		id: "editor:insert-table",
+		action: "editor:insert-table",
 		icon: "table-2",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -11,6 +12,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Callout",
 		id: "editor:insert-callout",
+		action: "editor:insert-callout",
 		icon: "indent",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -18,6 +20,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Code",
 		id: "editor:insert-codeblock",
+		action: "editor:insert-codeblock",
 		icon: "terminal",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -25,6 +28,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Math",
 		id: "editor:insert-mathblock",
+		action: "editor:insert-mathblock",
 		icon: "percent",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -32,6 +36,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Embed",
 		id: "editor:insert-embed",
+		action: "editor:insert-embed",
 		icon: "sticky-note",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -39,6 +44,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Attachment",
 		id: "editor:attach-file",
+		action: "editor:attach-file",
 		icon: "paperclip",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -46,6 +52,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Property",
 		id: "markdown:add-metadata-property",
+		action: "markdown:add-metadata-property",
 		icon: "plus-circle",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -53,6 +60,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Admonition",
 		id: "obsidian-admonition:insert-admonition",
+		action: "obsidian-admonition:insert-admonition",
 		icon: "indent",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -60,6 +68,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Excalidraw",
 		id: "obsidian-excalidraw-plugin:excalidraw-autocreate-and-embed-new-tab",
+		action: "obsidian-excalidraw-plugin:excalidraw-autocreate-and-embed-new-tab",
 		icon: "image",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -67,6 +76,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Task",
 		id: "obsidian-tasks-plugin:edit-task",
+		action: "obsidian-tasks-plugin:edit-task",
 		icon: "check-circle",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -74,6 +84,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Template",
 		id: "templater-obsidian:insert-templater",
+		action: "templater-obsidian:insert-templater",
 		icon: "book-copy",
 		mode: "any",
 		triggerMode: "anywhere",
@@ -81,6 +92,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 	{
 		name: "Citation",
 		id: "zotlit:insert-markdown-citation",
+		action: "zotlit:insert-markdown-citation",
 		icon: "book-marked",
 		mode: "desktop",
 		triggerMode: "anywhere",
