@@ -47,6 +47,8 @@
 		"modals.bind.icon.field": "アイコン",
 		"modals.bind.icon.placeholder": "新しいコマンドのアイコンを選択",
 		"modals.bind.icon.required": "アイコンを選択してください",
+		"modals.bind.id.required": "IDは空にできません",
+		"modals.bind.id.not_unique": "このIDは既に使用されています。別のIDを選択してください",
 		"modals.bind.is_group.field": "グループですか？",
 		"modals.bind.name.field": "名前",
 		"modals.bind.name.placeholder": "カスタム名を入力",

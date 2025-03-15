@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import SlashCommanderPlugin from "@/main";
 import {
 	SlashCommand,
-	getCommandFromId,
+	getObsidianCommand,
 	getCommandSourceName,
 	isCommandGroup,
 	isCommandActiveUnique,
@@ -22,7 +22,7 @@ export default function SuggestionComponent({
 	result,
 }: SuggestionProps): ReactElement | null {
 	const { item: scmd } = result;
-	const cmd = getCommandFromId(plugin, scmd.id);
+	const cmd = getObsidianCommand(plugin, scmd);
 	const [settings, setSettings] = useState<CommanderSettings>(plugin.settingsStore.getSettings());
 
 	useEffect(() => {

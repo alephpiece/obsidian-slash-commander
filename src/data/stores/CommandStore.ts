@@ -323,4 +323,23 @@ export default class CommandStore extends EventEmitter {
 
 		await this.commitChanges();
 	}
+
+	// Check if an ID is unique across all commands (including children)
+	public isIdUnique(id: string): boolean {
+		// Check root level
+		if (this.findRootCommand(id)) {
+			return false;
+		}
+		
+		// Check all children
+		for (const cmd of this.commands) {
+			if (cmd.children && cmd.children.length > 0) {
+				if (cmd.children.some(child => child.id === id)) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
 }

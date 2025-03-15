@@ -1,6 +1,8 @@
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import { CommanderSettings } from "@/data/models/Settings";
 import SlashCommanderPlugin from "@/main";
+import { SlashCommand } from "@/data/models/SlashCommand";
+import { generateUniqueId } from "@/services/utils/util";
 
 export default class SettingsStore {
 	private plugin: SlashCommanderPlugin;
@@ -18,6 +20,10 @@ export default class SettingsStore {
 		const data = Object.assign({}, DEFAULT_SETTINGS, await this.plugin.loadData());
 		this.data = data;
 		this.data.queryPattern = this.buildQueryPattern(this.data);
+		
+		// Migrate old command data format
+		await this.migrateCommandData();
+		
 		return this.getSettings();
 	}
 
@@ -69,5 +75,71 @@ export default class SettingsStore {
 			`^(?<fullQuery>(?:${escapedTriggers.join("|")})(?<commandQuery>.*))`,
 			"d"
 		);
+	}
+
+	/**
+	 * Migrate old SlashCommand data format to new format
+	 * Old format: id stores Obsidian command ID
+	 * New format: id is a unique identifier, action stores Obsidian command ID
+	 */
+	private async migrateCommandData(): Promise<void> {
+		if (!this.data.bindings || this.data.bindings.length === 0) return;
+		
+		// Check if migration is needed (any command missing action or isGroup field)
+		const needsMigration = this.data.bindings.some(cmd => 
+			!('action' in cmd) || cmd.action === undefined || 
+			!('isGroup' in cmd) || cmd.isGroup === undefined
+		);
+		
+		if (!needsMigration) {
+			console.log("SlashCommander: data is already in the new format, no migration needed");
+			return;
+		}
+		
+		console.log("SlashCommander: start migrating data to the new format");
+		
+		// Collect all existing IDs to detect duplicates
+		const existingIds = new Set<string>();
+		
+		// Recursive migration function
+		const migrateCommand = (cmd: SlashCommand): SlashCommand => {
+			// If no action field, copy id to action
+			if (!('action' in cmd) || cmd.action === undefined) {
+				cmd.action = cmd.id;
+			}
+			
+			// Set isGroup field
+			if (!('isGroup' in cmd) || cmd.isGroup === undefined) {
+				// Determine if it's a command group by checking for child commands
+				cmd.isGroup = (cmd.children && cmd.children.length > 0);
+				
+				// Special handling for IDs with old group prefix format
+				if (cmd.id.startsWith("slash-commander:group-")) {
+					cmd.isGroup = true;
+				}
+			}
+			
+			// Check if ID already exists, generate a new one if it does
+			if (existingIds.has(cmd.id)) {
+				cmd.id = generateUniqueId();
+			}
+			
+			// Record existing ID to avoid future conflicts
+			existingIds.add(cmd.id);
+			
+			// Recursively process child commands
+			if (cmd.children && cmd.children.length > 0) {
+				cmd.children = cmd.children.map(migrateCommand);
+			}
+			
+			return cmd;
+		};
+		
+		// Migrate all root commands
+		this.data.bindings = this.data.bindings.map(migrateCommand);
+		
+		// Save migrated data
+		await this.saveSettings();
+		console.log("SlashCommander: data migrated");
 	}
 }

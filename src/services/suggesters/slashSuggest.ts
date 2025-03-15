@@ -103,10 +103,8 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 		// Delete the trigger and command query.
 		this.context?.editor.replaceRange("", this.context.start, this.context.end);
 
-		if (!isCommandGroup(result.item)) {
-			if (result.item.id) {
-				this.plugin.app.commands.executeCommandById(result.item.id);
-			}
+		if (!isCommandGroup(result.item) && result.item.action) {
+			this.plugin.app.commands.executeCommandById(result.item.action);
 		} else {
 			// Open sub-suggester with child commands
 			const subSuggester = new SubSuggest(

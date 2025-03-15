@@ -241,7 +241,7 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
 		return item.name;
 	}
 	public onChooseItem(item: SlashCommand): void {
-		if (item) this.plugin.app.commands.executeCommandById(item.id);
+		if (item && item.action) this.plugin.app.commands.executeCommandById(item.action);
 	}
 	public selectSuggestion({ item }: FuzzyMatch<SlashCommand>): void {
 		this.onChooseItem(item);
@@ -254,7 +254,7 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
 			div.setText(this.emptyStateText);
 			return;
 		}
-		if (result.item.isChild) return;
+		if (result.item.parentId) return; // is child
 
 		const root = createRoot(el);
 		root.render(createElement(SuggestionComponent, { plugin: this.plugin, result }));

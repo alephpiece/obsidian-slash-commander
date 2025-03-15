@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { FuzzyMatch, Modal, setIcon } from "obsidian";
-import { SlashCommand, DeviceMode, TriggerMode, isCommandGroup, generateGroupUUID } from "@/data/models/SlashCommand";
+import { SlashCommand, DeviceMode, TriggerMode, isCommandGroup } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
 import { ICON_LIST } from "@/data/constants/icons";
 import { Command } from "obsidian";
-import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils/util";
+import { getDeviceModeInfo, getTriggerModeInfo, generateUniqueId } from "@/services/utils/util";
 
 /**
  * Modal for adding a new binding with all options in one interface
@@ -22,6 +22,8 @@ export default class BindingEditorModal extends Modal {
 
 	private isGroup = false;
 	private name = "";
+	private id = "";
+	private generated_id = "";
 	private selectedCommand: Command | null = null;
 	private selectedIcon = "";
 	private triggerMode: TriggerMode = "anywhere";
@@ -36,17 +38,23 @@ export default class BindingEditorModal extends Modal {
 		super(plugin.app);
 		this.plugin = plugin;
 		this.commands = Object.values(plugin.app.commands.commands);
-		
+
+		this.generated_id = generateUniqueId();
+
 		// If editing an existing command, initialize with its values
 		if (existingCommand) {
 			this.name = existingCommand.name;
+			this.id = existingCommand.id || this.generated_id;
 			this.selectedIcon = existingCommand.icon;
 			this.triggerMode = existingCommand.triggerMode || "anywhere";
 			this.deviceMode = existingCommand.mode || "any";
 			this.isGroup = isCommandGroup(existingCommand);
-			
-			// Find the command by ID to populate selectedCommand
-			this.selectedCommand = this.commands.find(cmd => cmd.id === existingCommand.id) || null;
+
+			// If editing an existing command, use its action to find the corresponding command
+			if (existingCommand.action) {
+				this.selectedCommand =
+					this.commands.find(cmd => cmd.id === existingCommand.action) || null;
+			}
 		}
 	}
 
@@ -65,8 +73,8 @@ export default class BindingEditorModal extends Modal {
 
 		// Header - show different title based on whether we're editing or creating
 		const isEditing = !!this.selectedCommand;
-		contentEl.createEl("h2", { 
-			text: isEditing ? t("modals.bind.title_edit") : t("modals.bind.title_add") 
+		contentEl.createEl("h2", {
+			text: isEditing ? t("modals.bind.title_edit") : t("modals.bind.title_add"),
 		});
 
 		// Command group switch
@@ -74,6 +82,9 @@ export default class BindingEditorModal extends Modal {
 
 		// Name field
 		this.createNameField(contentEl);
+
+		// ID field
+		this.createIdField(contentEl);
 
 		// Command field
 		this.createCommandField(contentEl);
@@ -108,15 +119,15 @@ export default class BindingEditorModal extends Modal {
 			}
 			this.close();
 		});
-		
-		// 确保初始状态的提示显示正确
+
+		// Ensure the initial state of the tip display is correct
 		this.updateCommandFieldTip();
 	}
 
 	onClose() {
 		const { contentEl } = this;
 		contentEl.empty();
-		
+
 		// Only reject if not already resolved/rejected
 		if (this.resolve && this.reject) {
 			// This handles unexpected closures (like pressing Escape key)
@@ -129,30 +140,30 @@ export default class BindingEditorModal extends Modal {
 	private createGroupSwitch(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item mod-toggle" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		
+
 		// Add label for group switch
-		titleContainer.createDiv({ 
-			cls: "cmdr-setting-item-name", 
-			text: t("modals.bind.is_group.field") 
+		titleContainer.createDiv({
+			cls: "cmdr-setting-item-name",
+			text: t("modals.bind.is_group.field"),
 		});
-		
+
 		// Add toggle to the same line as text (as a child of titleContainer)
-		const toggleEl = titleContainer.createDiv({ 
+		const toggleEl = titleContainer.createDiv({
 			cls: `checkbox-container ${this.isGroup ? "is-enabled" : ""}`,
-			attr: { style: "margin-left: auto;" } // Position toggle to the right
+			attr: { style: "margin-left: auto;" }, // Position toggle to the right
 		});
-		
+
 		// Handle click on toggle
 		toggleEl.addEventListener("click", () => {
 			this.isGroup = !this.isGroup;
-			
+
 			// Update toggle appearance
 			if (this.isGroup) {
 				toggleEl.addClass("is-enabled");
 			} else {
 				toggleEl.removeClass("is-enabled");
 			}
-			
+
 			// Update command field tip visibility
 			this.updateCommandFieldTip();
 		});
@@ -161,14 +172,17 @@ export default class BindingEditorModal extends Modal {
 	private createNameField(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		titleContainer.createDiv({ cls: "cmdr-setting-item-name", text: t("modals.bind.name.field") });
-		
+		titleContainer.createDiv({
+			cls: "cmdr-setting-item-name",
+			text: t("modals.bind.name.field"),
+		});
+
 		const input = wrapper.createEl("input", {
 			type: "text",
 			cls: "cmdr-input",
 			placeholder: t("modals.bind.name.placeholder"),
 		});
-		
+
 		// Preset input value if editing
 		if (this.name) {
 			input.value = this.name;
@@ -183,33 +197,65 @@ export default class BindingEditorModal extends Modal {
 		wrapper.createDiv({ cls: "cmdr-setting-error" });
 	}
 
+	private createIdField(container: HTMLElement) {
+		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
+		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
+		titleContainer.createDiv({ cls: "cmdr-setting-item-name", text: "ID" });
+
+		const input = wrapper.createEl("input", {
+			type: "text",
+			cls: "cmdr-input",
+			placeholder: this.generated_id,
+		});
+
+		input.addEventListener("input", e => {
+			this.id = (e.target as HTMLInputElement).value;
+			this.clearError("id", wrapper);
+
+			// If ID is not empty, check uniqueness
+			if (this.id) {
+				const store = this.plugin.commandStore;
+				if (store && !store.isIdUnique(this.id)) {
+					this.setError("id", t("modals.bind.id.not_unique"), wrapper);
+				}
+			}
+		});
+
+		if (!this.id) {
+			this.id = this.generated_id;
+		}
+
+		// Error container
+		wrapper.createDiv({ cls: "cmdr-setting-error" });
+	}
+
 	private createCommandField(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		
+
 		// Create container for title and optional tip
 		const titleWithTip = titleContainer.createDiv({ cls: "cmdr-setting-title-with-tip" });
-		titleWithTip.createDiv({ 
-			cls: "cmdr-setting-item-name", 
-			text: t("modals.bind.command.field") 
+		titleWithTip.createDiv({
+			cls: "cmdr-setting-item-name",
+			text: t("modals.bind.command.field"),
 		});
-		
+
 		// Add optional tip text (initially may be hidden)
-		const tipEl = titleWithTip.createDiv({ 
+		const tipEl = titleWithTip.createDiv({
 			cls: "cmdr-setting-item-tip",
 			text: t("modals.bind.command.tip_optional"),
-			attr: { 
-				style: this.isGroup ? "display: inline;" : "display: none;" 
-			}
+			attr: {
+				style: this.isGroup ? "display: inline;" : "display: none;",
+			},
 		});
-		
+
 		const suggestWrapper = wrapper.createDiv({ cls: "cmdr-suggest-wrapper" });
 		const input = suggestWrapper.createEl("input", {
 			type: "text",
 			cls: "cmdr-input",
 			placeholder: t("modals.bind.command.placeholder"),
 		});
-		
+
 		// Preset input value if editing
 		if (this.selectedCommand) {
 			input.value = this.selectedCommand.name;
@@ -303,9 +349,11 @@ export default class BindingEditorModal extends Modal {
 							this.clearError("icon", iconWrapper);
 						}
 					}
-					
+
 					// Update icon preview
-					const iconPreview = this.contentEl.querySelector(".cmdr-icon-preview") as HTMLElement;
+					const iconPreview = this.contentEl.querySelector(
+						".cmdr-icon-preview"
+					) as HTMLElement;
 					if (iconPreview) {
 						iconPreview.empty();
 						setIcon(iconPreview, command.icon);
@@ -318,9 +366,12 @@ export default class BindingEditorModal extends Modal {
 	private createIconField(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		
-		titleContainer.createDiv({ cls: "cmdr-setting-item-name", text: t("modals.bind.icon.field") });
-		
+
+		titleContainer.createDiv({
+			cls: "cmdr-setting-item-name",
+			text: t("modals.bind.icon.field"),
+		});
+
 		// Create icon preview container
 		const iconPreview = titleContainer.createDiv({ cls: "cmdr-icon-preview" });
 		if (this.selectedIcon) {
@@ -333,7 +384,7 @@ export default class BindingEditorModal extends Modal {
 			cls: "cmdr-input cmdr-icon-input",
 			placeholder: t("modals.bind.icon.placeholder"),
 		});
-		
+
 		// Preset input value if editing and has an icon
 		if (this.selectedIcon) {
 			input.value = this.selectedIcon;
@@ -374,7 +425,7 @@ export default class BindingEditorModal extends Modal {
 
 		// Error container
 		wrapper.createDiv({ cls: "cmdr-setting-error" });
-		
+
 		return { iconPreview };
 	}
 
@@ -414,9 +465,11 @@ export default class BindingEditorModal extends Modal {
 				this.selectedIcon = icon;
 				(container.parentElement?.querySelector("input") as HTMLInputElement).value = icon;
 				container.style.display = "none";
-				
+
 				// Update icon preview
-				const iconPreview = this.contentEl.querySelector(".cmdr-icon-preview") as HTMLElement;
+				const iconPreview = this.contentEl.querySelector(
+					".cmdr-icon-preview"
+				) as HTMLElement;
 				if (iconPreview) {
 					iconPreview.empty();
 					setIcon(iconPreview, icon);
@@ -428,13 +481,16 @@ export default class BindingEditorModal extends Modal {
 	private createTriggerModeField(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		titleContainer.createDiv({ cls: "cmdr-setting-item-name", text: t("modals.bind.trigger_mode.field") });
-		
+		titleContainer.createDiv({
+			cls: "cmdr-setting-item-name",
+			text: t("modals.bind.trigger_mode.field"),
+		});
+
 		// Create trigger mode icon preview
 		const { triggerModeIcon } = getTriggerModeInfo(this.triggerMode);
 		const iconPreview = titleContainer.createDiv({ cls: "cmdr-icon-preview" });
 		setIcon(iconPreview, triggerModeIcon);
-		
+
 		const select = wrapper.createEl("select", { cls: "dropdown" });
 
 		const options: TriggerMode[] = ["anywhere", "newline", "inline"];
@@ -451,7 +507,7 @@ export default class BindingEditorModal extends Modal {
 
 		select.addEventListener("change", () => {
 			this.triggerMode = select.value as TriggerMode;
-			
+
 			// Update trigger mode icon
 			const { triggerModeIcon } = getTriggerModeInfo(this.triggerMode);
 			iconPreview.empty();
@@ -462,13 +518,16 @@ export default class BindingEditorModal extends Modal {
 	private createDeviceModeField(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		titleContainer.createDiv({ cls: "cmdr-setting-item-name", text: t("modals.bind.device_mode.field") });
-		
+		titleContainer.createDiv({
+			cls: "cmdr-setting-item-name",
+			text: t("modals.bind.device_mode.field"),
+		});
+
 		// Create device mode icon preview
 		const { deviceModeIcon } = getDeviceModeInfo(this.deviceMode);
 		const iconPreview = titleContainer.createDiv({ cls: "cmdr-icon-preview" });
 		setIcon(iconPreview, deviceModeIcon);
-		
+
 		const select = wrapper.createEl("select", { cls: "dropdown" });
 
 		const options: DeviceMode[] = ["any", "desktop", "mobile"];
@@ -485,7 +544,7 @@ export default class BindingEditorModal extends Modal {
 
 		select.addEventListener("change", () => {
 			this.deviceMode = select.value as DeviceMode;
-			
+
 			// Update device mode icon
 			const { deviceModeIcon } = getDeviceModeInfo(this.deviceMode);
 			iconPreview.empty();
@@ -523,11 +582,29 @@ export default class BindingEditorModal extends Modal {
 		this.clearAllErrors();
 		let isValid = true;
 
+		// Validate ID
+		if (!this.id) {
+			const idWrapper = this.contentEl.querySelectorAll(
+				".cmdr-setting-item"
+			)[2] as HTMLElement;
+			this.setError("id", t("modals.bind.id.required"), idWrapper);
+			isValid = false;
+		} else {
+			const idWrapper = this.contentEl.querySelectorAll(
+				".cmdr-setting-item"
+			)[2] as HTMLElement;
+			const store = this.plugin.commandStore;
+			if (store && !store.isIdUnique(this.id)) {
+				this.setError("id", t("modals.bind.id.not_unique"), idWrapper);
+				isValid = false;
+			}
+		}
+
 		// Validate command (not required for command groups)
 		if (!this.isGroup && !this.selectedCommand) {
 			const commandWrapper = this.contentEl.querySelectorAll(
 				".cmdr-setting-item"
-			)[2] as HTMLElement;
+			)[3] as HTMLElement;
 			this.setError("command", t("modals.bind.command.required"), commandWrapper);
 			isValid = false;
 		}
@@ -536,7 +613,7 @@ export default class BindingEditorModal extends Modal {
 		if (!this.selectedIcon) {
 			const iconWrapper = this.contentEl.querySelectorAll(
 				".cmdr-setting-item"
-			)[3] as HTMLElement;
+			)[4] as HTMLElement;
 			this.setError("icon", t("modals.bind.icon.required"), iconWrapper);
 			isValid = false;
 		}
@@ -552,20 +629,25 @@ export default class BindingEditorModal extends Modal {
 
 		const name = this.name || (this.selectedCommand ? this.selectedCommand.name : "New Group");
 		
-		let commandId = "";
+		// Use action to store Obsidian command ID
+		let commandAction = "";
 		if (this.selectedCommand) {
-			commandId = this.selectedCommand.id;
-		} else if (this.isGroup) {
-			// Generate a random ID for command groups if no command selected
-			commandId = generateGroupUUID();
+			commandAction = this.selectedCommand.id;
 		}
-
+		
+		// Ensure there's a unique ID, use generated ID as fallback
+		if (!this.id || this.id.trim() === "") {
+			this.id = this.generated_id;
+		}
+		
 		const newCommand: SlashCommand = {
-			id: commandId,
+			id: this.id,  // Use unique identifier
 			icon: this.selectedIcon,
 			name: name,
+			action: commandAction,  // Store Obsidian command ID
 			mode: this.deviceMode,
 			triggerMode: this.triggerMode,
+			isGroup: this.isGroup,  // Use isGroup field to mark command group
 			children: this.isGroup ? [] : undefined,
 		};
 

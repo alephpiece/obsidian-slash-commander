@@ -1,5 +1,6 @@
 import { Command } from "obsidian";
 import SlashCommanderPlugin from "@/main";
+import { generateUniqueId } from "@/services/utils/util";
 
 export type DeviceMode = "any" | "desktop" | "mobile" | string;
 export type TriggerMode = "anywhere" | "newline" | "inline" | string;
@@ -8,9 +9,11 @@ export interface SlashCommand {
 	name: string;
 	icon: string;
 	id: string;
+	action?: string;
 	mode?: DeviceMode;
 	triggerMode?: TriggerMode;
 	color?: string;
+	isGroup?: boolean;
 
 	// Parent command ID, undefined means root command
 	parentId?: string;
@@ -19,14 +22,14 @@ export interface SlashCommand {
 	children?: SlashCommand[];
 }
 
-export function getCommandFromId(plugin: SlashCommanderPlugin, id: string): Command | null {
-	return plugin.app.commands.commands[id] ?? null;
+export function getObsidianCommand(plugin: SlashCommanderPlugin, scmd: SlashCommand): Command | null {
+	return plugin.app.commands.commands[scmd.action ?? ""] ?? null;
 }
 
 export function isValidSuggestItem(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
 	return (
 		isCommandActive(plugin, scmd) &&
-		(!!getCommandFromId(plugin, scmd.id) || isCommandGroup(scmd))
+		(!!getObsidianCommand(plugin, scmd) || isCommandGroup(scmd))
 	);
 }
 
@@ -75,11 +78,13 @@ export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashC
 }
 
 export function isRootCommand(scmd: SlashCommand): boolean {
-	return !scmd.parentId || isGroupUUID(scmd.id);
+	// Command without parent is a root command
+	return !scmd.parentId;
 }
 
 export function isCommandGroup(scmd: SlashCommand): boolean {
-	return isGroupUUID(scmd.id) || (!scmd.parentId && (scmd.children?.length ?? 0) > 0);
+	// Prioritize explicit isGroup field, compatible with old data that has child commands
+	return scmd.isGroup === true || (!scmd.parentId && (scmd.children?.length ?? 0) > 0);
 }
 
 export function getChildCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
@@ -87,24 +92,21 @@ export function getChildCommands(commands: SlashCommand[], parentId: string): Sl
 	return parentCmd?.children || [];
 }
 
-export function generateGroupUUID(): string {
-	return "slash-commander:group-" + crypto.randomUUID();
-}
-
-export function isGroupUUID(uuid: string): boolean {
-	return uuid.startsWith("slash-commander:group-");
-}
-
 /**
  * Generates a new command with default values and optional overrides
  */
 export function generateNewCommand(options: Partial<SlashCommand> = {}): SlashCommand {
+	// Determine if it's a group by children existence or explicit isGroup setting
+	const isGroup = options.isGroup !== undefined ? options.isGroup : !!options.children?.length;
+	
 	return {
-		id: generateGroupUUID(),
+		id: options.id || generateUniqueId(), // Generate a unique ID
 		name: "New Command",
 		icon: "command",
+		action: options.action,
 		parentId: undefined, // Default to root command
 		children: [],
+		isGroup, // Set the flag indicating whether it's a command group
 		...options
 	};
 }

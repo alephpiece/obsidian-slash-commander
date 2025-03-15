@@ -1,6 +1,30 @@
 import { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
+import { useCommandStore } from "@/data/hooks/useCommandStore";
+
+/**
+ * Generates a unique ID that doesn't conflict with any existing SlashCommand
+ * @param prefix Optional prefix for the ID
+ * @returns A unique ID string
+ */
+export function generateUniqueId(prefix = ""): string {
+	const store = useCommandStore.getState().store;
+	
+	// Exit early if store isn't available
+	if (!store) {
+		return prefix + crypto.randomUUID();
+	}
+	
+	// Generate a random ID
+	let id: string;
+	do {
+		id = prefix + crypto.randomUUID();
+		// Check if this ID already exists in the store
+	} while (!store.isIdUnique(id));
+	
+	return id;
+}
 
 export function isTriggerInConflicts(plugin: SlashCommanderPlugin): boolean {
 	const settings = plugin.settingsStore.getSettings();

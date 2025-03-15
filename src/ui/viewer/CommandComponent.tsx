@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import SlashCommanderPlugin from "@/main";
 import {
 	SlashCommand,
-	getCommandFromId,
+	getObsidianCommand,
 	getCommandSourceName,
 	isCommandGroup,
 	isRootCommand,
@@ -43,7 +43,7 @@ export function CommandComponent({
 	handleCollapse,
 }: CommandProps): ReactElement {
 	const { t } = useTranslation();
-	const cmd = getCommandFromId(plugin, pair.id);
+	const cmd = getObsidianCommand(plugin, pair);
 	if (!isCommandGroup(pair) && !cmd) {
 		return <UnavailableCommandComponent pair={pair} handleRemove={handleRemove} />;
 	}
@@ -75,7 +75,10 @@ export function CommandComponent({
 					/>
 				</div>
 				{cmd && Platform.isDesktop && !isCommandGroup(pair) && (
-					<div className="setting-item-description" aria-label={`id: "${pair.id}"`}>
+					<div
+						className="setting-item-description"
+						aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
+					>
 						{t("bindings.source", {
 							plugin_name: getCommandSourceName(plugin, cmd),
 						})}
@@ -124,6 +127,7 @@ export function CommandComponent({
 									pair.icon = updatedCommand.icon;
 									pair.mode = updatedCommand.mode;
 									pair.triggerMode = updatedCommand.triggerMode;
+									pair.action = updatedCommand.action;
 
 									// Sync changes
 									handleRename(updatedCommand.name);
@@ -185,7 +189,7 @@ function UnavailableCommandComponent({
 				icon="alert-triangle"
 				size="var(--icon-l) + 4px"
 				className="cmdr-icon mod-warning"
-				aria-label={`id: "${pair.id}"`}
+				aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
 			/>
 			<div className="setting-item-info">
 				<div className="setting-item-name">{pair.name}</div>

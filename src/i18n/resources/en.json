@@ -47,6 +47,8 @@
 		"modals.bind.icon.field": "Icon",
 		"modals.bind.icon.placeholder": "Choose an icon for your new command",
 		"modals.bind.icon.required": "Please select an icon",
+		"modals.bind.id.required": "ID cannot be empty",
+		"modals.bind.id.not_unique": "This ID is already in use, please choose another one",
 		"modals.bind.is_group.field": "Is group?",
 		"modals.bind.name.field": "Name",
 		"modals.bind.name.placeholder": "Enter a custom name",
