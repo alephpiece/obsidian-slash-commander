@@ -18,7 +18,7 @@ interface CommandState {
 	updateCommands: (commands: SlashCommand[]) => Promise<void>;
 	addCommand: (command: SlashCommand) => Promise<void>;
 	removeCommand: (commandId: string) => Promise<void>;
-	moveCommand: (commandId: string, targetDepth?: number, targetParentId?: string) => Promise<void>;
+	moveCommand: (commandId: string, targetParentId?: string) => Promise<void>;
 	syncCommands: () => Promise<void>;
 	restoreDefault: () => Promise<void>;
 
@@ -81,10 +81,10 @@ export const useCommandStore = create<CommandState>((set, get) => ({
 	},
 
 	// Move a command
-	moveCommand: async (commandId, targetDepth = 0, targetParentId) => {
+	moveCommand: async (commandId, targetParentId) => {
 		const { store } = get();
 		if (store) {
-			await store.moveCommand(commandId, targetDepth, targetParentId);
+			await store.moveCommand(commandId, targetParentId);
 		}
 	},
 
@@ -165,12 +165,12 @@ export function addChildCommand(
 	
 	const newCommand = generateNewCommand({
 		...options,
-		depth: 1,
+		parentId
 	});
 	
 	// Add the command first
 	return store.addCommand(newCommand).then(() => {
 		// Then move it under the parent
-		return store.moveCommand(newCommand.id, 1, parentId);
+		return store.moveCommand(newCommand.id, parentId);
 	});
 }

@@ -35,14 +35,17 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 				onCollapse={(): void => setCollapsed(!collapsed)}
 			/>
 			{!collapsed && (
-				<div className="cmdr-group-collapser-content">
+				<div className="cmdr-group-collapser-content" data-container-type="group" data-group-id={cmd.id}>
 					<ReactSortable
 						list={childCommands}
 						setList={(newState): void => {
 							// React-sortablejs requires this callback,
 							// but we'll handle actual updates in onSort
 						}}
-						group="commands"
+						group={{
+							name: "commands",
+							put: ["root"]  // Allow dragging from root list
+						}}
 						delay={100}
 						delayOnTouchOnly={true}
 						animation={200}
@@ -52,37 +55,83 @@ export function CommandViewerItemGroup({ cmd }: CommandViewerItemGroupProps): Re
 						dragClass="cmdr-sortable-drag"
 						ghostClass="cmdr-sortable-ghost"
 						onSort={({ oldIndex, newIndex, from, to }): void => {
-							if (oldIndex === undefined || newIndex === undefined || from !== to) return;
+							if (oldIndex === undefined || newIndex === undefined) return;
 							
-							// Create a new array with updated order
-							const updatedChildCommands = [...childCommands];
-							const [removed] = updatedChildCommands.splice(oldIndex, 1);
-							updatedChildCommands.splice(newIndex, 0, removed);
+							// Handle reordering within child commands group
+							if (from === to) {
+								// Create a new array with updated order
+								const updatedChildCommands = [...childCommands];
+								const [removed] = updatedChildCommands.splice(oldIndex, 1);
+								updatedChildCommands.splice(newIndex, 0, removed);
 
-							// Ensure all child commands have depth=1
-							for (let i = 0; i < updatedChildCommands.length; i++) {
-								updatedChildCommands[i] = {
-									...updatedChildCommands[i],
-									depth: 1
+								// Ensure all child commands have the correct parentId
+								for (let i = 0; i < updatedChildCommands.length; i++) {
+									updatedChildCommands[i] = {
+										...updatedChildCommands[i],
+										parentId: cmd.id
+									};
+								}
+
+								// Update the parent's children array
+								const updatedCmd = {
+									...cmd,
+									children: updatedChildCommands
 								};
-							}
 
-							// Update the parent's children array
-							const updatedCmd = {
-								...cmd,
-								children: updatedChildCommands
-							};
-
-							// Update only the parent command in the commands array
-							const newCommands = [...commands];
-							const commandIndex = newCommands.findIndex(c => c.id === cmd.id);
-							
-							if (commandIndex !== -1) {
-								newCommands[commandIndex] = updatedCmd;
+								// Update only the parent command in the commands array
+								const newCommands = [...commands];
+								const commandIndex = newCommands.findIndex(c => c.id === cmd.id);
 								
-								// Update state and save changes
-								updateCommands(newCommands);
-								plugin?.saveSettings();
+								if (commandIndex !== -1) {
+									newCommands[commandIndex] = updatedCmd;
+									
+									// Update state and save changes
+									updateCommands(newCommands);
+									plugin?.saveSettings();
+								}
+							}
+						}}
+						onEnd={(evt): void => {
+							// Handle dragging from root to child group
+							if (evt.from !== evt.to && evt.to.closest(`[data-group-id="${cmd.id}"]`)) {
+								// Get dragged command ID
+								const draggedId = evt.item.dataset.id;
+								if (!draggedId) return;
+								
+								// Find the dragged command
+								const movedCommand = commands.find(c => c.id === draggedId);
+								// Only proceed if command exists and is a root command
+								if (!movedCommand || movedCommand.parentId) return;
+								
+								// Create updated command list and remove from root level
+								const updatedCommands = commands.filter(c => c.id !== draggedId);
+								
+								// Prepare command with updated parent reference
+								const updatedCommand = {
+									...movedCommand,
+									parentId: cmd.id
+								};
+								
+								// Find and update the parent group command
+								const parentIndex = updatedCommands.findIndex(c => c.id === cmd.id);
+								if (parentIndex !== -1) {
+									// Clone parent and its children
+									const updatedParent = {...updatedCommands[parentIndex]};
+									const updatedChildCommands = [...(updatedParent.children || [])];
+									
+									// Insert dragged command at target position
+									updatedChildCommands.splice(evt.newDraggableIndex || 0, 0, updatedCommand);
+									
+									// Update parent with new children array
+									updatedCommands[parentIndex] = {
+										...updatedParent,
+										children: updatedChildCommands
+									};
+									
+									// Update state and save
+									updateCommands(updatedCommands);
+									plugin?.saveSettings();
+								}
 							}
 						}}
 					>

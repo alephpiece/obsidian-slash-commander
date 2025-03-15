@@ -3,6 +3,7 @@ import SlashCommanderPlugin from "@/main";
 import {
 	SlashCommand,
 	isCommandActive,
+	isRootCommand,
 	isValidSuggestItem,
 } from "@/data/models/SlashCommand";
 
@@ -126,7 +127,7 @@ export default class CommandStore extends EventEmitter {
 	}
 
 	public getRootCommands(): SlashCommand[] {
-		return this.getAllCommands().filter(cmd => cmd.depth === 0 || cmd.depth === undefined);
+		return this.getAllCommands().filter(cmd => isRootCommand(cmd));
 	}
 
 	public getCommandChildren(parentId: string): SlashCommand[] {
@@ -157,11 +158,6 @@ export default class CommandStore extends EventEmitter {
 	public async addCommand(scmd: SlashCommand, newlyAdded = true): Promise<void> {
 		if (!scmd.children) {
 			scmd.children = [];
-		}
-		
-		// Set depth to 0 (root level) if not specified
-		if (scmd.depth === undefined) {
-			scmd.depth = 0;
 		}
 
 		// Add to the array and index
@@ -200,7 +196,7 @@ export default class CommandStore extends EventEmitter {
 		}
 	}
 
-	public async moveCommand(commandId: string, targetDepth: number = 0, targetParentId?: string): Promise<void> {
+	public async moveCommand(commandId: string, targetParentId?: string): Promise<void> {
 		const command = this.getCommandById(commandId);
 		if (!command) return;
 
@@ -211,8 +207,8 @@ export default class CommandStore extends EventEmitter {
 			}
 		}
 
-		// Update depth
-		command.depth = targetDepth;
+		// Update parentId
+		command.parentId = targetParentId;
 
 		// Add to target parent's children if specified
 		if (targetParentId) {
@@ -239,7 +235,7 @@ export default class CommandStore extends EventEmitter {
 		this.commands = DEFAULT_SETTINGS.bindings.map(cmd => {
 			const newCmd: SlashCommand = { ...cmd };
 			newCmd.children = [];
-			newCmd.depth = 0;
+			newCmd.parentId = undefined;
 			return newCmd;
 		});
 

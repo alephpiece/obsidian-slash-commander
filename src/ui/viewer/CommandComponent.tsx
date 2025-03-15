@@ -6,7 +6,7 @@ import {
 	getCommandFromId,
 	getCommandSourceName,
 	isCommandGroup,
-	isParentCommand,
+	isRootCommand,
 } from "@/data/models/SlashCommand";
 import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
@@ -100,7 +100,7 @@ export function CommandComponent({
 						}
 					/>
 				)}
-				{isParentCommand(pair) && handleAddChild && (
+				{isRootCommand(pair) && handleAddChild && (
 					<ObsidianIcon
 						icon="plus-circle"
 						className="setting-editor-extra-setting-button clickable-icon"

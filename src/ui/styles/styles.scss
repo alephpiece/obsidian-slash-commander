@@ -617,6 +617,10 @@
 			padding-top: 6px;
 			padding-bottom: 6px;
 		}
+
+		> *:first-child {
+			margin-inline-end: var(--size-2-3);
+		}
 	}
 
 	/* Icon */

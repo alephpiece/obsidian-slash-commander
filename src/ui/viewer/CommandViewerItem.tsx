@@ -1,10 +1,10 @@
 import { ReactElement } from "react";
-import { SlashCommand, isParentCommand, isDeviceValid } from "@/data/models/SlashCommand";
+import { SlashCommand, isRootCommand, isDeviceValid, isCommandGroup } from "@/data/models/SlashCommand";
 import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
-import { usePlugin, useCommandStore } from "@/data/hooks/useCommandStore";
+import { usePlugin, useCommandStore, addChildCommand } from "@/data/hooks/useCommandStore";
 
 export interface CommandViewerItemProps {
 	cmd: SlashCommand;
@@ -34,7 +34,12 @@ export function CommandViewerItem({
 	}
 
 	return (
-		<div className="cmdr-command-item">
+		<div 
+			className={`cmdr-command-wrapper cmdr-command-item ${
+				isCommandGroup(cmd) ? "is-group" : ""
+			}`}
+			data-id={cmd.id}
+		>
 			<CommandComponent
 				pair={cmd}
 				plugin={plugin}
@@ -64,21 +69,23 @@ export function CommandViewerItem({
 					syncCommands();
 				}}
 				handleAddChild={async (): Promise<void> => {
+					// Only allow adding children to top-level commands
+					if (!isRootCommand(cmd)) return;
+					
 					if (plugin && store) {
 						const newCommand = await new BindingEditorModal(plugin).awaitSelection();
 						if (newCommand) {
-							// Set depth for new child command
-							newCommand.depth = 1;
+							// Set parentId and add to parent's children array
+							newCommand.parentId = cmd.id;
 							
-							// Add to store
-							await store.addCommand(newCommand, false);
-							
-							// Update parent's children array
+							// Ensure parent has a children array
 							if (!cmd.children) {
 								cmd.children = [];
 							}
 							cmd.children.push(newCommand);
 							
+							// Add command to store and save
+							await store.addCommand(newCommand, false);
 							await syncCommands();
 						}
 					}

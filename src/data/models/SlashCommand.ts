@@ -12,10 +12,10 @@ export interface SlashCommand {
 	triggerMode?: TriggerMode;
 	color?: string;
 
-	// Depth level in command hierarchy (0 = root level)
-	depth?: number;
+	// Parent command ID, undefined means root command
+	parentId?: string;
 
-	// Direct reference to child commands for tree structure
+	// Directly reference child commands (tree structure)
 	children?: SlashCommand[];
 }
 
@@ -74,12 +74,12 @@ export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashC
 	return matches.length === 1;
 }
 
-export function isParentCommand(scmd: SlashCommand): boolean {
-	return scmd.depth === 0 || scmd.depth === undefined;
+export function isRootCommand(scmd: SlashCommand): boolean {
+	return !scmd.parentId; // No parent ID means root command
 }
 
 export function isCommandGroup(scmd: SlashCommand): boolean {
-	return isParentCommand(scmd) && (scmd.children?.length ?? 0) > 0;
+	return !scmd.parentId && (scmd.children?.length ?? 0) > 0;
 }
 
 export function getChildCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
@@ -95,7 +95,7 @@ export function generateNewCommand(options: Partial<SlashCommand> = {}): SlashCo
 		id: crypto.randomUUID(),
 		name: "New Command",
 		icon: "command",
-		depth: 0,
+		parentId: undefined, // Default to root command
 		children: [],
 		...options
 	};
