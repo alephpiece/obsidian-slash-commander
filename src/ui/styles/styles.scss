@@ -435,8 +435,9 @@
 	}
 }
 
-.cmdr-icon.clickable-icon.mod-warning {
+.cmdr-icon.mod-warning {
 	cursor: default;
+	padding: 4px 6px;
 }
 
 .cmdr-hider-title {
@@ -607,7 +608,7 @@
 	.setting-item {
 		display: flex;
 		align-items: center;
-		padding: 6px 12px;
+		padding: 6px 2px;
 		border-top: none;
 		margin: 0;
 		width: 100%;

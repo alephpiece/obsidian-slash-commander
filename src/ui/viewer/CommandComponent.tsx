@@ -75,7 +75,7 @@ export function CommandComponent({
 					/>
 				</div>
 				{cmd && Platform.isDesktop && !isCommandGroup(pair) && (
-					<div className="setting-item-description">
+					<div className="setting-item-description" aria-label={`id: "${pair.id}"`}>
 						{t("bindings.source", {
 							plugin_name: getCommandSourceName(plugin, cmd),
 						})}
@@ -184,7 +184,8 @@ function UnavailableCommandComponent({
 			<ObsidianIcon
 				icon="alert-triangle"
 				size="var(--icon-l) + 4px"
-				className="cmdr-icon clickable-icon mod-warning"
+				className="cmdr-icon mod-warning"
+				aria-label={`id: "${pair.id}"`}
 			/>
 			<div className="setting-item-info">
 				<div className="setting-item-name">{pair.name}</div>

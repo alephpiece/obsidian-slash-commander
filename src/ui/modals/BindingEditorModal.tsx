@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FuzzyMatch, Modal, setIcon } from "obsidian";
-import { SlashCommand, DeviceMode, TriggerMode, isCommandGroup } from "@/data/models/SlashCommand";
+import { SlashCommand, DeviceMode, TriggerMode, isCommandGroup, generateGroupUUID } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
 import { ICON_LIST } from "@/data/constants/icons";
@@ -557,7 +557,7 @@ export default class BindingEditorModal extends Modal {
 			commandId = this.selectedCommand.id;
 		} else if (this.isGroup) {
 			// Generate a random ID for command groups if no command selected
-			commandId = crypto.randomUUID();
+			commandId = generateGroupUUID();
 		}
 
 		const newCommand: SlashCommand = {

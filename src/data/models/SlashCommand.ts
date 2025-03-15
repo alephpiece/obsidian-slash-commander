@@ -75,11 +75,11 @@ export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashC
 }
 
 export function isRootCommand(scmd: SlashCommand): boolean {
-	return !scmd.parentId; // No parent ID means root command
+	return !scmd.parentId || isGroupUUID(scmd.id);
 }
 
 export function isCommandGroup(scmd: SlashCommand): boolean {
-	return !scmd.parentId && (scmd.children?.length ?? 0) > 0;
+	return isGroupUUID(scmd.id) || (!scmd.parentId && (scmd.children?.length ?? 0) > 0);
 }
 
 export function getChildCommands(commands: SlashCommand[], parentId: string): SlashCommand[] {
@@ -87,12 +87,20 @@ export function getChildCommands(commands: SlashCommand[], parentId: string): Sl
 	return parentCmd?.children || [];
 }
 
+export function generateGroupUUID(): string {
+	return "slash-commander:group-" + crypto.randomUUID();
+}
+
+export function isGroupUUID(uuid: string): boolean {
+	return uuid.startsWith("slash-commander:group-");
+}
+
 /**
  * Generates a new command with default values and optional overrides
  */
 export function generateNewCommand(options: Partial<SlashCommand> = {}): SlashCommand {
 	return {
-		id: crypto.randomUUID(),
+		id: generateGroupUUID(),
 		name: "New Command",
 		icon: "command",
 		parentId: undefined, // Default to root command
