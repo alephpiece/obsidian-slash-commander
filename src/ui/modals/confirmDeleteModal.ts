@@ -1,33 +1,56 @@
 import { Modal } from "obsidian";
-import { h, render, VNode } from "preact";
-import t from "src/l10n";
-import SlashCommanderPlugin from "src/main";
-import { confirmDeleteComponent } from "../components/confirmDeleteComponent";
+import { createElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { t } from "i18next";
+import SlashCommanderPlugin from "@/main";
+import { confirmDeleteComponent } from "@/ui/components/confirmDeleteComponent";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
 export default class ConfirmDeleteModal extends Modal {
-	private reactComponent: VNode;
+	private root: Root | null = null;
 	public remove: boolean;
+	private command: SlashCommand | undefined;
+	private onSyncCallback: (() => void) | undefined;
 
-	// eslint-disable-next-line no-unused-vars
-	public constructor(public plugin: SlashCommanderPlugin) {
+	public constructor(
+		public plugin: SlashCommanderPlugin,
+		command?: SlashCommand,
+		onSync?: () => void
+	) {
 		super(plugin.app);
+		this.command = command;
+		this.onSyncCallback = onSync;
 	}
 
 	public async onOpen(): Promise<void> {
-		this.titleEl.innerText = t("Remove command");
+		this.titleEl.innerText = t("modals.remove_command.title");
 		this.containerEl.style.zIndex = "99";
-		this.reactComponent = h(confirmDeleteComponent, { modal: this });
-		render(this.reactComponent, this.contentEl);
+		this.root = createRoot(this.contentEl);
+		this.root.render(
+			createElement(confirmDeleteComponent, {
+				modal: this,
+				command: this.command,
+			})
+		);
 	}
 
 	public async didChooseRemove(): Promise<boolean> {
 		this.open();
-		return new Promise((resolve) => {
-			this.onClose = (): void => resolve(this.remove ?? false);
+		return new Promise(resolve => {
+			this.onClose = (): void => {
+				if (this.remove && this.command && this.onSyncCallback) {
+					this.plugin.commandStore.removeCommand(this.command.id);
+					this.onSyncCallback();
+				}
+				resolve(this.remove ?? false);
+			};
 		});
 	}
 
 	public onClose(): void {
-		render(null, this.contentEl);
+		if (this.root) {
+			this.root.unmount();
+			this.root = null;
+		}
 	}
 }

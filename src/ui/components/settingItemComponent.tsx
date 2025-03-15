@@ -1,20 +1,21 @@
-import { h } from "preact";
-import { useState } from "preact/hooks";
+import type { ReactElement, ReactNode, ChangeEvent } from "react";
+import { useState } from "react";
 
 interface BaseComponentProps {
-	children: h.JSX.Element;
+	children: ReactNode;
 	name: string;
 	description: string;
 	className?: string;
 }
-function BaseComponent({
+
+export function BaseComponent({
 	name,
 	description,
 	children,
 	className,
-}: BaseComponentProps): h.JSX.Element {
+}: BaseComponentProps): ReactElement {
 	return (
-		<div className={`setting-item ${className}`}>
+		<div className={`setting-item ${className ?? ""}`}>
 			<div className="setting-item-info">
 				<div className="setting-item-name">{name}</div>
 				<div className="setting-item-description">{description}</div>
@@ -27,20 +28,15 @@ function BaseComponent({
 interface SettingProps<T> {
 	name: string;
 	description: string;
-	// eslint-disable-next-line no-unused-vars
 	changeHandler: (value: T) => void;
 	value: T;
 }
 
-export function ToggleComponent(props: SettingProps<boolean>): h.JSX.Element {
+export function ToggleComponent(props: SettingProps<boolean>): ReactElement {
 	const [state, setState] = useState(props.value);
 
 	return (
-		<BaseComponent
-			name={props.name}
-			description={props.description}
-			className="mod-toggle"
-		>
+		<BaseComponent name={props.name} description={props.description} className="mod-toggle">
 			<div
 				className={`checkbox-container ${state ? "is-enabled" : ""}`}
 				onClick={(): void => {
@@ -52,21 +48,16 @@ export function ToggleComponent(props: SettingProps<boolean>): h.JSX.Element {
 	);
 }
 
-export function TextBoxComponent(props: SettingProps<string>): h.JSX.Element {
+export function TextBoxComponent(props: SettingProps<string>): ReactElement {
 	return (
-		<BaseComponent
-			description={props.description}
-			name={props.name}
-			className="cmdr-text"
-		>
+		<BaseComponent description={props.description} name={props.name} className="cmdr-text">
 			<input
 				type="text"
 				value={props.value}
-				onChange={({ target }): void => {
-					{/*@ts-expect-error*/ }
-					if (props.value !== target.value) {
-						{/*@ts-expect-error*/ }
-						props.changeHandler(target.value);
+				onChange={(event: ChangeEvent<HTMLInputElement>): void => {
+					const newValue = event.target.value;
+					if (props.value !== newValue) {
+						props.changeHandler(newValue);
 					}
 				}}
 			/>

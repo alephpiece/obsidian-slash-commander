@@ -1,56 +1,51 @@
-import { h } from "preact";
-import { Ref, useEffect, useRef, useState } from "preact/hooks";
+import type { ReactElement, KeyboardEvent, MouseEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
 	value: string;
-	// eslint-disable-next-line no-unused-vars
-	handleChange: (e: h.JSX.TargetedKeyboardEvent<HTMLInputElement>) => void;
+	handleChange: (e: KeyboardEvent<HTMLInputElement>) => void;
 	ariaLabel: string;
 }
 
-export default function ChangeableText({
-	value,
-	handleChange,
-	ariaLabel,
-}: Props): h.JSX.Element {
-	const [showInputEle, setShowInput] = useState(false);
-	const el: Ref<HTMLInputElement> | undefined = useRef(null);
-	const [width, setWidth] = useState<number>(0);
+export default function ChangeableText({ value, handleChange, ariaLabel }: Props): ReactElement {
+	const [isEditing, setIsEditing] = useState(false);
+	const inputRef = useRef<HTMLInputElement>(null);
+	const [inputWidth, setInputWidth] = useState<number>(0);
 
 	useEffect(() => {
-		el?.current?.select();
-		el?.current?.focus();
-	});
+		if (isEditing && inputRef.current) {
+			inputRef.current.select();
+			inputRef.current.focus();
+		}
+	}, [isEditing]);
+
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+		if (e.key === "Enter" && e.currentTarget.value.length > 0) {
+			setIsEditing(false);
+			handleChange(e);
+		}
+	};
+
+	const handleClick = (e: MouseEvent<HTMLSpanElement>): void => {
+		const span = e.currentTarget;
+		setInputWidth(span.offsetWidth);
+		setIsEditing(true);
+	};
 
 	return (
-		<div class="cmdr-editable">
-			{showInputEle ? (
+		<div className="cmdr-editable">
+			{isEditing ? (
 				<input
 					type="text"
 					value={value}
-					style={{ width: width + 25 + "px" }}
-					onKeyDown={(e): void => {
-						/* If Enter was pressed, handle the name change and set to display mode */
-						if (
-							e.key === "Enter" &&
-							(e.target as HTMLInputElement).value.length > 0
-						) {
-							setShowInput(false);
-							handleChange(e);
-						}
-					}}
-					onBlur={(): void => setShowInput(false)}
-					ref={el}
+					style={{ width: `${inputWidth + 25}px` }}
+					onKeyDown={handleKeyDown}
+					onBlur={(): void => setIsEditing(false)}
+					ref={inputRef}
+					aria-label={ariaLabel}
 				/>
 			) : (
-				<span
-					onDblClick={({ target }): void => {
-						/* @ts-ignore */
-						setWidth(target?.offsetWidth);
-						setShowInput(true);
-					}}
-					aria-label={ariaLabel}
-				>
+				<span onClick={handleClick} aria-label={ariaLabel}>
 					{value}
 				</span>
 			)}

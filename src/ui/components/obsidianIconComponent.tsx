@@ -1,20 +1,23 @@
 import { setIcon } from "obsidian";
-import { ComponentProps, h } from "preact";
-import { useRef, useLayoutEffect } from "preact/hooks";
+import type { ComponentProps } from "react";
+import { useRef, useLayoutEffect } from "react";
 
 interface ObsidianIconProps extends ComponentProps<"div"> {
 	icon: string;
-	size?: number;
+	size?: string;
 }
 
-export default function ObsidianIcon({
-	icon, size, ...props
-}: ObsidianIconProps): h.JSX.Element {
+export default function ObsidianIcon({ icon, size, ...props }: ObsidianIconProps) {
 	const iconEl = useRef<HTMLDivElement>(null);
 
 	useLayoutEffect(() => {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		setIcon(iconEl.current!, icon);
+		if (!iconEl.current) return;
+
+		setIcon(iconEl.current, icon);
+
+		if (size) {
+			iconEl.current.style.setProperty("--icon-size", size);
+		}
 	}, [icon, size]);
 
 	return <div ref={iconEl} {...props} />;

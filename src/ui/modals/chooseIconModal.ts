@@ -1,26 +1,35 @@
-import { ICON_LIST } from "../../data/constants";
+import { ICON_LIST } from "@/data/constants/icons";
 import { setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
-import SlashCommanderPlugin from "src/main";
-import t from "src/l10n";
+import SlashCommanderPlugin from "@/main";
+import { t } from "i18next";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
+/**
+ * Modal for choosing an icon for a command
+ * Allows users to search and select from available icons
+ */
 export default class ChooseIconModal extends FuzzySuggestModal<string> {
+	private command: SlashCommand | undefined;
+	private onSyncCallback: (() => void) | undefined;
 
-	public constructor(plugin: SlashCommanderPlugin) {
+	public constructor(plugin: SlashCommanderPlugin, command?: SlashCommand, onSync?: () => void) {
 		super(plugin.app);
-		this.setPlaceholder(t("Choose an icon for your new command"));
+		this.command = command;
+		this.onSyncCallback = onSync;
+		this.setPlaceholder(t("modals.bind.icon.placeholder"));
 
 		this.setInstructions([
 			{
 				command: "↑↓",
-				purpose: t("to navigate"),
+				purpose: t("modals.to_navigate"),
 			},
 			{
 				command: "↵",
-				purpose: t("to choose a custom icon"),
+				purpose: t("modals.to_save"),
 			},
 			{
 				command: "esc",
-				purpose: t("to cancel"),
+				purpose: t("modals.to_cancel"),
 			},
 		]);
 	}
@@ -29,9 +38,7 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 		this.open();
 		return new Promise((resolve, reject) => {
 			this.onChooseItem = (item): void => resolve(item);
-			//This is wrapped inside a setTimeout, because onClose is called before onChooseItem
-			this.onClose = (): number =>
-				window.setTimeout(() => reject("No Icon selected"), 0);
+			this.onClose = (): number => window.setTimeout(() => reject("No Icon selected"), 0);
 		});
 	}
 
@@ -43,13 +50,12 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 			.setText(
 				item.item
 					.replace(/-/g, " ")
-					.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
-						letter.toUpperCase()
-					)
+					.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())
 			);
 
 		const aux = el.createDiv({ cls: "suggestion-aux" });
-		setIcon(aux.createSpan({ cls: "suggestion-flair" }), item.item);
+		const iconElement = aux.createSpan({ cls: "suggestion-flair" });
+		setIcon(iconElement, item.item);
 	}
 
 	public getItems(): string[] {
@@ -60,7 +66,12 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
 		return item;
 	}
 
-	// This will be overriden anyway, but typescript complains if it's not declared
-	// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
-	public onChooseItem(_: string, __: MouseEvent | KeyboardEvent): void {}
+	public onChooseItem(item: string, _: MouseEvent | KeyboardEvent): void {
+		if (this.command) {
+			this.command.icon = item;
+			if (this.onSyncCallback) {
+				this.onSyncCallback();
+			}
+		}
+	}
 }

@@ -52,6 +52,19 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ![slash-commander-description](https://github.com/alephpiece/obsidian-slash-commander/assets/22237751/9b1f3cf9-f04b-4d0b-96ac-b8520edb09e4)
 
+## Development
+
+```shell
+# install deps
+yarn
+
+# dev
+yarn dev
+
+# build
+yarn build
+```
+
 ## Credits
 
 - Idea & logic: [Better Slash Commands](https://github.com/SPiCaRiA/obsidian-better-slash-commands)

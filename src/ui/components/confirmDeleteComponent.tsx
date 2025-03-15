@@ -1,15 +1,24 @@
-import { Fragment, h } from "preact";
-import t from "src/l10n";
+import type { ReactElement } from "react";
+import { useTranslation } from "react-i18next";
 import ConfirmDeleteModal from "../modals/confirmDeleteModal";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
-export function confirmDeleteComponent({
-	modal,
-}: {
+/**
+ * Props for the confirm delete component
+ */
+interface ConfirmDeleteProps {
 	modal: ConfirmDeleteModal;
-}): h.JSX.Element {
+	command?: SlashCommand;
+}
+
+/**
+ * Component that renders the confirmation dialog for deleting a command
+ */
+export function confirmDeleteComponent({ modal }: ConfirmDeleteProps): ReactElement {
+	const { t } = useTranslation();
 	return (
-		<Fragment>
-			<p>{t("Are you sure you want to delete the command?")}</p>
+		<>
+			<p>{t("modals.remove_command.detail")}</p>
 			<div className="modal-button-container">
 				<button
 					className="mod-warning"
@@ -21,7 +30,7 @@ export function confirmDeleteComponent({
 						modal.close();
 					}}
 				>
-					{t("Remove and don't ask again")}
+					{t("modals.remove_command.dont_ask")}
 				</button>
 				<button
 					className="mod-warning"
@@ -30,7 +39,7 @@ export function confirmDeleteComponent({
 						modal.close();
 					}}
 				>
-					{t("Remove")}
+					{t("common.remove")}
 				</button>
 				<button
 					onClick={(): void => {
@@ -38,9 +47,9 @@ export function confirmDeleteComponent({
 						modal.close();
 					}}
 				>
-					{t("Cancel")}
+					{t("common.cancel")}
 				</button>
 			</div>
-		</Fragment>
+		</>
 	);
 }
