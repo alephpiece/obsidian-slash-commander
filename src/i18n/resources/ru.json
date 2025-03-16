@@ -47,6 +47,7 @@
 		"modals.bind.icon.field": "Иконка",
 		"modals.bind.icon.placeholder": "Выберите иконку для вашей новой команды",
 		"modals.bind.icon.required": "Пожалуйста, выберите иконку",
+		"modals.bind.id.help": "Каждая команда должна иметь уникальный ID. Он используется для внутренних целей и будет автоматически сгенерирован, если оставить пустым.",
 		"modals.bind.id.required": "ID не может быть пустым",
 		"modals.bind.id.not_unique": "Этот ID уже используется, пожалуйста, выберите другой",
 		"modals.bind.is_group.field": "Это группа?",

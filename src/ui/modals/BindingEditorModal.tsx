@@ -200,8 +200,17 @@ export default class BindingEditorModal extends Modal {
 	private createIdField(container: HTMLElement) {
 		const wrapper = container.createDiv({ cls: "cmdr-setting-item" });
 		const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
-		titleContainer.createDiv({ cls: "cmdr-setting-item-name", text: "ID" });
-
+		const titleWithIcon = titleContainer.createDiv({ cls: "setting-item-name" });
+		titleWithIcon.style.display = "flex";
+		titleWithIcon.style.alignItems = "center";
+		titleWithIcon.createDiv({ cls: "cmdr-setting-item-name", text: "ID" });
+		
+		const infoIcon = titleWithIcon.createDiv({ cls: "cmdr-icon" });
+		setIcon(infoIcon, "lucide-info");
+		infoIcon.setAttribute("aria-label", t("modals.bind.id.help"));
+		infoIcon.addClass("has-tooltip");
+		infoIcon.style.paddingLeft = "4px";
+		
 		const input = wrapper.createEl("input", {
 			type: "text",
 			cls: "cmdr-input",

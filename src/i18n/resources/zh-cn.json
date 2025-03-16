@@ -47,6 +47,7 @@
 		"modals.bind.icon.field": "图标",
 		"modals.bind.icon.placeholder": "为新命令选择图标",
 		"modals.bind.icon.required": "请选择一个图标",
+		"modals.bind.id.help": "每个命令必须有一个唯一的ID。它用于内部使用，如果留空，将自动生成。",
 		"modals.bind.id.required": "ID 不能为空",
 		"modals.bind.id.not_unique": "此 ID 已被使用，请选择其他 ID",
 		"modals.bind.is_group.field": "是否为命令组？",
