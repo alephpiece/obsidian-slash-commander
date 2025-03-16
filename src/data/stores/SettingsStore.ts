@@ -98,8 +98,24 @@ export default class SettingsStore {
 		
 		console.log("SlashCommander: start migrating data to the new format");
 		
-		// Collect all existing IDs to detect duplicates
-		const existingIds = new Set<string>();
+		// First scan the entire command structure to identify duplicate IDs
+		const idUsageCount = new Map<string, number>();
+		
+		const countIds = (commands: SlashCommand[]) => {
+			for (const cmd of commands) {
+				idUsageCount.set(cmd.id, (idUsageCount.get(cmd.id) || 0) + 1);
+				
+				if (cmd.children && cmd.children.length > 0) {
+					countIds(cmd.children);
+				}
+			}
+		};
+		
+		// Count usage of all IDs in the original data
+		countIds(this.data.bindings);
+		
+		// Track newly assigned IDs to prevent conflicts
+		const assignedIds = new Set<string>();
 		
 		// Recursive migration function
 		const migrateCommand = (cmd: SlashCommand): SlashCommand => {
@@ -119,13 +135,17 @@ export default class SettingsStore {
 				}
 			}
 			
-			// Check if ID already exists, generate a new one if it does
-			if (existingIds.has(cmd.id)) {
-				cmd.id = generateUniqueId();
+			// Only replace IDs that appear multiple times in the original data
+			if ((idUsageCount.get(cmd.id) || 0) > 1) {
+				// Generate a new ID that doesn't conflict with existing or already assigned IDs
+				let newId;
+				do {
+					newId = generateUniqueId();
+				} while (idUsageCount.has(newId) || assignedIds.has(newId));
+				
+				assignedIds.add(newId);
+				cmd.id = newId;
 			}
-			
-			// Record existing ID to avoid future conflicts
-			existingIds.add(cmd.id);
 			
 			// Recursively process child commands
 			if (cmd.children && cmd.children.length > 0) {
