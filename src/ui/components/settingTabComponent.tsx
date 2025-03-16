@@ -39,9 +39,13 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					>
 						<ObsidianIcon
 							icon="alert-triangle"
-							size="var(--icon-m)"
-							className="cmdr-suggest-item-icon-large mod-warning"
-							style={{ display: "flex" }}
+							size="var(--icon-xl)"
+							className="cmdr-icon mod-warning"
+							style={{
+								display: "flex",
+								alignSelf: "start",
+								justifyContent: "center",
+							}}
 						/>
 						<div className="setting-item-info">
 							<div
