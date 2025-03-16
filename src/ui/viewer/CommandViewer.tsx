@@ -22,12 +22,12 @@ import { CSS } from "@dnd-kit/utilities";
 
 import { useCommandStore } from "@/data/hooks/useCommandStore";
 import { CommandViewerToolsBottom } from "@/ui/viewer/CommandViewerTools";
-import { SortableCommandItem } from "./SortableCommandItem";
+import { CommandViewerItem } from "./CommandViewerItem";
 import {
 	CommandTreeItem,
 	CommandTreeItems,
 	FlattenedCommandItem,
-	SortableCommandTreeProps,
+	CommandViewerProps,
 } from "./types";
 import {
 	buildTree,
@@ -68,16 +68,16 @@ const dropAnimationConfig = {
 };
 
 /**
- * Component for sorting the command tree structure.
+ * Component for viewing and sorting the command tree structure.
  * Integrates with dndkit for drag-and-drop functionality.
  */
-export function SortableCommandTree({
+export function CommandViewer({
 	plugin,
 	collapsible = true,
 	indicator = false,
 	indentationWidth = 20,
 	removable = true,
-}: SortableCommandTreeProps) {
+}: CommandViewerProps) {
 	const { t } = useTranslation();
 	const commands = useCommandStore(state => state.commands);
 	const updateCommands = useCommandStore(state => state.updateCommands);
@@ -251,7 +251,7 @@ export function SortableCommandTree({
 					>
 						<SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
 							{flattenedItems.map(({ id, command, children, collapsed, depth }) => (
-								<SortableCommandItem
+								<CommandViewerItem
 									key={id}
 									id={id}
 									command={command}
@@ -271,7 +271,7 @@ export function SortableCommandTree({
 							{createPortal(
 								<DragOverlay dropAnimation={dropAnimationConfig}>
 									{activeId && activeItem ? (
-										<SortableCommandItem
+										<CommandViewerItem
 											id={activeId}
 											command={activeItem.command}
 											depth={activeItem.depth}

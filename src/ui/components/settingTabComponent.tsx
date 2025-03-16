@@ -9,7 +9,7 @@ import TriggerViewer from "@ui/components/TriggerViewerComponent";
 import { useTranslation } from "react-i18next";
 import { CommanderSettings } from "@/data/models/Settings";
 import { CommandViewerToolsBar } from "@/ui/viewer/CommandViewerTools";
-import { SortableCommandTree } from "@/ui/tree";
+import { CommandViewer } from "@/ui/viewer";
 
 interface SettingTabProps {
 	plugin: SlashCommanderPlugin;
@@ -122,7 +122,7 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 				title={t("bindings.title")}
 				tools={<CommandViewerToolsBar />}
 			>
-				<SortableCommandTree
+				<CommandViewer
 					plugin={plugin}
 					collapsible={true}
 					indentationWidth={20}

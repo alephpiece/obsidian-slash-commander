@@ -1,4 +1,3 @@
-import type { MutableRefObject } from 'react';
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import type { SlashCommand } from '@/data/models/SlashCommand';
 import SlashCommanderPlugin from '@/main';
@@ -25,9 +24,9 @@ export interface FlattenedCommandItem extends CommandTreeItem {
 }
 
 /**
- * Props for the SortableCommandTree component
+ * Props for the CommandViewer component
  */
-export interface SortableCommandTreeProps {
+export interface CommandViewerProps {
     plugin: SlashCommanderPlugin;
     collapsible?: boolean;
     indentationWidth?: number;
@@ -36,9 +35,9 @@ export interface SortableCommandTreeProps {
 }
 
 /**
- * Props for SortableCommandItem component
+ * Props for CommandViewerItem component
  */
-export interface SortableCommandItemProps {
+export interface CommandViewerItemProps {
     id: UniqueIdentifier;
     command: SlashCommand;
     depth: number;

@@ -8,15 +8,14 @@ import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 import { useCommandStore } from "@/data/hooks/useCommandStore";
 import { isRootCommand } from "@/data/models/SlashCommand";
-import { SortableCommandItemProps } from "./types";
+import { CommandViewerItemProps } from "./types";
 import ObsidianIcon from "../components/obsidianIconComponent";
-import { t } from "i18next";
 
 /**
- * Renders a sortable command item in the tree.
+ * Renders a sortable command item in the viewer.
  * Integrates with dnd-kit for drag-and-drop functionality.
  */
-export function SortableCommandItem({
+export function CommandViewerItem({
 	id,
 	command,
 	depth,
@@ -28,7 +27,7 @@ export function SortableCommandItem({
 	plugin,
 	childCount,
 	clone,
-}: SortableCommandItemProps) {
+}: CommandViewerItemProps) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id,
 		data: {
