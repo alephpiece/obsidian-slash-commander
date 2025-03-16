@@ -105,7 +105,7 @@ export function CommandComponent({
 				)}
 				{isRootCommand(pair) && handleAddChild && (
 					<ObsidianIcon
-						icon="plus-circle"
+						icon="list-plus"
 						className="setting-editor-extra-setting-button clickable-icon"
 						onClick={handleAddChild}
 						aria-label={t("bindings.add_child")}
@@ -193,9 +193,11 @@ function UnavailableCommandComponent({
 			/>
 			<div className="setting-item-info">
 				<div className="setting-item-name">{pair.name}</div>
-				<div className="setting-item-description">
-					{t("bindings.device_mode.unavailable")}
-				</div>
+				{Platform.isDesktop && (
+					<div className="setting-item-description">
+						{t("bindings.device_mode.unavailable")}
+					</div>
+				)}
 			</div>
 			<div className="setting-item-control">
 				<ObsidianIcon

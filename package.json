@@ -21,12 +21,11 @@
 	"author": "alephpiece",
 	"devDependencies": {
 		"@eslint/js": "^9.0.0",
-		"@tailwindcss/vite": "^4.0.13",
+		"@tailwindcss/vite": "^4.0.14",
 		"@types/babel__core": "^7.20.5",
 		"@types/node": "^22.13.10",
 		"@types/react": "^19.0.10",
 		"@types/react-dom": "^19.0.4",
-		"@types/sortablejs": "^1.15.8",
 		"@typescript-eslint/eslint-plugin": "^8.26.1",
 		"@typescript-eslint/parser": "^8.26.1",
 		"@vitejs/plugin-react": "^4.3.4",
@@ -41,21 +40,21 @@
 		"prettier": "^3.5.3",
 		"rimraf": "^6.0.1",
 		"sass": "^1.69.0",
-		"tailwindcss": "^4.0.13",
+		"tailwindcss": "4.0.14",
 		"tslib": "^2.4.1",
 		"typescript": "^5.3.0",
 		"typescript-eslint": "^8.26.1",
-		"vite": "^6.2.1"
+		"vite": "6.2.2"
 	},
 	"dependencies": {
+		"@dnd-kit/core": "^6.3.1",
+		"@dnd-kit/sortable": "^10.0.0",
 		"@popperjs/core": "^2.11.8",
-		"i18next": "^24.2.2",
+		"i18next": "24.2.3",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-i18next": "^15.4.1",
 		"react-popper": "^2.3.0",
-		"react-sortablejs": "^6.1.4",
-		"sortablejs": "^1.15.6",
 		"zustand": "^5.0.3"
 	},
 	"packageManager": "yarn@4.7.0"

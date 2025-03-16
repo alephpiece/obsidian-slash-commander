@@ -1,0 +1,124 @@
+import React, { forwardRef } from "react";
+import type { UniqueIdentifier } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { CommandComponent } from "@/ui/viewer/CommandComponent";
+import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
+import ChooseIconModal from "@/ui/modals/chooseIconModal";
+import BindingEditorModal from "@/ui/modals/BindingEditorModal";
+import { useCommandStore } from "@/data/hooks/useCommandStore";
+import { isRootCommand } from "@/data/models/SlashCommand";
+import { SortableCommandItemProps } from "./types";
+import ObsidianIcon from "../components/obsidianIconComponent";
+import { t } from "i18next";
+
+/**
+ * Renders a sortable command item in the tree.
+ * Integrates with dnd-kit for drag-and-drop functionality.
+ */
+export function SortableCommandItem({
+	id,
+	command,
+	depth,
+	indentationWidth,
+	indicator,
+	collapsed,
+	onCollapse,
+	onRemove,
+	plugin,
+	childCount,
+	clone,
+}: SortableCommandItemProps) {
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+		id,
+		data: {
+			depth,
+			indentationWidth,
+			command,
+		},
+	});
+
+	const syncCommands = useCommandStore(state => state.syncCommands);
+	const addCommand = useCommandStore(state => state.addCommand);
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : undefined,
+		"--depth": depth,
+		"--indentation-width": `${indentationWidth}px`,
+	};
+
+	return (
+		<div
+			ref={setNodeRef}
+			className={`cmdr-command-wrapper cmdr-sortable-item ${clone ? "cmdr-clone" : ""}`}
+			style={style as React.CSSProperties}
+			data-id={id}
+		>
+			<ObsidianIcon
+				icon="grip-vertical"
+				className="setting-editor-extra-setting-button cmdr-drag-handle-icon"
+				{...attributes}
+				{...listeners}
+			/>
+			<CommandComponent
+				pair={command}
+				plugin={plugin}
+				handleRemove={async (): Promise<void> => {
+					if (onRemove) {
+						onRemove();
+					} else {
+						await new ConfirmDeleteModal(plugin, command, () =>
+							syncCommands()
+						).didChooseRemove();
+					}
+				}}
+				handleNewIcon={(): void => {
+					new ChooseIconModal(plugin, command, () => syncCommands()).open();
+				}}
+				handleRename={(name): void => {
+					command.name = name;
+					syncCommands();
+				}}
+				handleDeviceModeChange={(mode?: string): void => {
+					const modes = ["any", "desktop", "mobile", plugin.app.appId];
+					const nextIndex = (modes.indexOf(command.mode ?? "any") + 1) % modes.length;
+					command.mode = mode || modes[nextIndex];
+					syncCommands();
+				}}
+				handleTriggerModeChange={(mode?: string): void => {
+					const modes = ["anywhere", "newline", "inline"];
+					const nextIndex =
+						(modes.indexOf(command.triggerMode ?? "anywhere") + 1) % modes.length;
+					command.triggerMode = mode || modes[nextIndex];
+					syncCommands();
+				}}
+				handleAddChild={async (): Promise<void> => {
+					// Only allow adding children to top-level commands
+					if (!isRootCommand(command)) return;
+
+					if (plugin) {
+						const newCommand = await new BindingEditorModal(plugin).awaitSelection();
+						if (newCommand) {
+							// Set the parentId to indicate this command belongs to the parent
+							newCommand.parentId = command.id;
+
+							// Add command to store with parentId already set
+							await addCommand(newCommand);
+
+							// Sync changes to UI and save settings
+							await syncCommands();
+						}
+					}
+				}}
+				isCollapsed={collapsed}
+				handleCollapse={onCollapse}
+			/>
+
+			{indicator && isDragging && childCount && childCount > 0 ? (
+				<div className="cmdr-children-count">{childCount}</div>
+			) : null}
+		</div>
+	);
+}

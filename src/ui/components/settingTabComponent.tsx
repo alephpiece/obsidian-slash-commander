@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { isTriggerInConflicts } from "@/services/utils/util";
 import ObsidianIcon from "@ui/components/obsidianIconComponent";
 import SlashCommanderPlugin from "@/main";
-import { CommandViewer } from "@ui/viewer/CommandViewer";
 import { ToggleComponent, TextBoxComponent } from "@ui/components/settingItemComponent";
 import { SettingCollapser, SettingCollapserWithTools } from "@/ui/components/SettingHeaders";
 import TriggerViewer from "@ui/components/TriggerViewerComponent";
 import { useTranslation } from "react-i18next";
 import { CommanderSettings } from "@/data/models/Settings";
 import { CommandViewerToolsBar } from "@/ui/viewer/CommandViewerTools";
+import { SortableCommandTree } from "@/ui/tree";
 
 interface SettingTabProps {
 	plugin: SlashCommanderPlugin;
@@ -122,7 +122,12 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 				title={t("bindings.title")}
 				tools={<CommandViewerToolsBar />}
 			>
-				<CommandViewer />
+				<SortableCommandTree
+					plugin={plugin}
+					collapsible={true}
+					indentationWidth={20}
+					removable={true}
+				/>
 			</SettingCollapserWithTools>
 		</div>
 	);

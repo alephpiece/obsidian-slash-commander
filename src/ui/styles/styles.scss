@@ -720,13 +720,13 @@
 		background-color: var(--background-modifier-border);
 		border-radius: 1px;
 	}
-	
+
 	/* Add highlight on hover to improve visual hierarchy */
 	&:hover::before {
 		background-color: var(--interactive-accent);
 		opacity: 0.5;
 	}
-	
+
 	/* Style for child commands to make them visually distinct */
 	.cmdr-command-item {
 		position: relative;
@@ -800,13 +800,13 @@
 	.cmdr-setting-item-name {
 		font-weight: 600;
 	}
-	
+
 	.cmdr-icon-preview {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		margin-left: 8px;
-		
+
 		svg {
 			width: 20px;
 			height: 20px;
@@ -909,4 +909,63 @@
 	font-size: 0.8em;
 	color: var(--text-muted);
 	font-style: italic;
+}
+
+/* SortableCommandTree styles */
+.cmdr-sortable-item {
+	display: flex;
+	align-items: center;
+	padding-left: calc(var(--depth, 0) * var(--indentation-width, 20px));
+	position: relative;
+
+	&.cmdr-clone {
+		cursor: grabbing;
+		background-color: var(--background-secondary);
+		z-index: 999;
+
+		* {
+			cursor: grabbing;
+		}
+	}
+
+	.cmdr-drag-handle-icon {
+		cursor: grab;
+		padding: var(--size-2-2) var(--size-2-3);
+		height: auto;
+		display: flex;
+	}
+
+	.cmdr-children-count {
+		position: absolute;
+		right: 8px;
+		top: 50%;
+		transform: translateY(-50%);
+		background-color: var(--interactive-accent);
+		color: var(--text-on-accent);
+		border-radius: 4px;
+		padding: 2px 6px;
+		font-size: 12px;
+	}
+}
+
+/* Drag overlay styles */
+.cmdr-sortable-ghost {
+	opacity: 0.3;
+}
+
+.cmdr-sortable-drag {
+	z-index: 999;
+}
+
+/* Group collapser styles */
+.cmdr-group-collapser {
+	&[aria-expanded="false"] .cmdr-group-collapser-content {
+		display: none;
+	}
+}
+
+.cmdr-group-collapser-content {
+	margin-left: 20px;
+	border-left: 1px dashed var(--background-modifier-border);
+	padding-left: 10px;
 }
