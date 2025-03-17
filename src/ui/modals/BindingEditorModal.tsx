@@ -276,14 +276,9 @@ export default class BindingEditorModal extends Modal {
 		// Update suggestions when input changes
 		input.addEventListener("input", e => {
 			this.commandSearchValue = (e.target as HTMLInputElement).value;
+			this.selectedCommand = null;
 			this.updateCommandSuggestions(suggestContainer);
-
-			if (this.commandSearchValue) {
-				suggestContainer.style.display = "block";
-			} else {
-				// Show all suggestions even if there's no search text
-				suggestContainer.style.display = "block";
-			}
+			suggestContainer.style.display = "block";
 			this.clearError("command", wrapper);
 		});
 
@@ -310,7 +305,6 @@ export default class BindingEditorModal extends Modal {
 	private updateCommandSuggestions(container: HTMLElement) {
 		container.empty();
 
-		// 如果有搜索文本，则过滤命令
 		if (this.commandSearchValue) {
 			this.filteredCommands = this.commands
 				.filter(cmd =>
@@ -318,7 +312,6 @@ export default class BindingEditorModal extends Modal {
 				)
 				.slice(0, 20);
 		} else {
-			// 如果没有搜索文本，显示前10个命令
 			this.filteredCommands = this.commands.slice(0, 100);
 		}
 
@@ -440,13 +433,11 @@ export default class BindingEditorModal extends Modal {
 	private updateIconSuggestions(container: HTMLElement) {
 		container.empty();
 
-		// 如果有搜索文本，则过滤图标
 		if (this.iconSearchValue) {
 			this.filteredIcons = ICON_LIST.filter(icon =>
 				icon.toLowerCase().includes(this.iconSearchValue.toLowerCase())
 			).slice(0, 20);
 		} else {
-			// 如果没有搜索文本，显示前10个图标
 			this.filteredIcons = ICON_LIST.slice(0, 100);
 		}
 
