@@ -10,16 +10,16 @@ export default class ConfirmDeleteModal extends Modal {
 	private root: Root | null = null;
 	public remove: boolean;
 	private command: SlashCommand | undefined;
-	private onSyncCallback: (() => void) | undefined;
+	private onRemove: (() => void) | undefined;
 
 	public constructor(
 		public plugin: SlashCommanderPlugin,
 		command?: SlashCommand,
-		onSync?: () => void
+		onRemove?: () => void
 	) {
 		super(plugin.app);
 		this.command = command;
-		this.onSyncCallback = onSync;
+		this.onRemove = onRemove;
 	}
 
 	public async onOpen(): Promise<void> {
@@ -38,9 +38,8 @@ export default class ConfirmDeleteModal extends Modal {
 		this.open();
 		return new Promise(resolve => {
 			this.onClose = (): void => {
-				if (this.remove && this.command && this.onSyncCallback) {
-					this.plugin.commandStore.removeCommand(this.command.id);
-					this.onSyncCallback();
+				if (this.remove && this.command && this.onRemove) {
+					this.onRemove();
 				}
 				resolve(this.remove ?? false);
 			};

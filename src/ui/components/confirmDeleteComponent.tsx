@@ -14,11 +14,15 @@ interface ConfirmDeleteProps {
 /**
  * Component that renders the confirmation dialog for deleting a command
  */
-export function confirmDeleteComponent({ modal }: ConfirmDeleteProps): ReactElement {
+export function confirmDeleteComponent({ modal, command }: ConfirmDeleteProps): ReactElement {
 	const { t } = useTranslation();
 	return (
 		<>
-			<p>{t("modals.remove_command.detail")}</p>
+			<p>
+				{command?.isGroup
+					? t("modals.remove_command.detail_group")
+					: t("modals.remove_command.detail")}
+			</p>
 			<div className="modal-button-container">
 				<button
 					className="mod-warning"
@@ -30,7 +34,7 @@ export function confirmDeleteComponent({ modal }: ConfirmDeleteProps): ReactElem
 						modal.close();
 					}}
 				>
-					{t("modals.remove_command.dont_ask")}
+					{t("modals.remove_command.never_ask")}
 				</button>
 				<button
 					className="mod-warning"

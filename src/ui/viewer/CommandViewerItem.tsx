@@ -66,11 +66,7 @@ export function CommandViewerItem({
 				plugin={plugin}
 				handleRemove={async (): Promise<void> => {
 					if (onRemove) {
-						onRemove();
-					} else {
-						await new ConfirmDeleteModal(plugin, command, () =>
-							syncCommands()
-						).didChooseRemove();
+						await new ConfirmDeleteModal(plugin, command, onRemove).didChooseRemove();
 					}
 				}}
 				handleNewIcon={(): void => {
