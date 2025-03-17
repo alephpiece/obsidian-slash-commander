@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { t } from "i18next";
 import SlashCommanderPlugin from "@/main";
-import { confirmDeleteComponent } from "@/ui/components/confirmDeleteComponent";
+import { confirmDeleteComponent } from "@/ui/components/ConfirmDeleteComponent";
 import { SlashCommand } from "@/data/models/SlashCommand";
 
 export default class ConfirmDeleteModal extends Modal {

@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { t } from "i18next";
 import SlashCommanderPlugin from "@/main";
-import { confirmRestoreComponent } from "@/ui/components/confirmRestoreComponent";
+import { confirmRestoreComponent } from "@/ui/components/ConfirmRestoreComponent";
 
 /**
  * Modal for confirming restoration of default commands

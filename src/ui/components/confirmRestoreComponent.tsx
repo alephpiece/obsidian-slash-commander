@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import ConfirmRestoreModal from "../modals/confirmRestoreModal";
+import ConfirmRestoreModal from "../modals/ConfirmRestoreModal";
 
 /**
  * Props for the confirm restore component

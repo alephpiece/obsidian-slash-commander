@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { usePlugin, useStore } from "@/data/hooks/useCommandStore";
-import ConfirmRestoreModal from "@/ui/modals/confirmRestoreModal";
+import ConfirmRestoreModal from "@/ui/modals/ConfirmRestoreModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 
 /**

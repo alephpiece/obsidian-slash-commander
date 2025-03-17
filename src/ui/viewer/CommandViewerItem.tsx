@@ -3,7 +3,7 @@ import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CommandComponent } from "@/ui/viewer/CommandComponent";
-import ConfirmDeleteModal from "@/ui/modals/confirmDeleteModal";
+import ConfirmDeleteModal from "@/ui/modals/ConfirmDeleteModal";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 import { useCommandStore } from "@/data/hooks/useCommandStore";
