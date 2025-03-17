@@ -22,17 +22,15 @@ export default function SuggestionGroupComponent({
 		<div className="cmdr-suggest-item">
 			<ObsidianIcon
 				icon={pair.icon}
-				size="var(--icon-m)"
-				className={
-					plugin.settings.showDescriptions
-						? "cmdr-suggest-item-icon-large"
-						: "cmdr-suggest-item-icon"
-				}
+				size={plugin.settings.showDescriptions ? `var(--icon-l) + 4px` : "var(--icon-l)"}
+				className="cmdr-suggest-item-icon"
 			/>
 			<span className="cmdr-suggest-content">{highlightMatch(result)}</span>
-			<span className="cmdr-suggest-group-indicator">
-				<ObsidianIcon icon="chevron-right" size="var(--icon-s)" />
-			</span>
+			<ObsidianIcon
+				icon="chevron-right"
+				size="var(--icon-m)"
+				className="cmdr-suggest-item-icon"
+			/>
 		</div>
 	);
 }

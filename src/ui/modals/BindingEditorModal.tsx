@@ -69,7 +69,7 @@ export default class BindingEditorModal extends Modal {
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.addClass("cmdr-add-binding-modal");
+		contentEl.addClass("cmdr-binding-editor-modal");
 
 		// Header - show different title based on whether we're editing or creating
 		const isEditing = !!this.selectedCommand;
@@ -204,13 +204,13 @@ export default class BindingEditorModal extends Modal {
 		titleWithIcon.style.display = "flex";
 		titleWithIcon.style.alignItems = "center";
 		titleWithIcon.createDiv({ cls: "cmdr-setting-item-name", text: "ID" });
-		
+
 		const infoIcon = titleWithIcon.createDiv({ cls: "cmdr-icon" });
 		setIcon(infoIcon, "lucide-info");
 		infoIcon.setAttribute("aria-label", t("modals.bind.id.help"));
 		infoIcon.addClass("has-tooltip");
 		infoIcon.style.paddingLeft = "4px";
-		
+
 		const input = wrapper.createEl("input", {
 			type: "text",
 			cls: "cmdr-input",
@@ -330,8 +330,7 @@ export default class BindingEditorModal extends Modal {
 		for (const command of this.filteredCommands) {
 			const item = container.createDiv({ cls: "cmdr-suggest-item" });
 
-			const content = item.createDiv({ cls: "cmdr-suggest-item-content" });
-			content.createDiv({ cls: "cmdr-suggest-item-title", text: command.name });
+			item.createDiv({ cls: "cmdr-suggest-item-title", text: command.name });
 
 			if (command.icon) {
 				const iconContainer = item.createDiv({ cls: "cmdr-suggest-item-icon" });
@@ -459,8 +458,7 @@ export default class BindingEditorModal extends Modal {
 		for (const icon of this.filteredIcons) {
 			const item = container.createDiv({ cls: "cmdr-suggest-item" });
 
-			const content = item.createDiv({ cls: "cmdr-suggest-item-content" });
-			content.createDiv({
+			item.createDiv({
 				cls: "cmdr-suggest-item-title",
 				text: icon
 					.replace(/-/g, " ")
@@ -637,26 +635,26 @@ export default class BindingEditorModal extends Modal {
 		}
 
 		const name = this.name || (this.selectedCommand ? this.selectedCommand.name : "New Group");
-		
+
 		// Use action to store Obsidian command ID
 		let commandAction = "";
 		if (this.selectedCommand) {
 			commandAction = this.selectedCommand.id;
 		}
-		
+
 		// Ensure there's a unique ID, use generated ID as fallback
 		if (!this.id || this.id.trim() === "") {
 			this.id = this.generated_id;
 		}
-		
+
 		const newCommand: SlashCommand = {
-			id: this.id,  // Use unique identifier
+			id: this.id, // Use unique identifier
 			icon: this.selectedIcon,
 			name: name,
-			action: commandAction,  // Store Obsidian command ID
+			action: commandAction, // Store Obsidian command ID
 			mode: this.deviceMode,
 			triggerMode: this.triggerMode,
-			isGroup: this.isGroup,  // Use isGroup field to mark command group
+			isGroup: this.isGroup, // Use isGroup field to mark command group
 			children: this.isGroup ? [] : undefined,
 		};
 

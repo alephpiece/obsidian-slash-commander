@@ -40,12 +40,8 @@ export default function SuggestionComponent({
 		<div className="cmdr-suggest-item">
 			<ObsidianIcon
 				icon={scmd.icon}
-				size="var(--icon-m)"
-				className={
-					settings.showDescriptions
-						? "cmdr-suggest-item-icon-large"
-						: "cmdr-suggest-item-icon"
-				}
+				size={settings.showDescriptions ? `var(--icon-l) + 4px` : "var(--icon-l)"}
+				className="cmdr-suggest-item-icon"
 			/>
 			<div className="cmdr-suggest-content">
 				<div>
@@ -63,9 +59,11 @@ export default function SuggestionComponent({
 				)}
 			</div>
 			{isCommandGroup(scmd) && (
-				<span className="cmdr-suggest-group-indicator">
-					<ObsidianIcon icon="chevron-right" size="var(--icon-s)" />
-				</span>
+				<ObsidianIcon
+					icon="chevron-right"
+					size="var(--icon-m)"
+					className="cmdr-suggest-item-icon"
+				/>
 			)}
 		</div>
 	);

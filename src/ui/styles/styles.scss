@@ -6,10 +6,6 @@
 	--icon-size: var(--icon-l);
 }
 
-.cmdr-suggest-group-indicator {
-	--icon-size: var(--icon-s);
-}
-
 .cmdr {
 	transition: transform 400ms 0s;
 
@@ -69,6 +65,8 @@
 .cmdr-icon {
 	height: 20px;
 	align-self: center;
+	color: var(--icon-color);
+	opacity: var(--icon-opacity);
 }
 
 .cmdr-setting-modal > .modal {
@@ -502,47 +500,37 @@
 .cmdr-suggest-item {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 0.8em;
 	max-width: 25em;
+	margin: 0 auto;
+
+	.cmdr-suggest-item-icon {
+		align-self: center;
+		color: var(--icon-color);
+		opacity: var(--icon-opacity);
+	}
+
+	.cmdr-suggest-content {
+		flex: 1 1 auto;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		.cmdr-suggest-item-description {
+			font-size: smaller;
+			color: dimgray;
+		}
+
+		.cmdr-suggest-item-source {
+			font-style: italic;
+			color: dimgray;
+		}
+	}
 }
 
 .cmdr-suggest-item-icon {
 	display: flex;
 	align-self: center;
 	justify-content: center;
-
-	svg {
-		width: 1.2em;
-		height: 1.2em;
-	}
-}
-
-.cmdr-suggest-item-icon-large {
-	display: flex;
-	align-self: start;
-	justify-content: center;
-	padding-top: 2px;
-
-	svg {
-		width: 1.5em;
-		height: 1.5em;
-	}
-}
-
-.cmdr-suggest-content {
-	flex: 1 1 auto;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.cmdr-suggest-item-description {
-	font-size: smaller;
-	color: dimgray;
-}
-
-.cmdr-suggest-item-source {
-	font-style: italic;
-	color: dimgray;
 }
 
 .cmdr-standalone-menu {
@@ -775,7 +763,7 @@
 }
 
 /* Add Binding Modal Styles */
-.cmdr-add-binding-modal {
+.cmdr-binding-editor-modal {
 	max-width: 100%;
 	padding: 0 20px;
 
@@ -802,15 +790,11 @@
 	}
 
 	.cmdr-icon-preview {
-		display: flex;
-		align-items: center;
+		align-self: center;
 		justify-content: center;
+		color: var(--icon-color);
+		opacity: var(--icon-opacity);
 		margin-left: 8px;
-
-		svg {
-			width: 20px;
-			height: 20px;
-		}
 	}
 
 	.cmdr-input {
@@ -839,21 +823,18 @@
 	}
 
 	.cmdr-suggest-item {
+		cursor: pointer;
 		display: flex;
 		align-items: center;
 		padding: 8px;
-		cursor: pointer;
 
 		&:hover {
 			background-color: var(--background-modifier-hover);
 		}
 	}
 
-	.cmdr-suggest-item-content {
-		flex: 1;
-	}
-
 	.cmdr-suggest-item-title {
+		flex: 1;
 		font-weight: 500;
 	}
 
