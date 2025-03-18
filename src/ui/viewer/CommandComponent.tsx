@@ -189,12 +189,13 @@ function UnavailableCommandComponent({
 				icon="alert-triangle"
 				size="var(--icon-l) + 4px"
 				className="cmdr-icon mod-warning"
+				style={{ color: "var(--text-error)" }}
 				aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
 			/>
 			<div className="setting-item-info">
 				<div className="setting-item-name">{pair.name}</div>
 				{Platform.isDesktop && (
-					<div className="setting-item-description">
+					<div className="setting-item-description" style={{ color: "var(--text-error)" }}>
 						{t("bindings.device_mode.unavailable")}
 					</div>
 				)}
