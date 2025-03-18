@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import ConfirmDeleteModal from "../modals/ConfirmDeleteModal";
 import { SlashCommand } from "@/data/models/SlashCommand";
-import { useSettings, useUpdateSettings } from "@/data/hooks";
+import { useSettings, useUpdateSettings } from "@/data/stores/useSettingStore";
 
 /**
  * Props for the confirm delete component

@@ -10,7 +10,7 @@ import { useSettingStore } from "@/data/stores/useSettingStore";
 import { isRootCommand } from "@/data/models/SlashCommand";
 import { CommandViewerItemProps } from "./types";
 import ObsidianIcon from "../components/obsidianIconComponent";
-import { useSettings } from "@/data/hooks";
+import { useSettings } from "@/data/stores/useSettingStore";
 
 /**
  * Renders a sortable command item in the viewer.

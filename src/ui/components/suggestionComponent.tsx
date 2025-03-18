@@ -11,7 +11,7 @@ import {
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { FuzzyMatch } from "obsidian";
 import { CommanderSettings } from "@/data/models/Settings";
-import { useSettings } from "@/data/hooks";
+import { useSettings } from "@/data/stores/useSettingStore";
 
 interface SuggestionProps {
 	plugin: SlashCommanderPlugin;

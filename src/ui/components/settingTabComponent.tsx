@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { CommanderSettings } from "@/data/models/Settings";
 import { CommandViewerToolsBar } from "@/ui/viewer/CommandViewerTools";
 import { CommandViewer } from "@/ui/viewer";
-import { useSettings, useUpdateSettings } from "@/data/hooks";
+import { useSettings, useUpdateSettings } from "@/data/stores/useSettingStore";
 
 interface SettingTabProps {
 	plugin: SlashCommanderPlugin;

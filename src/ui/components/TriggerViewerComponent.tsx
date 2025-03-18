@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import SlashCommanderPlugin from "src/main";
 import ObsidianIcon from "./obsidianIconComponent";
 import { useTranslation } from "react-i18next";
-import { useSettings, useUpdateSettings } from "@/data/hooks";
+import { useSettings, useUpdateSettings } from "@/data/stores/useSettingStore";
 
 interface TriggerViewerProps {
 	plugin: SlashCommanderPlugin;

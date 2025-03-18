@@ -21,7 +21,7 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import { CSS } from "@dnd-kit/utilities";
 
 import { useSettingStore } from "@/data/stores/useSettingStore";
-import { useCommands } from "@/data/hooks";
+import { useCommands } from "@/data/stores/useSettingStore";
 import { CommandViewerToolsBottom } from "@/ui/viewer/CommandViewerTools";
 import { CommandViewerItem } from "./CommandViewerItem";
 import {
