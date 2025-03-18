@@ -5,7 +5,8 @@ import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
 import { ICON_LIST } from "@/data/constants/icons";
 import { Command } from "obsidian";
-import { getDeviceModeInfo, getTriggerModeInfo, generateUniqueId } from "@/services/utils/util";
+import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
+import { generateUniqueId } from "@/services/command";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 
 /**

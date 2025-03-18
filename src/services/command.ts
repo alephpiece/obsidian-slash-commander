@@ -2,25 +2,39 @@ import SlashCommanderPlugin from "@/main";
 import { SlashCommand, isValidSuggestItem } from "@/data/models/SlashCommand";
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import { CommanderSettings } from "@/data/models/Settings";
-import { generateUniqueId } from "@/services/utils/util";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 
 /**
- * 命令相关的服务函数
- * 这些函数不包含状态管理逻辑，仅处理纯业务逻辑
+ * SlashCommand-related service functions
+ * These functions handle pure business logic without state management
  */
 
 /**
- * 获取有效（应该显示）的命令
+ * Generate a unique ID that doesn't conflict with existing commands
+ */
+export function generateUniqueId(prefix = ""): string {
+    const settingStore = useSettingStore.getState();
+    
+    let id: string;
+    do {
+        id = prefix + crypto.randomUUID();
+    } while (!settingStore.isIdUnique(id));
+    
+    return id;
+}
+
+/**
+ * Get valid commands that should be displayed
  */
 export function getValidCommands(plugin: SlashCommanderPlugin, commands: SlashCommand[]): SlashCommand[] {
     if (!plugin) return [];
 
-    // 过滤并克隆根命令
+    // Filter and clone root commands
     const validRootCommands = commands
         .filter(cmd => isValidSuggestItem(plugin, cmd))
         .map(cmd => ({ ...cmd }));
 
-    // 处理并过滤命令组的子命令
+    // Process and filter child commands
     validRootCommands.forEach(cmd => {
         if (cmd.children && cmd.children.length > 0) {
             const validChildren = cmd.children
@@ -35,23 +49,23 @@ export function getValidCommands(plugin: SlashCommanderPlugin, commands: SlashCo
 }
 
 /**
- * 验证命令结构，检查重复ID
+ * Validate command structure and check for duplicate IDs
  */
 export function validateCommandStructure(commands: SlashCommand[]): void {
-    // 检查根级别的重复ID
+    // Check for duplicate IDs at root level
     const rootIds = new Set<string>();
     for (const cmd of commands) {
         if (rootIds.has(cmd.id)) {
-            throw new Error(`重复的根命令ID: ${cmd.id}`);
+            throw new Error(`Duplicate root command ID: ${cmd.id}`);
         }
         rootIds.add(cmd.id);
 
-        // 检查每个父命令的子命令中的重复ID
+        // Check for duplicate IDs in each parent's children
         if (cmd.children && cmd.children.length > 0) {
             const childIds = new Set<string>();
             for (const child of cmd.children) {
                 if (childIds.has(child.id)) {
-                    throw new Error(`重复的子命令ID: ${child.id}，在父命令 ${cmd.id} 中`);
+                    throw new Error(`Duplicate child command ID: ${child.id} in parent ${cmd.id}`);
                 }
                 childIds.add(child.id);
             }
@@ -60,15 +74,15 @@ export function validateCommandStructure(commands: SlashCommand[]): void {
 }
 
 /**
- * 检查命令 ID 在整个命令结构中是否唯一
+ * Check if a command ID is unique across the entire command structure
  */
 export function isIdUnique(id: string, commands: SlashCommand[]): boolean {
-    // 检查根级别
+    // Check root level
     if (commands.some(cmd => cmd.id === id)) {
         return false;
     }
 
-    // 检查所有子命令
+    // Check all child commands
     for (const cmd of commands) {
         if (cmd.children && cmd.children.length > 0) {
             if (cmd.children.some(child => child.id === id)) {
@@ -81,7 +95,7 @@ export function isIdUnique(id: string, commands: SlashCommand[]): boolean {
 }
 
 /**
- * 根据ID查找命令，可选指定父命令上下文
+ * Find a command by ID with optional parent context
  */
 export function findCommand(
     commands: SlashCommand[],
@@ -89,17 +103,17 @@ export function findCommand(
     parentId?: string
 ): SlashCommand | undefined {
     if (parentId) {
-        // 在父命令中查找
+        // Find within a specific parent
         const parent = commands.find(cmd => cmd.id === parentId);
         return parent?.children?.find(child => child.id === id);
     } else {
-        // 在根级别查找
+        // Find at root level
         return commands.find(cmd => cmd.id === id);
     }
 }
 
 /**
- * 获取默认命令
+ * Get default commands
  */
 export function getDefaultCommands(): SlashCommand[] {
     return DEFAULT_SETTINGS.bindings.map(cmd => {
@@ -108,25 +122,6 @@ export function getDefaultCommands(): SlashCommand[] {
         newCmd.parentId = undefined;
         return newCmd;
     });
-}
-
-/**
- * 构建查询模式正则表达式
- */
-export function buildQueryPattern(
-    mainTrigger: string,
-    extraTriggers: string[],
-    useExtraTriggers: boolean
-): RegExp {
-    const allTriggers = [mainTrigger].concat(extraTriggers);
-    const triggers = useExtraTriggers ? allTriggers : [mainTrigger];
-    const escapedTriggers = triggers.map(trigger =>
-        trigger.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    );
-    return new RegExp(
-        `^(?<fullQuery>(?:${escapedTriggers.join("|")})(?<commandQuery>.*))`,
-        "d"
-    );
 }
 
 /**

@@ -11,7 +11,7 @@ import {
 import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { useTranslation } from "react-i18next";
-import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils/util";
+import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 
 export interface CommandProps {

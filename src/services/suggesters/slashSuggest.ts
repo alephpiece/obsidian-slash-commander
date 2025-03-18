@@ -12,7 +12,7 @@ import { createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { isCommandGroup, SlashCommand, getObsidianCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
-import { SlashCommandMatch } from "@/services/utils/search";
+import { SlashCommandMatch } from "@/services/search";
 import SuggestionComponent from "@/ui/components/suggestionComponent";
 import { SubSuggest } from "./subSuggest";
 import { useSettingStore } from "@/data/stores/useSettingStore";

@@ -5,30 +5,31 @@ import type { SlashCommand } from "@/data/models/SlashCommand";
 import type { CommanderSettings } from "@/data/models/Settings";
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import * as CommandService from "@/services/command";
+import { buildQueryPattern } from "@/services/search";
 
 interface SettingState {
     // Core state
     settings: CommanderSettings;
     plugin: SlashCommanderPlugin | null;
-    
+
     // Core initialization
     setPlugin: (plugin: SlashCommanderPlugin) => void;
-    
+
     // Settings actions
     updateSettings: (settings: Partial<CommanderSettings>) => Promise<void>;
     loadSettings: () => Promise<void>;
     saveSettings: () => Promise<void>;
-    
+
     // Command getters
     getCommands: () => SlashCommand[];
     getValidCommands: () => SlashCommand[];
     findCommand: (id: string, parentId?: string) => SlashCommand | undefined;
-    
+
     // Command actions
     addCommand: (command: SlashCommand) => Promise<void>;
     removeCommand: (commandId: string, parentId?: string) => Promise<void>;
     moveCommand: (commandId: string, sourceParentId: string | undefined, targetParentId: string | undefined) => Promise<void>;
-    
+
     // Command structure validation
     validateCommandStructure: (commands: SlashCommand[]) => void;
     restoreDefault: () => Promise<void>;
@@ -42,53 +43,79 @@ export const useSettingStore = create<SettingState>()(
             // Core state
             settings: { ...DEFAULT_SETTINGS },
             plugin: null,
-            
+
             // Core initialization
             setPlugin: (plugin) => {
                 set({ plugin });
             },
-            
+
             // Settings actions
             updateSettings: async (partialSettings) => {
-                set(state => ({
-                    settings: {
-                        ...state.settings,
-                        ...partialSettings
-                    }
-                }));
+                const newSettings = {
+                    ...get().settings,
+                    ...partialSettings
+                };
+
+                if (
+                    partialSettings.mainTrigger !== undefined ||
+                    partialSettings.extraTriggers !== undefined ||
+                    partialSettings.useExtraTriggers !== undefined ||
+                    partialSettings.triggerOnlyOnNewLine !== undefined
+                ) {
+                    newSettings.queryPattern = buildQueryPattern(
+                        newSettings.mainTrigger,
+                        newSettings.extraTriggers,
+                        newSettings.useExtraTriggers
+                    );
+                }
+
+                set({ settings: newSettings });
                 await get().saveSettings();
             },
-            
+
             loadSettings: async () => {
                 const { plugin } = get();
                 if (!plugin) return;
-                
+
                 const loadedSettings = await plugin.loadData();
-                const settings = loadedSettings
+                let settings = loadedSettings
                     ? { ...DEFAULT_SETTINGS, ...loadedSettings }
                     : { ...DEFAULT_SETTINGS };
-                
+
+                settings.queryPattern = buildQueryPattern(
+                    settings.mainTrigger,
+                    settings.extraTriggers,
+                    settings.useExtraTriggers
+                );
+
+                settings = await CommandService.migrateCommandData(
+                    settings,
+                    async (updatedSettings) => {
+                        await plugin.saveData(updatedSettings);
+                    }
+                );
+
                 set({ settings });
             },
-            
+
             saveSettings: async () => {
                 const { plugin, settings } = get();
                 if (!plugin) return;
-                
+
                 await plugin.saveData(settings);
             },
-            
+
             // Command getters
             getCommands: () => {
                 return get().settings.bindings || [];
             },
-            
+
             getValidCommands: () => {
                 const { plugin } = get();
                 if (!plugin) return [];
                 return CommandService.getValidCommands(plugin, get().getCommands());
             },
-            
+
             findCommand: (id, parentId) => {
                 if (parentId) {
                     // Find within a specific parent
@@ -99,15 +126,15 @@ export const useSettingStore = create<SettingState>()(
                     return get().getCommands().find(cmd => cmd.id === id);
                 }
             },
-            
+
             // Command actions
             addCommand: async (command) => {
                 const commands = [...get().getCommands()];
-                
+
                 if (!command.children) {
                     command.children = [];
                 }
-                
+
                 if (!command.parentId) {
                     // Add as root command
                     if (commands.some(cmd => cmd.id === command.id)) {
@@ -121,21 +148,21 @@ export const useSettingStore = create<SettingState>()(
                         if (!parent.children) {
                             parent.children = [];
                         }
-                        
+
                         if (parent.children.some(child => child.id === command.id)) {
                             throw new Error(`Child command with ID ${command.id} already exists in parent ${command.parentId}`);
                         }
-                        
+
                         parent.children.push(command);
                     }
                 }
-                
+
                 await get().updateSettings({ bindings: commands });
             },
-            
+
             removeCommand: async (commandId, parentId) => {
                 const commands = [...get().getCommands()];
-                
+
                 if (parentId) {
                     // Remove child command
                     const parent = commands.find(cmd => cmd.id === parentId);
@@ -148,14 +175,14 @@ export const useSettingStore = create<SettingState>()(
                     await get().updateSettings({ bindings: filteredCommands });
                     return;
                 }
-                
+
                 await get().updateSettings({ bindings: commands });
             },
-            
+
             moveCommand: async (commandId, sourceParentId, targetParentId) => {
                 const commands = [...get().getCommands()];
                 let sourceCommand: SlashCommand | undefined;
-                
+
                 // Find and remove source command
                 if (sourceParentId) {
                     // From parent command
@@ -175,12 +202,12 @@ export const useSettingStore = create<SettingState>()(
                         commands.splice(rootIndex, 1);
                     }
                 }
-                
+
                 if (!sourceCommand) return;
-                
+
                 // Update parentId
                 sourceCommand.parentId = targetParentId;
-                
+
                 // Add to target location
                 if (targetParentId) {
                     // Move to parent command
@@ -189,12 +216,12 @@ export const useSettingStore = create<SettingState>()(
                         if (!targetParent.children) {
                             targetParent.children = [];
                         }
-                        
+
                         // Check for duplicate ID
                         if (targetParent.children.some(child => child.id === commandId)) {
                             throw new Error(`Child command with ID ${commandId} already exists in target parent ${targetParentId}`);
                         }
-                        
+
                         targetParent.children.push(sourceCommand);
                     }
                 } else {
@@ -204,23 +231,23 @@ export const useSettingStore = create<SettingState>()(
                     }
                     commands.push(sourceCommand);
                 }
-                
+
                 await get().updateSettings({ bindings: commands });
             },
-            
+
             validateCommandStructure: (commands) => {
                 CommandService.validateCommandStructure(commands);
             },
-            
+
             restoreDefault: async () => {
                 const defaultCommands = CommandService.getDefaultCommands();
                 await get().updateSettings({ bindings: defaultCommands });
             },
-            
+
             isIdUnique: (id) => {
                 return CommandService.isIdUnique(id, get().getCommands());
             },
-            
+
             initialize: async () => {
                 await get().loadSettings();
             }

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { useState, useEffect } from "react";
-import { isTriggerInConflicts } from "@/services/utils/util";
+import { isTriggerInConflicts } from "@/services/utils";
 import ObsidianIcon from "@ui/components/obsidianIconComponent";
 import SlashCommanderPlugin from "@/main";
 import { ToggleComponent, TextBoxComponent } from "@ui/components/settingItemComponent";
