@@ -38,7 +38,7 @@ export function CommandViewerItem({
         },
     });
 
-    const { addCommand, saveSettings } = useSettingStore();
+    const { addCommand, updateCommand } = useSettingStore();
     const settings = useSettings();
 
     const style = {
@@ -78,25 +78,30 @@ export function CommandViewerItem({
                         }
                     }
                 }}
-                handleNewIcon={(): void => {
-                    new ChooseIconModal(plugin, command, () => saveSettings()).open();
+                handleNewIcon={async (): Promise<void> => {
+                    new ChooseIconModal(
+                        plugin, 
+                        command, 
+                        () => {
+                            updateCommand(command.id, { icon: command.icon });
+                        }
+                    ).open();
                 }}
-                handleRename={(name): void => {
-                    command.name = name;
-                    saveSettings();
+                handleRename={async (name): Promise<void> => {
+                    await updateCommand(command.id, { name });
                 }}
-                handleDeviceModeChange={(mode?: string): void => {
+                handleDeviceModeChange={async (mode?: string): Promise<void> => {
                     const modes = ["any", "desktop", "mobile", plugin.app.appId];
                     const nextIndex = (modes.indexOf(command.mode ?? "any") + 1) % modes.length;
-                    command.mode = mode || modes[nextIndex];
-                    saveSettings();
+                    const newMode = mode || modes[nextIndex];
+                    await updateCommand(command.id, { mode: newMode });
                 }}
-                handleTriggerModeChange={(mode?: string): void => {
+                handleTriggerModeChange={async (mode?: string): Promise<void> => {
                     const modes = ["anywhere", "newline", "inline"];
                     const nextIndex =
                         (modes.indexOf(command.triggerMode ?? "anywhere") + 1) % modes.length;
-                    command.triggerMode = mode || modes[nextIndex];
-                    saveSettings();
+                    const newMode = mode || modes[nextIndex];
+                    await updateCommand(command.id, { triggerMode: newMode });
                 }}
                 handleAddChild={async (): Promise<void> => {
                     // Only allow adding children to top-level commands
@@ -110,9 +115,6 @@ export function CommandViewerItem({
 
                             // Add command to store with parentId already set
                             await addCommand(newCommand);
-
-                            // Sync changes to UI and save settings
-                            await saveSettings();
                         }
                     }
                 }}

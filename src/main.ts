@@ -73,8 +73,4 @@ export default class SlashCommanderPlugin extends Plugin {
             this.storeUnsubscribe();
         }
     }
-
-    public async saveSettings(): Promise<void> {
-        await useSettingStore.getState().saveSettings();
-    }
 }

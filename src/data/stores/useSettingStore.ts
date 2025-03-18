@@ -19,6 +19,7 @@ interface SettingState {
     updateSettings: (settings: Partial<CommanderSettings>) => Promise<void>;
     loadSettings: () => Promise<void>;
     saveSettings: () => Promise<void>;
+    updateCommand: (commandId: string, updates: Partial<SlashCommand>) => Promise<boolean>;
 
     // Command getters
     getCommands: () => SlashCommand[];
@@ -75,6 +76,35 @@ export const useSettingStore = create<SettingState>()(
 
             set({ settings: newSettings });
             await get().saveSettings();
+        },
+
+        updateCommand: async (commandId: string, updates: Partial<SlashCommand>) => {
+            const commands = [...get().getCommands()];
+            let updated = false;
+
+            const updateCommandInTree = (cmds: SlashCommand[]): boolean => {
+                for (let i = 0; i < cmds.length; i++) {
+                    if (cmds[i].id === commandId) {
+                        cmds[i] = { ...cmds[i], ...updates };
+                        return true;
+                    }
+
+                    if (cmds[i].children?.length) {
+                        if (updateCommandInTree(cmds[i].children || [])) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            updated = updateCommandInTree(commands);
+
+            if (updated) {
+                await get().updateSettings({ bindings: commands });
+            }
+
+            return updated;
         },
 
         loadSettings: async () => {
