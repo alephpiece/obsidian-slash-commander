@@ -3,22 +3,22 @@ import type { ComponentProps } from "react";
 import { useRef, useLayoutEffect } from "react";
 
 interface ObsidianIconProps extends ComponentProps<"div"> {
-	icon: string;
-	size?: string;
+    icon: string;
+    size?: string;
 }
 
 export default function ObsidianIcon({ icon, size, ...props }: ObsidianIconProps) {
-	const iconEl = useRef<HTMLDivElement>(null);
+    const iconEl = useRef<HTMLDivElement>(null);
 
-	useLayoutEffect(() => {
-		if (!iconEl.current) return;
+    useLayoutEffect(() => {
+        if (!iconEl.current) return;
 
-		setIcon(iconEl.current, icon);
+        setIcon(iconEl.current, icon);
 
-		if (size) {
-			iconEl.current.style.setProperty("--icon-size", size);
-		}
-	}, [icon, size]);
+        if (size) {
+            iconEl.current.style.setProperty("--icon-size", size);
+        }
+    }, [icon, size]);
 
-	return <div ref={iconEl} {...props} />;
+    return <div ref={iconEl} {...props} />;
 }

@@ -14,32 +14,35 @@ import { useSettingStore } from "@/data/stores/useSettingStore";
  */
 export function generateUniqueId(prefix = ""): string {
     const settingStore = useSettingStore.getState();
-    
+
     let id: string;
     do {
         id = prefix + crypto.randomUUID();
     } while (!settingStore.isIdUnique(id));
-    
+
     return id;
 }
 
 /**
  * Get valid commands that should be displayed
  */
-export function getValidCommands(plugin: SlashCommanderPlugin, commands: SlashCommand[]): SlashCommand[] {
+export function getValidCommands(
+    plugin: SlashCommanderPlugin,
+    commands: SlashCommand[]
+): SlashCommand[] {
     if (!plugin) return [];
 
     // Filter and clone root commands
     const validRootCommands = commands
-        .filter(cmd => isValidSuggestItem(plugin, cmd))
-        .map(cmd => ({ ...cmd }));
+        .filter((cmd) => isValidSuggestItem(plugin, cmd))
+        .map((cmd) => ({ ...cmd }));
 
     // Process and filter child commands
-    validRootCommands.forEach(cmd => {
+    validRootCommands.forEach((cmd) => {
         if (cmd.children && cmd.children.length > 0) {
             const validChildren = cmd.children
-                .filter(child => isValidSuggestItem(plugin, child))
-                .map(child => ({ ...child }));
+                .filter((child) => isValidSuggestItem(plugin, child))
+                .map((child) => ({ ...child }));
 
             cmd.children = validChildren;
         }
@@ -78,14 +81,14 @@ export function validateCommandStructure(commands: SlashCommand[]): void {
  */
 export function isIdUnique(id: string, commands: SlashCommand[]): boolean {
     // Check root level
-    if (commands.some(cmd => cmd.id === id)) {
+    if (commands.some((cmd) => cmd.id === id)) {
         return false;
     }
 
     // Check all child commands
     for (const cmd of commands) {
         if (cmd.children && cmd.children.length > 0) {
-            if (cmd.children.some(child => child.id === id)) {
+            if (cmd.children.some((child) => child.id === id)) {
                 return false;
             }
         }
@@ -104,11 +107,11 @@ export function findCommand(
 ): SlashCommand | undefined {
     if (parentId) {
         // Find within a specific parent
-        const parent = commands.find(cmd => cmd.id === parentId);
-        return parent?.children?.find(child => child.id === id);
+        const parent = commands.find((cmd) => cmd.id === parentId);
+        return parent?.children?.find((child) => child.id === id);
     } else {
         // Find at root level
-        return commands.find(cmd => cmd.id === id);
+        return commands.find((cmd) => cmd.id === id);
     }
 }
 
@@ -116,7 +119,7 @@ export function findCommand(
  * Get default commands
  */
 export function getDefaultCommands(): SlashCommand[] {
-    return DEFAULT_SETTINGS.bindings.map(cmd => {
+    return DEFAULT_SETTINGS.bindings.map((cmd) => {
         const newCmd = { ...cmd };
         newCmd.children = [];
         newCmd.parentId = undefined;
@@ -136,9 +139,12 @@ export async function migrateCommandData(
     if (!data.bindings || data.bindings.length === 0) return data;
 
     // Check if migration is needed
-    const needsMigration = data.bindings.some(cmd =>
-        !('action' in cmd) || cmd.action === undefined ||
-        !('isGroup' in cmd) || cmd.isGroup === undefined
+    const needsMigration = data.bindings.some(
+        (cmd) =>
+            !("action" in cmd) ||
+            cmd.action === undefined ||
+            !("isGroup" in cmd) ||
+            cmd.isGroup === undefined
     );
 
     if (!needsMigration) {
@@ -170,14 +176,14 @@ export async function migrateCommandData(
     // Recursive migration function
     const migrateCommand = (cmd: SlashCommand): SlashCommand => {
         // If no action field, copy id to action
-        if (!('action' in cmd) || cmd.action === undefined) {
+        if (!("action" in cmd) || cmd.action === undefined) {
             cmd.action = cmd.id;
         }
 
         // Set isGroup field
-        if (!('isGroup' in cmd) || cmd.isGroup === undefined) {
+        if (!("isGroup" in cmd) || cmd.isGroup === undefined) {
             // Determine if it's a command group by checking for child commands
-            cmd.isGroup = (cmd.children && cmd.children.length > 0);
+            cmd.isGroup = cmd.children && cmd.children.length > 0;
 
             // Special handling for IDs with old group prefix format
             if (cmd.id.startsWith("slash-commander:group-")) {

@@ -1,6 +1,6 @@
-import type { UniqueIdentifier } from '@dnd-kit/core';
-import type { SlashCommand } from '@/data/models/SlashCommand';
-import SlashCommanderPlugin from '@/main';
+import type { UniqueIdentifier } from "@dnd-kit/core";
+import type { SlashCommand } from "@/data/models/SlashCommand";
+import SlashCommanderPlugin from "@/main";
 
 /**
  * Extended TreeItem interface that includes SlashCommand properties
@@ -49,4 +49,4 @@ export interface CommandViewerItemProps {
     plugin: SlashCommanderPlugin;
     childCount?: number;
     clone?: boolean;
-} 
+}

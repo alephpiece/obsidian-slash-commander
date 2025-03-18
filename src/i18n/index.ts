@@ -8,21 +8,21 @@ import ru from "@/i18n/resources/ru.json";
 import zhCN from "@/i18n/resources/zh-cn.json";
 
 const resources = {
-	en,
-	ja,
-	ru,
-	"zh-CN": zhCN,
+    en,
+    ja,
+    ru,
+    "zh-CN": zhCN,
 };
 
 i18n.use(initReactI18next).init({
-	lng: moment.locale(),
-	fallbackLng: "en",
-	resources,
-	interpolation: {
-		escapeValue: false,
-	},
-	keySeparator: false,
-	returnNull: false,
+    lng: moment.locale(),
+    fallbackLng: "en",
+    resources,
+    interpolation: {
+        escapeValue: false,
+    },
+    keySeparator: false,
+    returnNull: false,
 });
 
 export default i18n;

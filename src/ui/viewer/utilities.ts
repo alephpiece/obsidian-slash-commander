@@ -1,19 +1,17 @@
-import type { UniqueIdentifier } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
-import { SlashCommand } from '@/data/models/SlashCommand';
-import type { CommandTreeItem, CommandTreeItems, FlattenedCommandItem } from './types';
+import type { UniqueIdentifier } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
+import { SlashCommand } from "@/data/models/SlashCommand";
+import type { CommandTreeItem, CommandTreeItems, FlattenedCommandItem } from "./types";
 
 /**
  * Convert SlashCommand array to CommandTreeItems for dnd-kit
  */
 export function commandsToTreeItems(commands: SlashCommand[]): CommandTreeItems {
-    return commands.map(command => ({
+    return commands.map((command) => ({
         id: command.id,
         command,
-        children: command.children
-            ? commandsToTreeItems(command.children)
-            : [],
-        collapsed: false
+        children: command.children ? commandsToTreeItems(command.children) : [],
+        collapsed: false,
     }));
 }
 
@@ -21,7 +19,7 @@ export function commandsToTreeItems(commands: SlashCommand[]): CommandTreeItems 
  * Convert CommandTreeItems back to SlashCommand array
  */
 export function treeItemsToCommands(items: CommandTreeItems): SlashCommand[] {
-    return items.map(item => {
+    return items.map((item) => {
         const command = { ...item.command };
 
         if (item.children && item.children.length > 0) {
@@ -93,7 +91,10 @@ export function getProjection(
     /**
      * Find parent with the specified depth
      */
-    function findParentWithDepth(item: FlattenedCommandItem, depth: number): UniqueIdentifier | null {
+    function findParentWithDepth(
+        item: FlattenedCommandItem,
+        depth: number
+    ): UniqueIdentifier | null {
         if (!item.parentId) {
             return null;
         }
@@ -151,10 +152,7 @@ function flatten(
         };
 
         if (item.children.length > 0 && !item.collapsed) {
-            return [
-                flattenedItem,
-                ...flatten(item.children, item.id, depth + 1),
-            ];
+            return [flattenedItem, ...flatten(item.children, item.id, depth + 1)];
         }
 
         return [flattenedItem];
@@ -174,7 +172,7 @@ export function flattenTree(items: CommandTreeItems): FlattenedCommandItem[] {
 export function buildTree(flattenedItems: FlattenedCommandItem[]): CommandTreeItems {
     const root: CommandTreeItems = [];
     const itemMap = new Map<UniqueIdentifier, CommandTreeItem>();
-    const items = flattenedItems.map(item => ({
+    const items = flattenedItems.map((item) => ({
         id: item.id,
         command: item.command,
         children: [],
@@ -239,7 +237,7 @@ export function removeItem(items: CommandTreeItems, id: UniqueIdentifier): Comma
         if (item.children.length) {
             newItems.push({
                 ...item,
-                children: removeItem(item.children, id)
+                children: removeItem(item.children, id),
             });
         } else {
             newItems.push(item);
@@ -258,7 +256,7 @@ export function setProperty<T extends keyof CommandTreeItem>(
     property: T,
     setter: (value: CommandTreeItem[T]) => CommandTreeItem[T]
 ): CommandTreeItems {
-    return items.map(item => {
+    return items.map((item) => {
         if (item.id === id) {
             return {
                 ...item,
@@ -307,7 +305,7 @@ export function removeChildrenOf(
 ): FlattenedCommandItem[] {
     const excludeParentIds = new Set(ids);
 
-    return items.filter(item => {
+    return items.filter((item) => {
         if (item.parentId && excludeParentIds.has(item.parentId)) {
             excludeParentIds.add(item.id);
             return false;
@@ -315,4 +313,4 @@ export function removeChildrenOf(
 
         return true;
     });
-} 
+}
