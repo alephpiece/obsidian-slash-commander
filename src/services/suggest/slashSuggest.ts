@@ -5,6 +5,7 @@ import {
     EditorSuggestContext,
     EditorSuggestTriggerInfo,
     FuzzyMatch,
+    Notice,
     prepareFuzzySearch,
     TFile,
 } from "obsidian";
@@ -18,6 +19,7 @@ import SuggestedCommand from "@/ui/suggest/SuggestedCommand";
 import { SubSuggest } from "./subSuggest";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 import SuggestedGroup from "@/ui/suggest/SuggestedGroup";
+import { t } from "i18next";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
     private plugin: SlashCommanderPlugin;
@@ -99,17 +101,15 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
         // Delete the trigger and command query.
         this.context?.editor.replaceRange("", this.context.start, this.context.end);
 
-        if (!isCommandGroup(result.item) && result.item.action) {
-            this.plugin.app.commands.executeCommandById(result.item.action);
-        } else {
-            // Open sub-suggester with child commands
-            const subSuggester = new SubSuggest(
-                this.plugin,
-                this.containerEl,
-                result.item.children ?? []
-            );
-            subSuggester.open();
+        // If a group is selected, do nothing. Otherwise, execute the command.
+        if (!isCommandGroup(result.item)) {
+            if (result.item.action) {
+                this.plugin.app.commands.executeCommandById(result.item.action);
+            } else {
+                new Notice(t("suggest.invalid_command"));
+            }
         }
+
         this.close();
     }
 

@@ -5,6 +5,7 @@ import {
     FuzzyMatch,
     FuzzySuggestModal,
     Modal,
+    Notice,
     Scope,
     SuggestModal,
     TextComponent,
@@ -18,6 +19,7 @@ import { createRoot } from "react-dom/client";
 import SuggestedCommand from "@/ui/suggest/SuggestedCommand";
 import SuggestedGroup from "@/ui/suggest/SuggestedGroup";
 import { t } from "i18next";
+import { isCommandGroup } from "../command";
 
 export default class Suggester<T> {
     public owner: SuggestModal<T>;
@@ -122,7 +124,7 @@ export abstract class SuggestionModal<T> extends FuzzySuggestModal<T> {
     public suggester: Suggester<FuzzyMatch<T>>;
     public suggestEl: HTMLDivElement;
     public promptEl: HTMLDivElement;
-    public emptyStateText = t("suggester.no_matches");
+    public emptyStateText = t("suggest.no_matches");
     public limit = 100;
     public constructor(app: App, inputEl: HTMLInputElement, items: T[]) {
         super(app);
@@ -241,7 +243,13 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
         return item.name;
     }
     public onChooseItem(item: SlashCommand): void {
-        if (item && item.action) this.plugin.app.commands.executeCommandById(item.action);
+        if (item && !isCommandGroup(item)) {
+            if (item.action) {
+                this.plugin.app.commands.executeCommandById(item.action);
+            } else {
+                new Notice(t("suggest.invalid_command"));
+            }
+        }
     }
     public selectSuggestion({ item }: FuzzyMatch<SlashCommand>): void {
         this.onChooseItem(item);
@@ -254,10 +262,14 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
             div.setText(this.emptyStateText);
             return;
         }
-        if (result.item.parentId) return; // is child
 
         const root = createRoot(el);
-        root.render(createElement(SuggestedCommand, { plugin: this.plugin, result }));
+        root.render(
+            createElement(isCommandGroup(result.item) ? SuggestedGroup : SuggestedCommand, {
+                plugin: this.plugin,
+                result,
+            })
+        );
     }
     public getItems(): SlashCommand[] {
         return this.items;
