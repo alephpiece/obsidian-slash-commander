@@ -13,9 +13,10 @@ import { createRoot } from "react-dom/client";
 import { isCommandGroup, SlashCommand, getObsidianCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { SlashCommandMatch } from "@/services/search";
-import SuggestionComponent from "@/ui/components/suggestionComponent";
+import SuggestedCommand from "@/ui/suggest/SuggestedCommand";
 import { SubSuggest } from "./subSuggest";
 import { useSettingStore } from "@/data/stores/useSettingStore";
+import SuggestedGroup from "@/ui/suggest/SuggestedGroup";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
     private plugin: SlashCommanderPlugin;
@@ -114,7 +115,12 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
     public renderSuggestion(result: FuzzyMatch<SlashCommand>, el: HTMLElement): void {
         this.containerEl = el;
         const root = createRoot(el);
-        root.render(createElement(SuggestionComponent, { plugin: this.plugin, result: result }));
+        root.render(
+            createElement(isCommandGroup(result.item) ? SuggestedGroup : SuggestedCommand, {
+                plugin: this.plugin,
+                result: result,
+            })
+        );
     }
 
     public unload(): void {

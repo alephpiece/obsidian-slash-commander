@@ -15,8 +15,8 @@ import { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
-import SuggestionComponent from "@/ui/components/suggestionComponent";
-import SuggestionGroupComponent from "@/ui/components/suggestionGroupComponent";
+import SuggestedCommand from "@/ui/suggest/SuggestedCommand";
+import SuggestedGroup from "@/ui/suggest/SuggestedGroup";
 import { t } from "i18next";
 
 export default class Suggester<T> {
@@ -257,7 +257,7 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
         if (result.item.parentId) return; // is child
 
         const root = createRoot(el);
-        root.render(createElement(SuggestionComponent, { plugin: this.plugin, result }));
+        root.render(createElement(SuggestedCommand, { plugin: this.plugin, result }));
     }
     public getItems(): SlashCommand[] {
         return this.items;

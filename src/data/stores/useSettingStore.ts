@@ -108,7 +108,6 @@ export const useSettingStore = create<SettingState>()(
             await plugin.saveData(settings);
         },
 
-        // Command getters
         getCommands: () => {
             return get().settings.bindings || [];
         },

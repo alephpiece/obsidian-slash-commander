@@ -525,6 +525,15 @@
             color: dimgray;
         }
     }
+
+    .cmdr-suggest-group-name {
+        flex: 1 1 auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text-muted);
+        font-weight: bold;
+        font-size: small;
+    }
 }
 
 .cmdr-suggest-item-icon {

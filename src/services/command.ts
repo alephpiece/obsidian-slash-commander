@@ -5,6 +5,18 @@ import { CommanderSettings } from "@/data/models/Settings";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 
 /**
+ * Get default commands
+ */
+export function getDefaultCommands(): SlashCommand[] {
+    return DEFAULT_SETTINGS.bindings.map((cmd) => {
+        const newCmd = { ...cmd };
+        newCmd.children = [];
+        newCmd.parentId = undefined;
+        return newCmd;
+    });
+}
+
+/**
  * SlashCommand-related service functions
  * These functions handle pure business logic without state management
  */
@@ -113,18 +125,6 @@ export function findCommand(
         // Find at root level
         return commands.find((cmd) => cmd.id === id);
     }
-}
-
-/**
- * Get default commands
- */
-export function getDefaultCommands(): SlashCommand[] {
-    return DEFAULT_SETTINGS.bindings.map((cmd) => {
-        const newCmd = { ...cmd };
-        newCmd.children = [];
-        newCmd.parentId = undefined;
-        return newCmd;
-    });
 }
 
 /**
