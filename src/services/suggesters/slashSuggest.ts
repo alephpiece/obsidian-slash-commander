@@ -15,25 +15,15 @@ import SlashCommanderPlugin from "@/main";
 import { SlashCommandMatch } from "@/services/utils/search";
 import SuggestionComponent from "@/ui/components/suggestionComponent";
 import { SubSuggest } from "./subSuggest";
-import { CommanderSettings, EnhancedEditor } from "@/data/models/Settings";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 	private plugin: SlashCommanderPlugin;
 	private containerEl: HTMLElement;
-	private settings: CommanderSettings;
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
 		this.plugin = plugin;
-		this.settings = useSettingStore.getState().settings;
-		
-		useSettingStore.subscribe(
-			state => state.settings,
-			(newSettings) => {
-				this.settings = newSettings;
-			}
-		);
 	}
 
 	public onTrigger(
@@ -41,12 +31,13 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 		editor: Editor,
 		_file: TFile
 	): EditorSuggestTriggerInfo | null {
-		const queryPattern = this.settings.queryPattern;
+		const settings = useSettingStore.getState().settings;
+		const queryPattern = settings.queryPattern;
 		const currentLine = editor.getLine(cursor.line).slice(0, cursor.ch);
 		let lastWordIndex = 0;
 		let lastWord = currentLine;
 
-		if (!this.settings.triggerOnlyOnNewLine) {
+		if (!settings.triggerOnlyOnNewLine) {
 			// Only the last word of the line will trigger slash commands.
 			lastWordIndex = currentLine.lastIndexOf(" ") + 1;
 			lastWord = currentLine.slice(lastWordIndex, cursor.ch);
@@ -127,6 +118,6 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 	}
 
 	public unload(): void {
-		// 释放资源或其他清理操作
+		// Clean up resources if needed
 	}
 }
