@@ -1,7 +1,7 @@
 import { MarkdownView, Plugin } from "obsidian";
 import { EnhancedEditor } from "./data/models/Settings";
 import CommanderSettingTab from "@/ui/settingTab";
-import SettingTabModal from "@/ui/modals/settingTabModal";
+import SettingTabModal from "@/ui/modals/SettingTabModal";
 import { SlashSuggester } from "@/services/suggesters/slashSuggest";
 import { MenuSuggest } from "@/services/suggesters/menuSuggest";
 

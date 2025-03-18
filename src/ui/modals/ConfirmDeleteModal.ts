@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { t } from "i18next";
 import SlashCommanderPlugin from "@/main";
-import { confirmDeleteComponent } from "@/ui/components/ConfirmDeleteComponent";
+import { ConfirmDeleteComponent } from "@/ui/components/ConfirmDeleteComponent";
 import { SlashCommand } from "@/data/models/SlashCommand";
 
 export default class ConfirmDeleteModal extends Modal {
@@ -27,7 +27,7 @@ export default class ConfirmDeleteModal extends Modal {
 		this.containerEl.style.zIndex = "99";
 		this.root = createRoot(this.contentEl);
 		this.root.render(
-			createElement(confirmDeleteComponent, {
+			createElement(ConfirmDeleteComponent, {
 				modal: this,
 				command: this.command,
 			})

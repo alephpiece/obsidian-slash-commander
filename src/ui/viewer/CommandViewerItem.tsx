@@ -4,7 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ConfirmDeleteModal from "@/ui/modals/ConfirmDeleteModal";
-import ChooseIconModal from "@/ui/modals/chooseIconModal";
+import ChooseIconModal from "@/ui/modals/ChooseIconModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 import { isRootCommand } from "@/data/models/SlashCommand";

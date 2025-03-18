@@ -15,7 +15,7 @@ interface ConfirmDeleteProps {
 /**
  * Component that renders the confirmation dialog for deleting a command
  */
-export function confirmDeleteComponent({ modal, command }: ConfirmDeleteProps): ReactElement {
+export function ConfirmDeleteComponent({ modal, command }: ConfirmDeleteProps): ReactElement {
 	const { t } = useTranslation();
 	const settings = useSettings();
 	const updateSettings = useUpdateSettings();
