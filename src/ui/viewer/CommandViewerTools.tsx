@@ -1,23 +1,22 @@
 import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
-import { usePlugin, useStore } from "@/data/hooks/useCommandStore";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 import ConfirmRestoreModal from "@/ui/modals/ConfirmRestoreModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 
 /**
  * Render the command list tools (full version).
- * Uses Zustand store for accessing plugin, store and sync functions.
+ * Uses Zustand store for accessing plugin and command functions.
  */
 export function CommandViewerToolsBottom(): ReactElement {
 	const { t } = useTranslation();
-	const plugin = usePlugin();
-	const store = useStore();
+	const { plugin, addCommand, restoreDefault } = useSettingStore();
 
 	const handleRestoreDefault = async (): Promise<void> => {
-		if (plugin && store) {
+		if (plugin) {
 			await new ConfirmRestoreModal(plugin, async () => {
-				await store.restoreDefault();
+				await restoreDefault();
 			}).didChooseRestore();
 		}
 	};
@@ -29,8 +28,8 @@ export function CommandViewerToolsBottom(): ReactElement {
 				onClick={async (): Promise<void> => {
 					if (plugin) {
 						const command = await new BindingEditorModal(plugin).awaitSelection();
-						if (command && store) {
-							await store.addCommand(command);
+						if (command) {
+							await addCommand(command);
 						}
 					}
 				}}
@@ -50,18 +49,17 @@ export function CommandViewerToolsBottom(): ReactElement {
 
 /**
  * Render the command list tools (short version).
- * Uses Zustand store for accessing plugin, store and sync functions.
+ * Uses Zustand store for accessing plugin and command functions.
  * This is a more compact version used in different contexts than CommandTools.
  */
 export function CommandViewerToolsBar(): ReactElement {
 	const { t } = useTranslation();
-	const plugin = usePlugin();
-	const store = useStore();
+	const { plugin, addCommand, restoreDefault } = useSettingStore();
 
 	const handleRestoreDefault = async (): Promise<void> => {
-		if (plugin && store) {
+		if (plugin) {
 			await new ConfirmRestoreModal(plugin, async () => {
-				await store.restoreDefault();
+				await restoreDefault();
 			}).didChooseRestore();
 		}
 	};
@@ -76,8 +74,8 @@ export function CommandViewerToolsBar(): ReactElement {
 				onClick={async (): Promise<void> => {
 					if (plugin) {
 						const command = await new BindingEditorModal(plugin).awaitSelection();
-						if (command && store) {
-							await store.addCommand(command);
+						if (command) {
+							await addCommand(command);
 						}
 					}
 				}}

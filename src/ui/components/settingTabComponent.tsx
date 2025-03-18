@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { CommanderSettings } from "@/data/models/Settings";
 import { CommandViewerToolsBar } from "@/ui/viewer/CommandViewerTools";
 import { CommandViewer } from "@/ui/viewer";
+import { useSettings, useUpdateSettings } from "@/data/hooks";
 
 interface SettingTabProps {
 	plugin: SlashCommanderPlugin;
@@ -18,15 +19,8 @@ interface SettingTabProps {
 
 export default function SettingTabComponent({ plugin }: SettingTabProps): ReactElement {
 	const { t } = useTranslation();
-	const [settings, setSettings] = useState<CommanderSettings>(plugin.settingsStore.getSettings());
-
-	useEffect(() => {
-		const unsubscribe = plugin.settingsStore.subscribe(newSettings => {
-			setSettings({ ...newSettings });
-		});
-
-		return unsubscribe;
-	}, [plugin]);
+	const settings = useSettings();
+	const updateSettings = useUpdateSettings();
 
 	return (
 		<div>
@@ -65,7 +59,7 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					name={t("triggers.command.title")}
 					description={t("triggers.command.detail")}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settingsStore.updateSettings({
+						await updateSettings({
 							mainTrigger: value,
 						});
 					}}
@@ -75,7 +69,7 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					description={t("triggers.more.detail")}
 					value={settings.useExtraTriggers}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settingsStore.updateSettings({
+						await updateSettings({
 							useExtraTriggers: !value,
 						});
 					}}
@@ -86,7 +80,7 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					description={t("settings.newline_only.detail")}
 					value={settings.triggerOnlyOnNewLine}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settingsStore.updateSettings({
+						await updateSettings({
 							triggerOnlyOnNewLine: !value,
 						});
 					}}
@@ -96,7 +90,7 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					description={t("settings.show_descriptions.detail")}
 					value={settings.showDescriptions}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settingsStore.updateSettings({
+						await updateSettings({
 							showDescriptions: !value,
 						});
 					}}
@@ -106,7 +100,7 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					description={t("settings.show_sources.detail")}
 					value={settings.showSourcesForDuplicates}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settingsStore.updateSettings({
+						await updateSettings({
 							showSourcesForDuplicates: !value,
 						});
 					}}
@@ -116,7 +110,7 @@ export default function SettingTabComponent({ plugin }: SettingTabProps): ReactE
 					description={t("settings.ask_before_removing.detail")}
 					value={settings.confirmDeletion}
 					changeHandler={async (value): Promise<void> => {
-						plugin.settingsStore.updateSettings({
+						await updateSettings({
 							confirmDeletion: !value,
 						});
 					}}

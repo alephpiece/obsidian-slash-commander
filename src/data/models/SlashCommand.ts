@@ -1,6 +1,7 @@
 import { Command } from "obsidian";
 import SlashCommanderPlugin from "@/main";
 import { generateUniqueId } from "@/services/utils/util";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 
 export type DeviceMode = "any" | "desktop" | "mobile" | string;
 export type TriggerMode = "anywhere" | "newline" | "inline" | string;
@@ -55,7 +56,7 @@ export function getCommandSourceName(plugin: SlashCommanderPlugin, cmd: Command)
 }
 
 export function isCommandActiveUnique(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
-	const settings = plugin.settingsStore.getSettings();
+	const settings = useSettingStore.getState().settings;
 	const commands = settings.bindings;
 	
 	// Find all active commands with matching name

@@ -11,6 +11,7 @@ import {
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { FuzzyMatch } from "obsidian";
 import { CommanderSettings } from "@/data/models/Settings";
+import { useSettings } from "@/data/hooks";
 
 interface SuggestionProps {
 	plugin: SlashCommanderPlugin;
@@ -23,15 +24,7 @@ export default function SuggestionComponent({
 }: SuggestionProps): ReactElement | null {
 	const { item: scmd } = result;
 	const cmd = getObsidianCommand(plugin, scmd);
-	const [settings, setSettings] = useState<CommanderSettings>(plugin.settingsStore.getSettings());
-
-	useEffect(() => {
-		const unsubscribe = plugin.settingsStore.subscribe(newSettings => {
-			setSettings({ ...newSettings });
-		});
-
-		return unsubscribe;
-	}, [plugin]);
+	const settings = useSettings();
 
 	if (!isCommandGroup(scmd) && !cmd) {
 		return null;

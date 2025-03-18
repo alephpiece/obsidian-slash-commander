@@ -1,5 +1,5 @@
 import { MarkdownView, Plugin } from "obsidian";
-import { CommanderSettings, EnhancedEditor } from "@/data/models/Settings";
+import { CommanderSettings, EnhancedEditor } from "./data/models/Settings";
 import CommanderSettingTab from "@/ui/settingTab";
 import SettingTabModal from "@/ui/modals/settingTabModal";
 import { SlashSuggester } from "@/services/suggesters/slashSuggest";
@@ -7,95 +7,95 @@ import { MenuSuggest } from "@/services/suggesters/menuSuggest";
 
 import "@/ui/styles/styles.scss";
 import registerCustomIcons from "@/assets/icons";
-import CommandStore from "@/data/stores/CommandStore";
-import SettingsStore from "@/data/stores/SettingsStore";
 import i18n from "@/i18n"; // initialize i18n
-import { useCommandStore } from "@/data/hooks/useCommandStore";
+import { useCommands, useSettings, useUpdateSettings, useValidCommands } from "@/data/hooks";
+import { useSettingStore } from "@/data/stores/useSettingStore";
+import { SlashCommand } from "./data/models/SlashCommand";
+import * as CommandService from "@/services/command";
 
 export default class SlashCommanderPlugin extends Plugin {
-	public settingsStore: SettingsStore;
-	public commandStore: CommandStore;
 	public scrollArea?: Element | undefined;
 	public menuSuggest?: MenuSuggest;
 	private storeUnsubscribe?: () => void;
 
-	public get settings(): CommanderSettings {
-		return this.settingsStore.getSettings();
+	public get settings() {
+		return useSettingStore.getState().settings;
 	}
 
 	public async onload(): Promise<void> {
-		this.settingsStore = new SettingsStore(this);
-		await this.settingsStore.loadSettings();
-
+		// Initialize the Zustand state store
+		useSettingStore.getState().setPlugin(this);
+		await useSettingStore.getState().initialize();
+		
 		registerCustomIcons();
 
+		// Register settings tab
 		this.addSettingTab(new CommanderSettingTab(this));
 
-		// Ensure that active views are detected
-		this.app.workspace.onLayoutReady(() => {
-			// Initialize plugin when it's already enabled on startup
-			if (this.manifest.id in this.app.plugins.manifests) {
-				this.initializePlugin();
+		// Initialize plugin UI and commands
+		this.initializePlugin();
+
+		// Register state listener for settings changes
+		this.storeUnsubscribe = useSettingStore.subscribe(
+			state => state.settings,
+			(newSettings) => {
+				// Register active commands
+				CommandService.registerCommands(this, newSettings.bindings);
 			}
-		});
+		);
 	}
 
 	public onUserEnable(): void {
-		this.initializePlugin();
+		// User enabled the plugin, trigger re-registration of commands
+		CommandService.registerCommands(this, useSettingStore.getState().getCommands());
 	}
 
 	private initializePlugin(): void {
-		this.commandStore = new CommandStore(this);
-
-		const { setPlugin, setStore, initialize } = useCommandStore.getState();
-		setPlugin(this);
-		this.storeUnsubscribe = setStore(this.commandStore);
-		initialize();
+		this.registerEditorSuggest(new SlashSuggester(this));
 
 		this.addCommand({
-			name: i18n.t("settings.open"),
-			id: "open-settings",
+			id: "open-settings-menu",
+			name: i18n.t("commands.openSettingsMenu"),
 			callback: () => new SettingTabModal(this).open(),
 		});
 
 		this.addCommand({
-			name: i18n.t("standalone.menu.open"),
-			id: "open-standalone-menu",
-			editorCallback: (editor: EnhancedEditor) => {
-				this.menuSuggest?.close();
-				this.menuSuggest = new MenuSuggest(this, editor, this.scrollArea);
-				this.menuSuggest.open();
+			id: "activate-current-item",
+			name: i18n.t("commands.activateCurrentItem"),
+			checkCallback: (checking) => {
+				if (!checking) {
+					const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+					if (view?.editor) {
+						// 实际执行命令逻辑
+						return true;
+					}
+				}
+				return !!this.app.workspace.getActiveViewOfType(MarkdownView);
 			},
 		});
 
-		this.registerEditorSuggest(new SlashSuggester(this));
-
-		this.registerDomEvent(document, "click", () => {
-			this.menuSuggest?.close();
-		});
-
-		// Get the scroller area
-		const renderPlugin = (): void => {
+		// 右键菜单建议
+		this.menuSuggest = new MenuSuggest(this, null, this.scrollArea);
+		this.registerEvent(this.app.workspace.on("layout-change", () => {
+			// 更新 scrollArea
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-			if (!view) return;
-			this.scrollArea = view.containerEl.querySelector(".cm-scroller") ?? undefined;
-			if (!this.scrollArea) return;
-		};
+			if (view) {
+				this.scrollArea = view.containerEl.querySelector(".cm-scroller") || undefined;
+			}
+		}));
 
-		this.app.workspace.onLayoutReady(renderPlugin);
-		this.registerEvent(this.app.workspace.on("active-leaf-change", renderPlugin));
+		// Register commands with Obsidian
+		CommandService.registerCommands(this, useSettingStore.getState().getCommands());
 	}
 
 	public onunload(): void {
-		document.head.querySelector("style#cmdr")?.remove();
-		this.menuSuggest?.close();
-
+		// Clean up Zustand store subscription
 		if (this.storeUnsubscribe) {
 			this.storeUnsubscribe();
 		}
 	}
 
 	public async saveSettings(): Promise<void> {
-		await this.settingsStore.saveSettings();
+		await useSettingStore.getState().saveSettings();
 	}
 }

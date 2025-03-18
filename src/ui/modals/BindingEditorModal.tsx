@@ -6,10 +6,10 @@ import { t } from "i18next";
 import { ICON_LIST } from "@/data/constants/icons";
 import { Command } from "obsidian";
 import { getDeviceModeInfo, getTriggerModeInfo, generateUniqueId } from "@/services/utils/util";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 
 /**
- * Modal for adding a new binding with all options in one interface
- * Allows users to set name, command, icon, trigger mode and device mode at once
+ * Modal for creating and editing slash commands
  */
 export default class BindingEditorModal extends Modal {
 	private plugin: SlashCommanderPlugin;
@@ -223,8 +223,8 @@ export default class BindingEditorModal extends Modal {
 
 			// If ID is not empty, check uniqueness
 			if (this.id) {
-				const store = this.plugin.commandStore;
-				if (store && !store.isIdUnique(this.id)) {
+				const settingStore = useSettingStore.getState();
+				if (!settingStore.isIdUnique(this.id)) {
 					this.setError("id", t("modals.bind.id.not_unique"), wrapper);
 				}
 			}
@@ -591,8 +591,8 @@ export default class BindingEditorModal extends Modal {
 			const idWrapper = this.contentEl.querySelectorAll(
 				".cmdr-setting-item"
 			)[2] as HTMLElement;
-			const store = this.plugin.commandStore;
-			if (store && !store.isIdUnique(this.id)) {
+			const settingStore = useSettingStore.getState();
+			if (!settingStore.isIdUnique(this.id)) {
 				this.setError("id", t("modals.bind.id.not_unique"), idWrapper);
 				isValid = false;
 			}

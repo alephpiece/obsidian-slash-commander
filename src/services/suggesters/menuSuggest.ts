@@ -3,6 +3,8 @@ import SlashCommanderPlugin from "@/main";
 import { MenuSuggestionModal } from "./suggester";
 import { Coords, EnhancedEditor } from "@/data/models/Settings";
 import { SlashCommandMatch } from "@/services/utils/search";
+import { useSettingStore } from "@/data/stores/useSettingStore";
+import { SlashCommand } from "@/data/models/SlashCommand";
 
 export class MenuSuggest {
 	private plugin: SlashCommanderPlugin;
@@ -39,14 +41,14 @@ export class MenuSuggest {
 
 		// Filter suggestions and open the menu modal
 		const onNewLine = cursor.ch == 0;
+		const validCommands = useSettingStore.getState().getValidCommands();
 
 		const modal = new MenuSuggestionModal(
 			this.plugin,
 			this.search,
-			this.plugin.commandStore
-				.getValidCommands()
+			validCommands
 				.filter(
-					pair =>
+					(pair: SlashCommand) =>
 						(onNewLine && pair.triggerMode != "inline") ||
 						(!onNewLine && pair.triggerMode != "newline")
 				)

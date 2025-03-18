@@ -20,7 +20,8 @@ import {
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { useCommandStore } from "@/data/hooks/useCommandStore";
+import { useSettingStore } from "@/data/stores/useSettingStore";
+import { useCommands } from "@/data/hooks";
 import { CommandViewerToolsBottom } from "@/ui/viewer/CommandViewerTools";
 import { CommandViewerItem } from "./CommandViewerItem";
 import {
@@ -79,8 +80,8 @@ export function CommandViewer({
 	removable = true,
 }: CommandViewerProps) {
 	const { t } = useTranslation();
-	const commands = useCommandStore(state => state.commands);
-	const updateCommands = useCommandStore(state => state.updateCommands);
+	const commands = useCommands();
+	const { updateSettings } = useSettingStore();
 
 	// Convert SlashCommand array to dndkit-compatible tree structure
 	const [items, setItems] = useState<CommandTreeItems>(() => commandsToTreeItems(commands));
@@ -149,12 +150,9 @@ export function CommandViewer({
 	const saveChangesToStore = useCallback(
 		async (newItems: CommandTreeItems) => {
 			const newCommands = treeItemsToCommands(newItems);
-			await updateCommands(newCommands);
-			if (plugin) {
-				await plugin.saveSettings();
-			}
+			await updateSettings({ bindings: newCommands });
 		},
-		[plugin, updateCommands]
+		[updateSettings]
 	);
 
 	// Handle drag start

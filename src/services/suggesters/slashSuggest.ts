@@ -10,27 +10,30 @@ import {
 } from "obsidian";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
-import { isCommandGroup, SlashCommand } from "@/data/models/SlashCommand";
+import { isCommandGroup, SlashCommand, getObsidianCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { SlashCommandMatch } from "@/services/utils/search";
 import SuggestionComponent from "@/ui/components/suggestionComponent";
 import { SubSuggest } from "./subSuggest";
-import { CommanderSettings } from "@/data/models/Settings";
+import { CommanderSettings, EnhancedEditor } from "@/data/models/Settings";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 	private plugin: SlashCommanderPlugin;
 	private containerEl: HTMLElement;
 	private settings: CommanderSettings;
-	private unsubscribe: (() => void) | null = null;
 
 	public constructor(plugin: SlashCommanderPlugin) {
 		super(plugin.app);
 		this.plugin = plugin;
-		this.settings = plugin.settingsStore.getSettings();
-
-		this.unsubscribe = plugin.settingsStore.subscribe(newSettings => {
-			this.settings = { ...newSettings };
-		});
+		this.settings = useSettingStore.getState().settings;
+		
+		useSettingStore.subscribe(
+			state => state.settings,
+			(newSettings) => {
+				this.settings = newSettings;
+			}
+		);
 	}
 
 	public onTrigger(
@@ -70,16 +73,16 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 		let results: FuzzyMatch<SlashCommand>[];
 
 		const search = prepareFuzzySearch(context.query);
+		const validCommands = useSettingStore.getState().getValidCommands();
 
 		if (context.query == "") {
 			// Return the full list
-			results = this.plugin.commandStore.getValidCommands().map(scmd => {
+			results = validCommands.map(scmd => {
 				return { item: scmd, match: null } as unknown as FuzzyMatch<SlashCommand>;
 			});
 		} else {
 			// Return fuzzy search results
-			results = this.plugin.commandStore
-				.getValidCommands()
+			results = validCommands
 				.map(scmd => {
 					return { item: scmd, match: search(scmd.name) } as FuzzyMatch<SlashCommand>;
 				})
@@ -121,5 +124,9 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
 		this.containerEl = el;
 		const root = createRoot(el);
 		root.render(createElement(SuggestionComponent, { plugin: this.plugin, result: result }));
+	}
+
+	public unload(): void {
+		// 释放资源或其他清理操作
 	}
 }

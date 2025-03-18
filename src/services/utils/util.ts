@@ -1,7 +1,7 @@
 import { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
-import { useCommandStore } from "@/data/hooks/useCommandStore";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 
 /**
  * Generates a unique ID that doesn't conflict with any existing SlashCommand
@@ -9,25 +9,20 @@ import { useCommandStore } from "@/data/hooks/useCommandStore";
  * @returns A unique ID string
  */
 export function generateUniqueId(prefix = ""): string {
-	const store = useCommandStore.getState().store;
-	
-	// Exit early if store isn't available
-	if (!store) {
-		return prefix + crypto.randomUUID();
-	}
+	const settingStore = useSettingStore.getState();
 	
 	// Generate a random ID
 	let id: string;
 	do {
 		id = prefix + crypto.randomUUID();
-		// Check if this ID already exists in the store
-	} while (!store.isIdUnique(id));
+		// Check if this ID already exists
+	} while (!settingStore.isIdUnique(id));
 	
 	return id;
 }
 
 export function isTriggerInConflicts(plugin: SlashCommanderPlugin): boolean {
-	const settings = plugin.settingsStore.getSettings();
+	const settings = useSettingStore.getState().settings;
 	const { mainTrigger, extraTriggers, useExtraTriggers } = settings;
 
 	return (

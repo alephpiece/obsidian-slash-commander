@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import SlashCommanderPlugin from "src/main";
 import ObsidianIcon from "./obsidianIconComponent";
 import { useTranslation } from "react-i18next";
+import { useSettings, useUpdateSettings } from "@/data/hooks";
 
 interface TriggerViewerProps {
 	plugin: SlashCommanderPlugin;
@@ -11,15 +12,14 @@ interface TriggerViewerProps {
 
 export default function TriggerViewer({ plugin, children }: TriggerViewerProps): ReactElement {
 	const { t } = useTranslation();
-	const [triggers, setTriggers] = useState(plugin.settingsStore.getSettings().extraTriggers);
+	const settings = useSettings();
+	const updateSettings = useUpdateSettings();
+	const [triggers, setTriggers] = useState(settings.extraTriggers);
 
+	// Update local state when global settings change
 	useEffect(() => {
-		const unsubscribe = plugin.settingsStore.subscribe(settings => {
-			setTriggers([...settings.extraTriggers]);
-		});
-
-		return unsubscribe;
-	}, [plugin]);
+		setTriggers([...settings.extraTriggers]);
+	}, [settings.extraTriggers]);
 
 	const handleTriggerChange = async (index: number, value: string): Promise<void> => {
 		if (triggers[index] !== value) {
@@ -27,7 +27,7 @@ export default function TriggerViewer({ plugin, children }: TriggerViewerProps):
 			newTriggers[index] = value;
 			setTriggers(newTriggers);
 
-			plugin.settingsStore.updateSettings({
+			await updateSettings({
 				extraTriggers: newTriggers,
 			});
 		}
@@ -38,16 +38,16 @@ export default function TriggerViewer({ plugin, children }: TriggerViewerProps):
 		newTriggers.splice(index, 1);
 		setTriggers(newTriggers);
 
-		plugin.settingsStore.updateSettings({
+		await updateSettings({
 			extraTriggers: newTriggers,
 		});
 	};
 
-	const handleAddTrigger = (): void => {
+	const handleAddTrigger = async (): Promise<void> => {
 		const newTriggers = [...triggers, ""];
 		setTriggers(newTriggers);
 
-		plugin.settingsStore.updateSettings({
+		await updateSettings({
 			extraTriggers: newTriggers,
 		});
 	};

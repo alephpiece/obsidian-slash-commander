@@ -6,10 +6,11 @@ import { CommandComponent } from "@/ui/viewer/CommandComponent";
 import ConfirmDeleteModal from "@/ui/modals/ConfirmDeleteModal";
 import ChooseIconModal from "@/ui/modals/chooseIconModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
-import { useCommandStore } from "@/data/hooks/useCommandStore";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 import { isRootCommand } from "@/data/models/SlashCommand";
 import { CommandViewerItemProps } from "./types";
 import ObsidianIcon from "../components/obsidianIconComponent";
+import { useSettings } from "@/data/hooks";
 
 /**
  * Renders a sortable command item in the viewer.
@@ -37,8 +38,8 @@ export function CommandViewerItem({
 		},
 	});
 
-	const syncCommands = useCommandStore(state => state.syncCommands);
-	const addCommand = useCommandStore(state => state.addCommand);
+	const { addCommand, saveSettings } = useSettingStore();
+	const settings = useSettings();
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
@@ -66,28 +67,36 @@ export function CommandViewerItem({
 				plugin={plugin}
 				handleRemove={async (): Promise<void> => {
 					if (onRemove) {
-						await new ConfirmDeleteModal(plugin, command, onRemove).didChooseRemove();
+						if (settings.confirmDeletion) {
+							await new ConfirmDeleteModal(
+								plugin,
+								command,
+								onRemove
+							).didChooseRemove();
+						} else {
+							onRemove();
+						}
 					}
 				}}
 				handleNewIcon={(): void => {
-					new ChooseIconModal(plugin, command, () => syncCommands()).open();
+					new ChooseIconModal(plugin, command, () => saveSettings()).open();
 				}}
 				handleRename={(name): void => {
 					command.name = name;
-					syncCommands();
+					saveSettings();
 				}}
 				handleDeviceModeChange={(mode?: string): void => {
 					const modes = ["any", "desktop", "mobile", plugin.app.appId];
 					const nextIndex = (modes.indexOf(command.mode ?? "any") + 1) % modes.length;
 					command.mode = mode || modes[nextIndex];
-					syncCommands();
+					saveSettings();
 				}}
 				handleTriggerModeChange={(mode?: string): void => {
 					const modes = ["anywhere", "newline", "inline"];
 					const nextIndex =
 						(modes.indexOf(command.triggerMode ?? "anywhere") + 1) % modes.length;
 					command.triggerMode = mode || modes[nextIndex];
-					syncCommands();
+					saveSettings();
 				}}
 				handleAddChild={async (): Promise<void> => {
 					// Only allow adding children to top-level commands
@@ -103,7 +112,7 @@ export function CommandViewerItem({
 							await addCommand(newCommand);
 
 							// Sync changes to UI and save settings
-							await syncCommands();
+							await saveSettings();
 						}
 					}
 				}}
