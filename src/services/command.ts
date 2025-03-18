@@ -3,7 +3,7 @@ import { SlashCommand } from "@/data/models/SlashCommand";
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import { CommanderSettings } from "@/data/models/Settings";
 import { useSettingStore } from "@/data/stores/useSettingStore";
-import { Command } from "obsidian";
+import { Command, Notice } from "obsidian";
 
 /**
  * Get default SlashCommands
@@ -128,44 +128,10 @@ export function generateUniqueId(prefix = ""): string {
 }
 
 /**
- * Get valid SlashCommands that should be displayed in the suggestion list
- */
-export function getValidCommands(
-    plugin: SlashCommanderPlugin,
-    commands: SlashCommand[]
-): SlashCommand[] {
-    if (!plugin) return [];
-
-    // Filter and clone root commands
-    const validRootCommands = commands
-        .filter((cmd) => isValidSuggestItem(plugin, cmd))
-        .map((cmd) => ({ ...cmd }));
-
-    // Process and filter child commands
-    validRootCommands.forEach((cmd) => {
-        if (cmd.children && cmd.children.length > 0) {
-            const validChildren = cmd.children
-                .filter((child) => isValidSuggestItem(plugin, child))
-                .map((child) => ({ ...child }));
-
-            cmd.children = validChildren;
-        }
-    });
-
-    return validRootCommands;
-}
-
-/**
- * Returns a flattened array of valid SlashCommands
+ * Returns a flattened array of all SlashCommands
  * For group commands, their children will be placed right after them
  */
-export function getFlatValidCommands(
-    plugin: SlashCommanderPlugin,
-    commands: SlashCommand[]
-): SlashCommand[] {
-    if (!plugin) return [];
-
-    const validCommands = getValidCommands(plugin, commands);
+export function getFlattenedCommands(commands: SlashCommand[]): SlashCommand[] {
     const result: SlashCommand[] = [];
 
     // Recursive function to flatten the command structure
@@ -181,8 +147,22 @@ export function getFlatValidCommands(
         }
     };
 
-    flattenCommands(validCommands);
+    flattenCommands(commands);
     return result;
+}
+
+/**
+ * Returns a flattened array of valid SlashCommands
+ * For group commands, their children will be placed right after them
+ */
+export function getFlatValidCommands(
+    plugin: SlashCommanderPlugin,
+    commands: SlashCommand[]
+): SlashCommand[] {
+    if (!plugin) return [];
+
+    const flattenedCommands = getFlattenedCommands(commands);
+    return flattenedCommands.filter((cmd) => isValidSuggestItem(plugin, cmd));
 }
 
 /**
@@ -274,7 +254,7 @@ export async function migrateCommandData(
         return data;
     }
 
-    console.log("SlashCommander: start migrating data to the new format");
+    new Notice("SlashCommander: start migrating data to the new format");
 
     // First scan the entire command structure to identify duplicate IDs
     const idUsageCount = new Map<string, number>();
@@ -338,7 +318,7 @@ export async function migrateCommandData(
 
     // Save migrated data
     await saveCallback(data);
-    console.log("SlashCommander: data migrated");
+    new Notice("SlashCommander: data migrated");
 
     return data;
 }

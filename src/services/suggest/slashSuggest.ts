@@ -76,12 +76,13 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
                 return { item: scmd, match: null } as unknown as FuzzyMatch<SlashCommand>;
             });
         } else {
-            // Return fuzzy search results
+            // Return fuzzy search results without group placeholders
             results = validCommands
                 .map((scmd) => {
                     return { item: scmd, match: search(scmd.name) } as FuzzyMatch<SlashCommand>;
                 })
-                .filter(({ match }) => match);
+                .filter(({ match }) => match)
+                .filter(({ item }) => !item.isGroup);
         }
 
         // Filter by trigger mode
