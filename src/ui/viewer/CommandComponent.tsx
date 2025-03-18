@@ -1,13 +1,13 @@
 import { Notice, Platform } from "obsidian";
 import type { ReactElement } from "react";
 import SlashCommanderPlugin from "@/main";
+import { SlashCommand } from "@/data/models/SlashCommand";
 import {
-    SlashCommand,
     getObsidianCommand,
     getCommandSourceName,
     isCommandGroup,
     isRootCommand,
-} from "@/data/models/SlashCommand";
+} from "@/services/command";
 import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import { useTranslation } from "react-i18next";

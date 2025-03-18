@@ -41,7 +41,7 @@ export class MenuSuggest {
 
         // Filter suggestions and open the menu modal
         const onNewLine = cursor.ch == 0;
-        const validCommands = useSettingStore.getState().getValidCommands();
+        const validCommands = useSettingStore.getState().getFlatValidCommands();
 
         const modal = new MenuSuggestionModal(
             this.plugin,

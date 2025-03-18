@@ -1,11 +1,12 @@
 import SlashCommanderPlugin from "@/main";
-import { SlashCommand, isValidSuggestItem } from "@/data/models/SlashCommand";
+import { SlashCommand } from "@/data/models/SlashCommand";
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import { CommanderSettings } from "@/data/models/Settings";
 import { useSettingStore } from "@/data/stores/useSettingStore";
+import { Command } from "obsidian";
 
 /**
- * Get default commands
+ * Get default SlashCommands
  */
 export function getDefaultCommands(): SlashCommand[] {
     return DEFAULT_SETTINGS.bindings.map((cmd) => {
@@ -17,12 +18,103 @@ export function getDefaultCommands(): SlashCommand[] {
 }
 
 /**
- * SlashCommand-related service functions
- * These functions handle pure business logic without state management
+ * Get Obsidian command by SlashCommand action
  */
+export function getObsidianCommand(
+    plugin: SlashCommanderPlugin,
+    scmd: SlashCommand
+): Command | null {
+    return plugin.app.commands.commands[scmd.action ?? ""] ?? null;
+}
 
 /**
- * Generate a unique ID that doesn't conflict with existing commands
+ * Check if a command is valid for suggestions
+ */
+export function isValidSuggestItem(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
+    return (
+        isCommandActive(plugin, scmd) &&
+        (!!getObsidianCommand(plugin, scmd) || isCommandGroup(scmd))
+    );
+}
+
+/**
+ * Check if a command is active on the current device
+ */
+export function isCommandActive(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
+    const { isMobile, appId } = plugin.app;
+    return (
+        scmd.mode === undefined ||
+        scmd.mode === "any" ||
+        scmd.mode === appId ||
+        (scmd.mode === "mobile" && isMobile) ||
+        (scmd.mode === "desktop" && !isMobile)
+    );
+}
+
+/**
+ * Check if a device mode is valid
+ */
+export function isDeviceValid(plugin: SlashCommanderPlugin, mode = "any"): boolean {
+    return !!mode.match(/desktop|mobile|any/) || mode === plugin.app.appId;
+}
+
+/**
+ * Get the source name of a SlashCommand
+ */
+export function getCommandSourceName(plugin: SlashCommanderPlugin, cmd: Command): string {
+    const owningPluginID = cmd.id.split(":").first();
+    const owningPlugin = plugin.app.plugins.manifests[owningPluginID!];
+    return owningPlugin ? owningPlugin.name : "Obsidian";
+}
+
+/**
+ * Check if a SlashCommand has a unique name among active commands.
+ * This is used to determine if the suggester should show the source name of a command.
+ */
+export function isActiveCommandNameUnique(
+    plugin: SlashCommanderPlugin,
+    scmd: SlashCommand
+): boolean {
+    const settings = useSettingStore.getState().settings;
+    const commands = settings.bindings;
+
+    // Find all active commands with matching name
+    const matches: SlashCommand[] = [];
+
+    function findMatches(cmds: SlashCommand[]): void {
+        for (const cmd of cmds) {
+            if (isCommandActive(plugin, cmd) && cmd.name === scmd.name) {
+                matches.push(cmd);
+            }
+
+            if (cmd.children?.length) {
+                findMatches(cmd.children);
+            }
+        }
+    }
+
+    findMatches(commands);
+    return matches.length === 1;
+}
+
+/**
+ * Check if a SlashCommand is a root command
+ */
+export function isRootCommand(scmd: SlashCommand): boolean {
+    // Command without parent is a root command
+    return !scmd.parentId;
+}
+
+/**
+ * Check if a SlashCommand is a group
+ */
+export function isCommandGroup(scmd: SlashCommand): boolean {
+    // Prioritize explicit isGroup field, compatible with old data that has child commands
+    return scmd.isGroup === true || (!scmd.parentId && (scmd.children?.length ?? 0) > 0);
+}
+
+/**
+ * Generate a unique ID that doesn't conflict with existing SlashCommands
  */
 export function generateUniqueId(prefix = ""): string {
     const settingStore = useSettingStore.getState();
@@ -36,7 +128,7 @@ export function generateUniqueId(prefix = ""): string {
 }
 
 /**
- * Get valid commands that should be displayed
+ * Get valid SlashCommands that should be displayed in the suggestion list
  */
 export function getValidCommands(
     plugin: SlashCommanderPlugin,
@@ -64,7 +156,37 @@ export function getValidCommands(
 }
 
 /**
- * Validate command structure and check for duplicate IDs
+ * Returns a flattened array of valid SlashCommands
+ * For group commands, their children will be placed right after them
+ */
+export function getFlatValidCommands(
+    plugin: SlashCommanderPlugin,
+    commands: SlashCommand[]
+): SlashCommand[] {
+    if (!plugin) return [];
+
+    const validCommands = getValidCommands(plugin, commands);
+    const result: SlashCommand[] = [];
+
+    // Recursive function to flatten the command structure
+    const flattenCommands = (cmds: SlashCommand[]) => {
+        for (const cmd of cmds) {
+            // Add the current command
+            result.push(cmd);
+
+            // If it's a group with children, add children immediately after
+            if (cmd.isGroup && cmd.children && cmd.children.length > 0) {
+                flattenCommands(cmd.children);
+            }
+        }
+    };
+
+    flattenCommands(validCommands);
+    return result;
+}
+
+/**
+ * Validate SlashCommand structure and check for duplicate IDs
  */
 export function validateCommandStructure(commands: SlashCommand[]): void {
     // Check for duplicate IDs at root level
@@ -89,7 +211,7 @@ export function validateCommandStructure(commands: SlashCommand[]): void {
 }
 
 /**
- * Check if a command ID is unique across the entire command structure
+ * Check if a SlashCommand ID is unique across the entire command structure
  */
 export function isIdUnique(id: string, commands: SlashCommand[]): boolean {
     // Check root level
@@ -110,7 +232,7 @@ export function isIdUnique(id: string, commands: SlashCommand[]): boolean {
 }
 
 /**
- * Find a command by ID with optional parent context
+ * Find a SlashCommand by ID with optional parent context
  */
 export function findCommand(
     commands: SlashCommand[],

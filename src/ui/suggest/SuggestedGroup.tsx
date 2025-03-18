@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import SlashCommanderPlugin from "@/main";
-import { SlashCommand, isCommandGroup } from "@/data/models/SlashCommand";
-import ObsidianIcon from "@/ui/components/obsidianIconComponent";
+import { SlashCommand } from "@/data/models/SlashCommand";
+import { isCommandGroup } from "@/services/command";
 import { FuzzyMatch } from "obsidian";
 import { highlightMatch } from "./highlightMatch";
 

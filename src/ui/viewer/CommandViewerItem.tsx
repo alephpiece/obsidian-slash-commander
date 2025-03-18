@@ -7,7 +7,7 @@ import ConfirmDeleteModal from "@/ui/modals/ConfirmDeleteModal";
 import ChooseIconModal from "@/ui/modals/ChooseIconModal";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 import { useSettingStore } from "@/data/stores/useSettingStore";
-import { isRootCommand } from "@/data/models/SlashCommand";
+import { isRootCommand } from "@/services/command";
 import { CommandViewerItemProps } from "./types";
 import ObsidianIcon from "../components/obsidianIconComponent";
 import { useSettings } from "@/data/stores/useSettingStore";

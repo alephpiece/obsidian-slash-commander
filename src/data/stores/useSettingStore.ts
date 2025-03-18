@@ -23,6 +23,7 @@ interface SettingState {
     // Command getters
     getCommands: () => SlashCommand[];
     getValidCommands: () => SlashCommand[];
+    getFlatValidCommands: () => SlashCommand[];
     findCommand: (id: string, parentId?: string) => SlashCommand | undefined;
 
     // Command actions
@@ -116,6 +117,12 @@ export const useSettingStore = create<SettingState>()(
             const { plugin } = get();
             if (!plugin) return [];
             return CommandService.getValidCommands(plugin, get().getCommands());
+        },
+
+        getFlatValidCommands: () => {
+            const { plugin } = get();
+            if (!plugin) return [];
+            return CommandService.getFlatValidCommands(plugin, get().getCommands());
         },
 
         findCommand: (id, parentId) => {
@@ -269,4 +276,5 @@ export const useSettings = () => useSettingStore((state) => state.settings);
 export const useUpdateSettings = () => useSettingStore((state) => state.updateSettings);
 export const useCommands = () => useSettingStore((state) => state.getCommands());
 export const useValidCommands = () => useSettingStore((state) => state.getValidCommands());
+export const useFlatValidCommands = () => useSettingStore((state) => state.getFlatValidCommands());
 export const useFindCommand = () => useSettingStore((state) => state.findCommand);

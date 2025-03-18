@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
 import { FuzzyMatch, Modal, setIcon } from "obsidian";
-import { SlashCommand, DeviceMode, TriggerMode, isCommandGroup } from "@/data/models/SlashCommand";
+import { SlashCommand, DeviceMode, TriggerMode } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
 import { ICON_LIST } from "@/data/constants/icons";
 import { Command } from "obsidian";
 import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
-import { generateUniqueId } from "@/services/command";
+import { generateUniqueId, isCommandGroup } from "@/services/command";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 
 /**

@@ -10,7 +10,8 @@ import {
 } from "obsidian";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
-import { isCommandGroup, SlashCommand, getObsidianCommand } from "@/data/models/SlashCommand";
+import { SlashCommand } from "@/data/models/SlashCommand";
+import { isCommandGroup } from "@/services/command";
 import SlashCommanderPlugin from "@/main";
 import { SlashCommandMatch } from "@/services/search";
 import SuggestedCommand from "@/ui/suggest/SuggestedCommand";
@@ -65,7 +66,7 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
         let results: FuzzyMatch<SlashCommand>[];
 
         const search = prepareFuzzySearch(context.query);
-        const validCommands = useSettingStore.getState().getValidCommands();
+        const validCommands = useSettingStore.getState().getFlatValidCommands();
 
         if (context.query == "") {
             // Return the full list
