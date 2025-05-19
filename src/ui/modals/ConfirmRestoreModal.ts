@@ -28,7 +28,14 @@ export default class ConfirmRestoreModal extends Modal {
         this.root = createRoot(this.contentEl);
         this.root.render(
             createElement(ConfirmRestoreComponent, {
-                modal: this,
+                onConfirm: () => {
+                    this.restore = true;
+                    this.close();
+                },
+                onCancel: () => {
+                    this.restore = false;
+                    this.close();
+                }
             })
         );
     }
