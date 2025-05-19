@@ -31,6 +31,7 @@ jobs:
       id: build
       run: |
         yarn install
+        yarn build:check
         yarn build
         mkdir ${{ env.PLUGIN_NAME }}
         cp main.js manifest.json styles.css README.md ${{ env.PLUGIN_NAME }}
