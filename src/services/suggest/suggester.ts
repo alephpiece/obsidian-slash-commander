@@ -30,6 +30,7 @@ export default class Suggester<T> {
     public constructor(owner: SuggestModal<T>, containerEl: HTMLElement, scope: Scope) {
         this.containerEl = containerEl;
         this.owner = owner;
+        this.selectedItem = 0;
         containerEl.on("click", ".suggestion-item", this.onSuggestionClick.bind(this));
         containerEl.on("mousemove", ".suggestion-item", this.onSuggestionMouseover.bind(this));
 
