@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import SlashCommanderPlugin from "@/main";
-import type { SlashCommand } from "@/data/models/SlashCommand";
-import type { CommanderSettings } from "@/data/models/Settings";
+
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
+import type { CommanderSettings } from "@/data/models/Settings";
+import type { SlashCommand } from "@/data/models/SlashCommand";
+import SlashCommanderPlugin from "@/main";
 import * as CommandService from "@/services/command";
 import { buildQueryPattern } from "@/services/search";
 

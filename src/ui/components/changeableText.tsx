@@ -1,4 +1,4 @@
-import type { ReactElement, KeyboardEvent, MouseEvent } from "react";
+import type { KeyboardEvent, MouseEvent, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {

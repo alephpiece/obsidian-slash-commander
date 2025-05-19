@@ -1,14 +1,15 @@
-import { MarkdownView, Plugin } from "obsidian";
-import { EnhancedEditor } from "./data/models/Settings";
-import CommanderSettingTab from "@/ui/settingTab";
-import SettingTabModal from "@/ui/modals/SettingTabModal";
-import { SlashSuggester } from "@/services/suggest/slashSuggest";
-import { MenuSuggest } from "@/services/suggest/menuSuggest";
-
 import "@/ui/styles/styles.scss";
+
+import { MarkdownView, Plugin } from "obsidian";
+
 import registerCustomIcons from "@/assets/icons";
-import i18n from "@/i18n"; // initialize i18n
+import { EnhancedEditor } from "@/data/models/Settings";
 import { useSettingStore } from "@/data/stores/useSettingStore";
+import i18n from "@/i18n"; // initialize i18n
+import { MenuSuggest } from "@/services/suggest/menuSuggest";
+import { SlashSuggester } from "@/services/suggest/slashSuggest";
+import SettingTabModal from "@/ui/modals/SettingTabModal";
+import CommanderSettingTab from "@/ui/settingTab";
 
 export default class SlashCommanderPlugin extends Plugin {
     public scrollArea?: Element | undefined;

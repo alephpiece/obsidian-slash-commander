@@ -1,8 +1,9 @@
-import { ICON_LIST } from "@/data/constants/icons";
-import { setIcon, FuzzySuggestModal, FuzzyMatch } from "obsidian";
-import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
+import { FuzzyMatch, FuzzySuggestModal, setIcon } from "obsidian";
+
+import { ICON_LIST } from "@/data/constants/icons";
 import { SlashCommand } from "@/data/models/SlashCommand";
+import SlashCommanderPlugin from "@/main";
 
 /**
  * Modal for choosing an icon for a command
@@ -66,7 +67,7 @@ export default class ChooseIconModal extends FuzzySuggestModal<string> {
         return item;
     }
 
-    public onChooseItem(item: string, _: MouseEvent | KeyboardEvent): void {
+    public onChooseItem(item: string): void {
         if (this.command) {
             this.command.icon = item;
             if (this.onSyncCallback) {

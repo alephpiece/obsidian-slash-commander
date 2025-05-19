@@ -1,6 +1,7 @@
-import { SlashCommand } from "@/data/models/SlashCommand";
 import { FuzzyMatch } from "obsidian";
 import { ReactElement } from "react";
+
+import { SlashCommand } from "@/data/models/SlashCommand";
 
 export function highlightMatch(result: FuzzyMatch<SlashCommand>): ReactElement | ReactElement[] {
     const { item, match } = result;

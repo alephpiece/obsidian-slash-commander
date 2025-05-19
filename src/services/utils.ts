@@ -1,7 +1,8 @@
-import { SlashCommand } from "@/data/models/SlashCommand";
-import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
+
+import { SlashCommand } from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
+import SlashCommanderPlugin from "@/main";
 
 /**
  * Check if the trigger is in conflict with the built-in slash commands

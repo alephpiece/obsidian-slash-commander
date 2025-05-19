@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { Editor } from "obsidian";
+
 import { SlashCommand } from "@/data/models/SlashCommand";
 
 export interface CommanderSettings {

@@ -1,4 +1,5 @@
 import type { UniqueIdentifier } from "@dnd-kit/core";
+
 import type { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 

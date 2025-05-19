@@ -1,9 +1,10 @@
+import { t } from "i18next";
 import { Modal } from "obsidian";
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { t } from "i18next";
+
 import SlashCommanderPlugin from "@/main";
-import { confirmRestoreComponent } from "@/ui/components/ConfirmRestoreComponent";
+import { ConfirmRestoreComponent } from "@/ui/components/ConfirmRestoreComponent";
 
 /**
  * Modal for confirming restoration of default commands
@@ -26,7 +27,7 @@ export default class ConfirmRestoreModal extends Modal {
         this.containerEl.style.zIndex = "99";
         this.root = createRoot(this.contentEl);
         this.root.render(
-            createElement(confirmRestoreComponent, {
+            createElement(ConfirmRestoreComponent, {
                 modal: this,
             })
         );

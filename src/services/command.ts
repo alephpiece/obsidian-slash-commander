@@ -1,9 +1,10 @@
-import SlashCommanderPlugin from "@/main";
-import { SlashCommand } from "@/data/models/SlashCommand";
+import { Command, Notice } from "obsidian";
+
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import { CommanderSettings } from "@/data/models/Settings";
+import { SlashCommand } from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
-import { Command, Notice } from "obsidian";
+import SlashCommanderPlugin from "@/main";
 
 /**
  * Get default SlashCommands

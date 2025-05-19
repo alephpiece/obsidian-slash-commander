@@ -1,10 +1,11 @@
+import { t } from "i18next";
 import { Modal } from "obsidian";
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { t } from "i18next";
+
+import { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import { ConfirmDeleteComponent } from "@/ui/components/ConfirmDeleteComponent";
-import { SlashCommand } from "@/data/models/SlashCommand";
 
 export default class ConfirmDeleteModal extends Modal {
     private root: Root | null = null;

@@ -1,6 +1,7 @@
 import { Modal, Platform } from "obsidian";
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
+
 import SlashCommanderPlugin from "@/main";
 import settingTabComponent from "@/ui/components/settingTabComponent";
 

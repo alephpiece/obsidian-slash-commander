@@ -1,24 +1,24 @@
 // Credits go to https://github.com/liamcain/obsidian-periodic-notes
 // and https://github.com/javalent/admonitions
+import { createPopper, Instance as PopperInstance } from "@popperjs/core";
+import { t } from "i18next";
 import {
     App,
     FuzzyMatch,
     FuzzySuggestModal,
-    Modal,
     Notice,
     Scope,
     SuggestModal,
     TextComponent,
 } from "obsidian";
-
-import { createPopper, Instance as PopperInstance } from "@popperjs/core";
-import { SlashCommand } from "@/data/models/SlashCommand";
-import SlashCommanderPlugin from "@/main";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
+
+import { SlashCommand } from "@/data/models/SlashCommand";
+import SlashCommanderPlugin from "@/main";
 import SuggestedCommand from "@/ui/suggest/SuggestedCommand";
 import SuggestedGroup from "@/ui/suggest/SuggestedGroup";
-import { t } from "i18next";
+
 import { isCommandGroup } from "../command";
 
 export default class Suggester<T> {

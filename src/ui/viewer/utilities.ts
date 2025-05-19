@@ -1,6 +1,8 @@
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+
 import { SlashCommand } from "@/data/models/SlashCommand";
+
 import type { CommandTreeItem, CommandTreeItems, FlattenedCommandItem } from "./types";
 
 /**

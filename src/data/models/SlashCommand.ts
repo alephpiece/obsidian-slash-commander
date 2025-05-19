@@ -1,8 +1,3 @@
-import { Command } from "obsidian";
-import SlashCommanderPlugin from "@/main";
-import { generateUniqueId } from "@/services/command";
-import { useSettingStore } from "@/data/stores/useSettingStore";
-
 export type DeviceMode = "any" | "desktop" | "mobile" | string;
 export type TriggerMode = "anywhere" | "newline" | "inline" | string;
 

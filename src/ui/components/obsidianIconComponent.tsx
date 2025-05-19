@@ -1,6 +1,6 @@
 import { setIcon } from "obsidian";
 import type { ComponentProps } from "react";
-import { useRef, useLayoutEffect } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 interface ObsidianIconProps extends ComponentProps<"div"> {
     icon: string;

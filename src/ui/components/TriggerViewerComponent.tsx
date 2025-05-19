@@ -1,16 +1,18 @@
-import type { ReactElement, ChangeEvent } from "react";
-import { useState, useEffect } from "react";
-import SlashCommanderPlugin from "src/main";
-import ObsidianIcon from "./obsidianIconComponent";
+import type { ChangeEvent, ReactElement } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import SlashCommanderPlugin from "src/main";
+
 import { useSettings, useUpdateSettings } from "@/data/stores/useSettingStore";
+
+import ObsidianIcon from "./obsidianIconComponent";
 
 interface TriggerViewerProps {
     plugin: SlashCommanderPlugin;
     children?: ReactElement | ReactElement[];
 }
 
-export default function TriggerViewer({ plugin, children }: TriggerViewerProps): ReactElement {
+export default function TriggerViewer({ children }: TriggerViewerProps): ReactElement {
     const { t } = useTranslation();
     const settings = useSettings();
     const updateSettings = useUpdateSettings();

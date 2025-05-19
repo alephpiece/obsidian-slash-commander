@@ -1,46 +1,41 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { createPortal } from "react-dom";
 import {
-    DndContext,
+    Announcements,
     closestCenter,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    DragStartEvent,
-    DragOverEvent,
+    DndContext,
     DragEndEvent,
     DragMoveEvent,
+    DragOverEvent,
     DragOverlay,
-    DragCancelEvent,
-    UniqueIdentifier,
+    DragStartEvent,
     MeasuringStrategy,
-    Announcements,
+    PointerSensor,
+    UniqueIdentifier,
+    useSensor,
+    useSensors,
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
-import { useSettingStore } from "@/data/stores/useSettingStore";
-import { useCommands } from "@/data/stores/useSettingStore";
-import { CommandViewerToolsBottom } from "@/ui/viewer/CommandViewerTools";
-import { CommandViewerItem } from "./CommandViewerItem";
-import {
-    CommandTreeItem,
-    CommandTreeItems,
-    FlattenedCommandItem,
-    CommandViewerProps,
-} from "./types";
+import { useCommands, useSettingStore } from "@/data/stores/useSettingStore";
 import {
     buildTree,
     commandsToTreeItems,
+    CommandTreeItems,
+    CommandViewerItem,
+    CommandViewerProps,
+    CommandViewerToolsBottom,
+    FlattenedCommandItem,
     flattenTree,
     getChildCount,
     getProjection,
     removeChildrenOf,
+    removeItem,
     setProperty,
     treeItemsToCommands,
-    removeItem,
-} from "./utilities";
+} from "@/ui/viewer";
 
 // Measuring configuration
 const measuring = {
@@ -90,7 +85,7 @@ export function CommandViewer({
     const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
     const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
     const [offsetLeft, setOffsetLeft] = useState(0);
-    const [currentPosition, setCurrentPosition] = useState<{
+    const [, setCurrentPosition] = useState<{
         parentId: UniqueIdentifier | null;
         overId: UniqueIdentifier;
     } | null>(null);
@@ -132,17 +127,17 @@ export function CommandViewer({
 
     // Simplified accessibility announcements
     const announcements: Announcements = {
-        onDragStart({ active }) {
-            return `开始拖动项目。`;
+        onDragStart() {
+            return `Started dragging item.`;
         },
-        onDragOver({ active, over }) {
-            return over ? `移动到其他项目上方。` : `正在拖动。`;
+        onDragOver({ over }) {
+            return over ? `Moved over another item.` : `Dragging in progress.`;
         },
-        onDragEnd({ active, over }) {
-            return over ? `完成拖动。` : `取消拖动。`;
+        onDragEnd({ over }) {
+            return over ? `Finished dragging.` : `Dragging canceled.`;
         },
-        onDragCancel({ active }) {
-            return `拖动已取消，项目返回原位置。`;
+        onDragCancel() {
+            return `Dragging canceled, item returned to original position.`;
         },
     };
 

@@ -1,12 +1,13 @@
-import { FuzzyMatch, Modal, setIcon } from "obsidian";
-import { SlashCommand, DeviceMode, TriggerMode } from "@/data/models/SlashCommand";
-import SlashCommanderPlugin from "@/main";
 import { t } from "i18next";
-import { ICON_LIST } from "@/data/constants/icons";
+import { Modal, setIcon } from "obsidian";
 import { Command } from "obsidian";
-import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
-import { generateUniqueId, isCommandGroup } from "@/services/command";
+
+import { ICON_LIST } from "@/data/constants/icons";
+import { DeviceMode, SlashCommand, TriggerMode } from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
+import SlashCommanderPlugin from "@/main";
+import { generateUniqueId, isCommandGroup } from "@/services/command";
+import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
 
 /**
  * Modal for creating and editing slash commands
@@ -250,7 +251,7 @@ export default class BindingEditorModal extends Modal {
         });
 
         // Add optional tip text (initially may be hidden)
-        const tipEl = titleWithTip.createDiv({
+        titleWithTip.createDiv({
             cls: "cmdr-setting-item-tip",
             text: t("modals.bind.command.tip_optional"),
             attr: {

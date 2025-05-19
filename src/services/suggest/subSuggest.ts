@@ -1,6 +1,8 @@
-import { SuggestModal, TextComponent } from "obsidian";
-import SlashCommanderPlugin from "@/main";
+import { TextComponent } from "obsidian";
+
 import { SlashCommand } from "@/data/models/SlashCommand";
+import SlashCommanderPlugin from "@/main";
+
 import { MenuSuggestionModal } from "./suggester";
 
 export class SubSuggest {

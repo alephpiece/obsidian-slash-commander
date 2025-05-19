@@ -1,5 +1,5 @@
-import { CommanderSettings } from "@/data/models/Settings";
 import { DEFAULT_COMMANDS } from "@/data/constants/defaultCommands";
+import { CommanderSettings } from "@/data/models/Settings";
 
 export const DEFAULT_SETTINGS: CommanderSettings = {
     confirmDeletion: true,

@@ -1,6 +1,7 @@
 import { Platform, PluginSettingTab } from "obsidian";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
+
 import SlashCommanderPlugin from "@/main";
 import settingTabComponent from "@/ui/components/settingTabComponent";
 

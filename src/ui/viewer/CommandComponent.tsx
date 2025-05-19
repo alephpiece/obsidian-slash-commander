@@ -1,17 +1,18 @@
-import { Notice, Platform } from "obsidian";
+import { Platform } from "obsidian";
 import type { ReactElement } from "react";
-import SlashCommanderPlugin from "@/main";
+import { useTranslation } from "react-i18next";
+
 import { SlashCommand } from "@/data/models/SlashCommand";
+import SlashCommanderPlugin from "@/main";
 import {
-    getObsidianCommand,
     getCommandSourceName,
+    getObsidianCommand,
     isCommandGroup,
     isRootCommand,
 } from "@/services/command";
+import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
 import ChangeableText from "@/ui/components/changeableText";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
-import { useTranslation } from "react-i18next";
-import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
 
 export interface CommandProps {

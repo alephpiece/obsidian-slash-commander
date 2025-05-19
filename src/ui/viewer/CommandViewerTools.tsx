@@ -1,9 +1,10 @@
 import { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import ObsidianIcon from "@/ui/components/obsidianIconComponent";
+
 import { useSettingStore } from "@/data/stores/useSettingStore";
-import ConfirmRestoreModal from "@/ui/modals/ConfirmRestoreModal";
+import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 import BindingEditorModal from "@/ui/modals/BindingEditorModal";
+import ConfirmRestoreModal from "@/ui/modals/ConfirmRestoreModal";
 
 /**
  * Render the command list tools (full version).

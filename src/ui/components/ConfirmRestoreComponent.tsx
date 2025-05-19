@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+
 import ConfirmRestoreModal from "../modals/ConfirmRestoreModal";
 
 /**
@@ -12,7 +13,7 @@ interface ConfirmRestoreProps {
 /**
  * Component that renders the confirmation dialog for restoring default commands
  */
-export function confirmRestoreComponent({ modal }: ConfirmRestoreProps): ReactElement {
+export function ConfirmRestoreComponent({ modal }: ConfirmRestoreProps): ReactElement {
     const { t } = useTranslation();
     return (
         <>

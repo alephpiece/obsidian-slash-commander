@@ -1,16 +1,17 @@
-import React, { forwardRef } from "react";
-import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CommandComponent } from "@/ui/viewer/CommandComponent";
-import ConfirmDeleteModal from "@/ui/modals/ConfirmDeleteModal";
-import ChooseIconModal from "@/ui/modals/ChooseIconModal";
-import BindingEditorModal from "@/ui/modals/BindingEditorModal";
+import React from "react";
+
 import { useSettingStore } from "@/data/stores/useSettingStore";
-import { isRootCommand } from "@/services/command";
-import { CommandViewerItemProps } from "./types";
-import ObsidianIcon from "../components/obsidianIconComponent";
 import { useSettings } from "@/data/stores/useSettingStore";
+import { isRootCommand } from "@/services/command";
+import BindingEditorModal from "@/ui/modals/BindingEditorModal";
+import ChooseIconModal from "@/ui/modals/ChooseIconModal";
+import ConfirmDeleteModal from "@/ui/modals/ConfirmDeleteModal";
+import { CommandComponent } from "@/ui/viewer/CommandComponent";
+
+import ObsidianIcon from "../components/obsidianIconComponent";
+import { CommandViewerItemProps } from "./types";
 
 /**
  * Renders a sortable command item in the viewer.
@@ -79,13 +80,9 @@ export function CommandViewerItem({
                     }
                 }}
                 handleNewIcon={async (): Promise<void> => {
-                    new ChooseIconModal(
-                        plugin, 
-                        command, 
-                        () => {
-                            updateCommand(command.id, { icon: command.icon });
-                        }
-                    ).open();
+                    new ChooseIconModal(plugin, command, () => {
+                        updateCommand(command.id, { icon: command.icon });
+                    }).open();
                 }}
                 handleRename={async (name): Promise<void> => {
                     await updateCommand(command.id, { name });

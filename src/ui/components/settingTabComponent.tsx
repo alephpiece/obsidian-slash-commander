@@ -1,16 +1,15 @@
-import type { ReactElement } from "react";
-import { useState, useEffect } from "react";
-import { isTriggerInConflicts } from "@/services/utils";
 import ObsidianIcon from "@ui/components/obsidianIconComponent";
-import SlashCommanderPlugin from "@/main";
-import { ToggleComponent, TextBoxComponent } from "@ui/components/settingItemComponent";
-import { SettingCollapser, SettingCollapserWithTools } from "@/ui/components/SettingHeaders";
+import { TextBoxComponent, ToggleComponent } from "@ui/components/settingItemComponent";
 import TriggerViewer from "@ui/components/TriggerViewerComponent";
+import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import { CommanderSettings } from "@/data/models/Settings";
-import { CommandViewerToolsBar } from "@/ui/viewer/CommandViewerTools";
-import { CommandViewer } from "@/ui/viewer";
+
 import { useSettings, useUpdateSettings } from "@/data/stores/useSettingStore";
+import SlashCommanderPlugin from "@/main";
+import { isTriggerInConflicts } from "@/services/utils";
+import { SettingCollapserWithTools } from "@/ui/components/SettingHeaders";
+import { CommandViewer } from "@/ui/viewer";
+import { CommandViewerToolsBar } from "@/ui/viewer/CommandViewerTools";
 
 interface SettingTabProps {
     plugin: SlashCommanderPlugin;

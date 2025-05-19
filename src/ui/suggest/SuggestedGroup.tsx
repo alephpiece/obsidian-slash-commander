@@ -1,9 +1,9 @@
-import type { ReactElement } from "react";
-import SlashCommanderPlugin from "@/main";
-import { SlashCommand } from "@/data/models/SlashCommand";
-import { isCommandGroup } from "@/services/command";
 import { FuzzyMatch } from "obsidian";
-import { highlightMatch } from "./highlightMatch";
+import type { ReactElement } from "react";
+
+import { SlashCommand } from "@/data/models/SlashCommand";
+import SlashCommanderPlugin from "@/main";
+import { isCommandGroup } from "@/services/command";
 
 interface SuggestionProps {
     plugin: SlashCommanderPlugin;
@@ -16,7 +16,7 @@ interface SuggestionProps {
  * @param result - The fuzzy match result.
  * @returns A React element representing the suggested command group.
  */
-export default function SuggestedGroup({ plugin, result }: SuggestionProps): ReactElement | null {
+export default function SuggestedGroup({ result }: SuggestionProps): ReactElement | null {
     const { item: scmd } = result;
     if (!isCommandGroup(scmd)) {
         return null;

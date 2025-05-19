@@ -1,10 +1,11 @@
 import { TextComponent } from "obsidian";
-import SlashCommanderPlugin from "@/main";
-import { MenuSuggestionModal } from "./suggester";
+
 import { Coords, EnhancedEditor } from "@/data/models/Settings";
-import { SlashCommandMatch } from "@/services/search";
-import { useSettingStore } from "@/data/stores/useSettingStore";
 import { SlashCommand } from "@/data/models/SlashCommand";
+import { useSettingStore } from "@/data/stores/useSettingStore";
+import SlashCommanderPlugin from "@/main";
+
+import { MenuSuggestionModal } from "./suggester";
 
 export class MenuSuggest {
     private plugin: SlashCommanderPlugin;

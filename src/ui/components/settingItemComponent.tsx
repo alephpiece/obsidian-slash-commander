@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode, ChangeEvent } from "react";
+import type { ChangeEvent, ReactElement, ReactNode } from "react";
 import { useState } from "react";
 
 interface BaseComponentProps {

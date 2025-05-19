@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import {
     Editor,
     EditorPosition,
@@ -7,19 +8,17 @@ import {
     FuzzyMatch,
     Notice,
     prepareFuzzySearch,
-    TFile,
 } from "obsidian";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
+
 import { SlashCommand } from "@/data/models/SlashCommand";
-import { isCommandGroup } from "@/services/command";
+import { useSettingStore } from "@/data/stores/useSettingStore";
 import SlashCommanderPlugin from "@/main";
+import { isCommandGroup } from "@/services/command";
 import { SlashCommandMatch } from "@/services/search";
 import SuggestedCommand from "@/ui/suggest/SuggestedCommand";
-import { SubSuggest } from "./subSuggest";
-import { useSettingStore } from "@/data/stores/useSettingStore";
 import SuggestedGroup from "@/ui/suggest/SuggestedGroup";
-import { t } from "i18next";
 
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
     private plugin: SlashCommanderPlugin;
@@ -30,11 +29,7 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
         this.plugin = plugin;
     }
 
-    public onTrigger(
-        cursor: EditorPosition,
-        editor: Editor,
-        _file: TFile
-    ): EditorSuggestTriggerInfo | null {
+    public onTrigger(cursor: EditorPosition, editor: Editor): EditorSuggestTriggerInfo | null {
         const settings = useSettingStore.getState().settings;
         const queryPattern = settings.queryPattern;
         const currentLine = editor.getLine(cursor.line).slice(0, cursor.ch);
@@ -95,10 +90,7 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
         );
     }
 
-    public selectSuggestion(
-        result: FuzzyMatch<SlashCommand>,
-        _evt: MouseEvent | KeyboardEvent
-    ): void {
+    public selectSuggestion(result: FuzzyMatch<SlashCommand>): void {
         // Delete the trigger and command query.
         this.context?.editor.replaceRange("", this.context.start, this.context.end);
 
