@@ -1,6 +1,6 @@
 {
     "name": "slash-commander",
-    "version": "0.2.16",
+    "version": "0.3.0",
     "description": "Customizable slash commands for Obsidian.md",
     "main": "main.js",
     "type": "module",
@@ -16,7 +16,7 @@
         "lint": "eslint --fix src/",
         "format:check": "prettier --check \"src/**/*.{ts,tsx,scss,css,json}\"",
         "format": "prettier --write \"src/**/*.{ts,tsx,scss,css,json}\"",
-        "typecheck": "tsc -noEmit",
+        "typecheck": "tsc -noEmit -p tsconfig.json",
         "test": "vitest run",
         "test:ui": "vitest --ui",
         "test:coverage": "vitest run --silent --coverage",
