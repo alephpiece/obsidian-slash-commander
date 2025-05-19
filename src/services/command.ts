@@ -1,6 +1,7 @@
-import { Command, Notice } from "obsidian";
+import { Command } from "obsidian";
 
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
+import { DATA_VERSION } from "@/data/constants/version";
 import { CommanderSettings } from "@/data/models/Settings";
 import { SlashCommand } from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
@@ -99,19 +100,17 @@ export function isActiveCommandNameUnique(
 }
 
 /**
- * Check if a SlashCommand is a root command
+ * A SlashCommand without parent is a root command
  */
 export function isRootCommand(scmd: SlashCommand): boolean {
-    // Command without parent is a root command
-    return !scmd.parentId;
+    return typeof scmd.parentId === "undefined";
 }
 
 /**
  * Check if a SlashCommand is a group
  */
 export function isCommandGroup(scmd: SlashCommand): boolean {
-    // Prioritize explicit isGroup field, compatible with old data that has child commands
-    return scmd.isGroup === true || (!scmd.parentId && (scmd.children?.length ?? 0) > 0);
+    return scmd.isGroup === true;
 }
 
 /**
@@ -239,87 +238,87 @@ export async function migrateCommandData(
     data: CommanderSettings,
     saveCallback: (settings: CommanderSettings) => Promise<void>
 ): Promise<CommanderSettings> {
-    if (!data.bindings || data.bindings.length === 0) return data;
+    // Compatibility with old data
+    if (!data.version) data.version = 1;
 
-    // Check if migration is needed
-    const needsMigration = data.bindings.some(
-        (cmd) =>
-            !("action" in cmd) ||
-            cmd.action === undefined ||
-            !("isGroup" in cmd) ||
-            cmd.isGroup === undefined
-    );
-
-    if (!needsMigration) {
-        console.log("SlashCommander: data is already in the new format, no migration needed");
+    // Already up to date
+    if (data.version >= DATA_VERSION) {
         return data;
     }
 
-    new Notice("SlashCommander: start migrating data to the new format");
+    // No commands to migrate
+    if (!data.bindings || data.bindings.length === 0) return data;
 
-    // First scan the entire command structure to identify duplicate IDs
-    const idUsageCount = new Map<string, number>();
+    // new Notice("SlashCommander: start migrating data to the new format");
 
-    const countIds = (commands: SlashCommand[]) => {
-        for (const cmd of commands) {
-            idUsageCount.set(cmd.id, (idUsageCount.get(cmd.id) || 0) + 1);
+    if (data.version < 2) {
+        // First scan the entire command structure to identify duplicate IDs
+        const idUsageCount = new Map<string, number>();
 
+        const countIds = (commands: SlashCommand[]) => {
+            for (const cmd of commands) {
+                idUsageCount.set(cmd.id, (idUsageCount.get(cmd.id) || 0) + 1);
+
+                if (cmd.children && cmd.children.length > 0) {
+                    countIds(cmd.children);
+                }
+            }
+        };
+
+        // Count usage of all IDs in the original data
+        countIds(data.bindings);
+
+        // Track newly assigned IDs to prevent conflicts
+        const assignedIds = new Set<string>();
+
+        // Recursive migration function
+        const migrateCommand = (cmd: SlashCommand): SlashCommand => {
+            // If no action field, copy id to action
+            if (!("action" in cmd) || cmd.action === undefined) {
+                cmd.action = cmd.id;
+            }
+
+            // Set isGroup field
+            if (!("isGroup" in cmd) || cmd.isGroup === undefined) {
+                // Determine if it's a command group by checking for child commands
+                cmd.isGroup = cmd.children && cmd.children.length > 0;
+
+                // Special handling for IDs with old group prefix format
+                if (cmd.id.startsWith("slash-commander:group-")) {
+                    cmd.isGroup = true;
+                }
+            }
+
+            // Only replace IDs that appear multiple times in the original data
+            if ((idUsageCount.get(cmd.id) || 0) > 1) {
+                // Generate a new ID that doesn't conflict with existing or already assigned IDs
+                let newId;
+                do {
+                    newId = generateUniqueId();
+                } while (idUsageCount.has(newId) || assignedIds.has(newId));
+
+                assignedIds.add(newId);
+                cmd.id = newId;
+            }
+
+            // Recursively process child commands
             if (cmd.children && cmd.children.length > 0) {
-                countIds(cmd.children);
+                cmd.children = cmd.children.map(migrateCommand);
             }
-        }
-    };
 
-    // Count usage of all IDs in the original data
-    countIds(data.bindings);
+            return cmd;
+        };
 
-    // Track newly assigned IDs to prevent conflicts
-    const assignedIds = new Set<string>();
+        // Migrate all root commands
+        data.bindings = data.bindings.map(migrateCommand);
 
-    // Recursive migration function
-    const migrateCommand = (cmd: SlashCommand): SlashCommand => {
-        // If no action field, copy id to action
-        if (!("action" in cmd) || cmd.action === undefined) {
-            cmd.action = cmd.id;
-        }
+        data.version = 2;
 
-        // Set isGroup field
-        if (!("isGroup" in cmd) || cmd.isGroup === undefined) {
-            // Determine if it's a command group by checking for child commands
-            cmd.isGroup = cmd.children && cmd.children.length > 0;
+        // Save migrated data
+        await saveCallback(data);
+    }
 
-            // Special handling for IDs with old group prefix format
-            if (cmd.id.startsWith("slash-commander:group-")) {
-                cmd.isGroup = true;
-            }
-        }
-
-        // Only replace IDs that appear multiple times in the original data
-        if ((idUsageCount.get(cmd.id) || 0) > 1) {
-            // Generate a new ID that doesn't conflict with existing or already assigned IDs
-            let newId;
-            do {
-                newId = generateUniqueId();
-            } while (idUsageCount.has(newId) || assignedIds.has(newId));
-
-            assignedIds.add(newId);
-            cmd.id = newId;
-        }
-
-        // Recursively process child commands
-        if (cmd.children && cmd.children.length > 0) {
-            cmd.children = cmd.children.map(migrateCommand);
-        }
-
-        return cmd;
-    };
-
-    // Migrate all root commands
-    data.bindings = data.bindings.map(migrateCommand);
-
-    // Save migrated data
-    await saveCallback(data);
-    new Notice("SlashCommander: data migrated");
+    // new Notice("SlashCommander: data migrated");
 
     return data;
 }
