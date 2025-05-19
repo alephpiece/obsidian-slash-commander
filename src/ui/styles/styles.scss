@@ -747,11 +747,14 @@
     z-index: 1000;
 }
 
+/* Drag overlay styles */
 .cmdr-sortable-drag {
     opacity: 0.8;
+    z-index: 999;
 }
 
 .cmdr-sortable-ghost {
+    opacity: 0.3;
     background-color: var(--background-modifier-hover);
     border: 1px dashed var(--interactive-accent);
     border-radius: var(--radius-s);
@@ -936,15 +939,6 @@
         padding: 2px 6px;
         font-size: 12px;
     }
-}
-
-/* Drag overlay styles */
-.cmdr-sortable-ghost {
-    opacity: 0.3;
-}
-
-.cmdr-sortable-drag {
-    z-index: 999;
 }
 
 /* Group collapser styles */
