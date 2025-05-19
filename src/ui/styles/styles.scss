@@ -602,19 +602,11 @@
     }
 
     /* Setting item */
-    .setting-item {
+    .cmdr-setting-item {
         display: flex;
         align-items: center;
         padding: 6px 2px;
-        border-top: none;
-        margin: 0;
         width: 100%;
-
-        &.mod-toggle {
-            border-top: none;
-            padding-top: 6px;
-            padding-bottom: 6px;
-        }
 
         > *:first-child {
             margin-inline-end: var(--size-2-3);
@@ -629,20 +621,20 @@
     }
 
     /* Setting item info */
-    .setting-item-info {
+    .cmdr-item-info {
         overflow: hidden;
         margin: 0 8px;
-        max-width: 80%;
+        max-width: 500px;
         text-align: left;
 
-        .setting-item-name {
+        .cmdr-item-name {
             font-weight: var(--font-normal);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .setting-item-description {
+        .cmdr-item-description {
             color: var(--text-muted);
             font-size: var(--font-smaller);
             white-space: nowrap;
@@ -652,26 +644,13 @@
     }
 
     /* Setting item control */
-    .setting-item-control {
+    .cmdr-item-control {
+        flex: 1 1 auto;
+        text-align: end;
         display: flex;
+        justify-content: flex-end;
         align-items: center;
-        gap: 8px;
-
-        button {
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .setting-editor-extra-setting-button {
-            padding: 4px;
-            border-radius: var(--radius-s);
-
-            &:hover {
-                background-color: var(--background-modifier-hover);
-            }
-        }
+        gap: var(--size-2-2);
     }
 
     /* Group collapser button */

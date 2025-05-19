@@ -57,7 +57,7 @@ export function CommandComponent({
     const { triggerModeIcon, triggerModeName } = getTriggerModeInfo(pair.triggerMode);
 
     return (
-        <div className="setting-item mod-toggle">
+        <div className="cmdr-setting-item">
             <ObsidianIcon
                 icon={pair.icon}
                 size="var(--icon-l) + 4px"
@@ -65,8 +65,8 @@ export function CommandComponent({
                 onClick={handleNewIcon}
                 className="cmdr-icon clickable-icon"
             />
-            <div className="setting-item-info">
-                <div className="setting-item-name">
+            <div className="cmdr-item-info">
+                <div className="cmdr-item-name">
                     <ChangeableText
                         ariaLabel={t("bindings.rename.click")}
                         handleChange={(e): void => {
@@ -77,7 +77,7 @@ export function CommandComponent({
                 </div>
                 {cmd && Platform.isDesktop && !isCommandGroup(pair) && (
                     <div
-                        className="setting-item-description"
+                        className="cmdr-item-description"
                         aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
                     >
                         {t("bindings.source", {
@@ -93,7 +93,7 @@ export function CommandComponent({
                     </div>
                 )}
             </div>
-            <div className="setting-item-control">
+            <div className="cmdr-item-control">
                 {isCollapsed !== undefined && handleCollapse && (
                     <ObsidianIcon
                         icon={isCollapsed ? "chevron-right" : "chevron-down"}
@@ -107,7 +107,7 @@ export function CommandComponent({
                 {isRootCommand(pair) && handleAddChild && (
                     <ObsidianIcon
                         icon="list-plus"
-                        className="setting-editor-extra-setting-button clickable-icon"
+                        className="clickable-icon"
                         onClick={handleAddChild}
                         aria-label={t("bindings.add_child")}
                     />
@@ -115,7 +115,7 @@ export function CommandComponent({
                 {Platform.isMobile ? (
                     <ObsidianIcon
                         icon="pencil"
-                        className="setting-editor-extra-setting-button clickable-icon"
+                        className="clickable-icon"
                         onClick={async (): Promise<void> => {
                             if (plugin) {
                                 const updatedCommand = await new BindingEditorModal(
@@ -142,7 +142,7 @@ export function CommandComponent({
                         <>
                             <ObsidianIcon
                                 icon={triggerModeIcon}
-                                className="setting-editor-extra-setting-button clickable-icon"
+                                className="clickable-icon"
                                 onClick={(): void => handleTriggerModeChange()}
                                 aria-label={t("bindings.trigger_mode.change", {
                                     current_mode: triggerModeName,
@@ -150,7 +150,7 @@ export function CommandComponent({
                             />
                             <ObsidianIcon
                                 icon={deviceModeIcon}
-                                className="setting-editor-extra-setting-button clickable-icon"
+                                className="clickable-icon"
                                 onClick={(): void => handleDeviceModeChange()}
                                 aria-label={t("bindings.device_mode.change", {
                                     current_mode: deviceModeName,
@@ -161,7 +161,7 @@ export function CommandComponent({
                 )}
                 <ObsidianIcon
                     icon="lucide-trash"
-                    className="setting-editor-extra-setting-button clickable-icon"
+                    className="clickable-icon"
                     style={{ color: "var(--text-error)" }}
                     onClick={handleRemove}
                     aria-label={t("common.delete")}
@@ -185,7 +185,7 @@ function UnavailableCommandComponent({
 }): ReactElement {
     const { t } = useTranslation();
     return (
-        <div className="setting-item mod-toggle">
+        <div className="cmdr-setting-item">
             <ObsidianIcon
                 icon="alert-triangle"
                 size="var(--icon-l) + 4px"
@@ -193,21 +193,21 @@ function UnavailableCommandComponent({
                 style={{ color: "var(--text-error)" }}
                 aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
             />
-            <div className="setting-item-info">
-                <div className="setting-item-name">{pair.name}</div>
+            <div className="cmdr-item-info">
+                <div className="cmdr-item-name">{pair.name}</div>
                 {Platform.isDesktop && (
                     <div
-                        className="setting-item-description"
+                        className="cmdr-item-description"
                         style={{ color: "var(--text-error)" }}
                     >
                         {t("bindings.device_mode.unavailable")}
                     </div>
                 )}
             </div>
-            <div className="setting-item-control">
+            <div className="cmdr-item-control">
                 <ObsidianIcon
                     icon="lucide-trash"
-                    className="setting-editor-extra-setting-button clickable-icon"
+                    className="clickable-icon"
                     style={{ color: "var(--text-error)" }}
                     onClick={handleRemove}
                     aria-label={t("common.delete")}
