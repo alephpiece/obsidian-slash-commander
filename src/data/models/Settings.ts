@@ -4,6 +4,7 @@ import { Editor } from "obsidian";
 import { SlashCommand } from "@/data/models/SlashCommand";
 
 export interface CommanderSettings {
+    version: number;
     confirmDeletion: boolean;
     showDescriptions: boolean;
     showSourcesForDuplicates: boolean;
