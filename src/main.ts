@@ -1,84 +1,77 @@
-import { MarkdownView, Plugin } from "obsidian";
-import { DEFAULT_SETTINGS } from "./data/constants";
-import t from "./l10n";
-import { CommanderSettings, EnhancedEditor } from "./data/types";
-import CommanderSettingTab from "./settings/settingTab";
-import SettingTabModal from "./ui/modals/settingTabModal";
-import CommandManager from "./data/commandManager";
-import { SlashSuggester } from "./suggesters/slashSuggest";
-import { MenuSuggest } from "./suggesters/menuSuggest";
-import { buildQueryPattern } from "./utils/search";
+import "@/ui/styles/styles.scss";
 
-import "./styles/styles.scss";
-import registerCustomIcons from "./assets/icons";
+import { MarkdownView, Plugin } from "obsidian";
+
+import registerCustomIcons from "@/assets/icons";
+import { EnhancedEditor } from "@/data/models/Settings";
+import { useSettingStore } from "@/data/stores/useSettingStore";
+import i18n from "@/i18n"; // initialize i18n
+import { MenuSuggest } from "@/services/suggest/menuSuggest";
+import { SlashSuggester } from "@/services/suggest/slashSuggest";
+import SettingTabModal from "@/ui/modals/SettingTabModal";
+import CommanderSettingTab from "@/ui/settingTab";
 
 export default class SlashCommanderPlugin extends Plugin {
-	public settings: CommanderSettings;
-	public manager: CommandManager;
-	public scrollArea?: Element | undefined;
-	public menuSuggest?: MenuSuggest;
+    public scrollArea?: Element | undefined;
+    public menuSuggest?: MenuSuggest;
+    private storeUnsubscribe?: () => void;
 
-	public async onload(): Promise<void> {
-		await this.loadSettings();
+    public get settings() {
+        return useSettingStore.getState().settings;
+    }
 
-		registerCustomIcons();
+    public async onload(): Promise<void> {
+        // Initialize the Zustand state store
+        useSettingStore.getState().setPlugin(this);
+        await useSettingStore.getState().initialize();
 
-		this.manager = new CommandManager(this);
+        registerCustomIcons();
 
-		this.addSettingTab(new CommanderSettingTab(this));
+        // Register settings tab
+        this.addSettingTab(new CommanderSettingTab(this));
 
-		this.addCommand({
-			name: t("Open settings"),
-			id: "open-settings",
-			callback: () => new SettingTabModal(this).open(),
-		});
+        // Initialize plugin UI and commands
+        this.initializePlugin();
+    }
 
-		this.addCommand({
-			name: t("Open standalone menu"),
-			id: "open-standalone-menu",
-			editorCallback: (editor: EnhancedEditor) => {
-				this.menuSuggest?.close();
-				this.menuSuggest = new MenuSuggest(this, editor, this.scrollArea);
-				this.menuSuggest.open();
-			},
-		});
+    private initializePlugin(): void {
+        this.addCommand({
+            name: i18n.t("settings.open"),
+            id: "open-settings",
+            callback: () => new SettingTabModal(this).open(),
+        });
 
-		this.registerEditorSuggest(new SlashSuggester(this));
+        this.addCommand({
+            name: i18n.t("standalone.menu.open"),
+            id: "open-standalone-menu",
+            editorCallback: (editor: EnhancedEditor) => {
+                this.menuSuggest?.close();
+                this.menuSuggest = new MenuSuggest(this, editor, this.scrollArea);
+                this.menuSuggest.open();
+            },
+        });
 
-		this.registerDomEvent(document, "click", () => {
-			this.menuSuggest?.close();
-		});
+        this.registerEditorSuggest(new SlashSuggester(this));
 
-		// Get the scroller area
-		// Credits go to https://github.com/Jambo2018/notion-assistant-plugin
-		const renderPlugin = (): void => {
-			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-			if (!view) return;
-			this.scrollArea =
-				view.containerEl.querySelector(".cm-scroller") ?? undefined;
-			if (!this.scrollArea) return;
-		};
+        // Get the scroller area
+        const renderPlugin = (): void => {
+            const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+            if (!view) return;
+            this.scrollArea = view.containerEl.querySelector(".cm-scroller") ?? undefined;
+            if (!this.scrollArea) return;
+        };
 
-		/**Ensure that the plugin can be loaded and used immediately after it is turned on */
-		renderPlugin();
+        this.app.workspace.onLayoutReady(renderPlugin);
+        this.registerEvent(this.app.workspace.on("active-leaf-change", renderPlugin));
+    }
 
-		this.registerEvent(
-			this.app.workspace.on("active-leaf-change", renderPlugin)
-		);
-	}
+    public onunload(): void {
+        document.head.querySelector("style#cmdr")?.remove();
+        this.menuSuggest?.close();
 
-	public onunload(): void {
-		document.head.querySelector("style#cmdr")?.remove();
-		this.menuSuggest?.close();
-	}
-
-	private async loadSettings(): Promise<void> {
-		const data = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-		this.settings = data;
-		this.settings.queryPattern = buildQueryPattern(this.settings);
-	}
-
-	public async saveSettings(): Promise<void> {
-		await this.saveData(this.settings);
-	}
+        // Clean up Zustand store subscription
+        if (this.storeUnsubscribe) {
+            this.storeUnsubscribe();
+        }
+    }
 }

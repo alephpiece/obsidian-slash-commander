@@ -1,0 +1,31 @@
+// Global SCSS variables
+$prefix: "cmdr";
+
+// Color variables - using Obsidian CSS variables for theme consistency
+$primary-color: var(--interactive-accent, #007bff);
+$secondary-color: var(--text-accent, #6c757d);
+$success-color: var(--text-success, #28a745);
+$danger-color: var(--text-error, #dc3545);
+$warning-color: var(--text-warning, #ffc107);
+$info-color: var(--text-normal, #17a2b8);
+
+// Background colors
+$background-primary: var(--background-primary);
+$background-secondary: var(--background-secondary);
+$background-modifier-hover: var(--background-modifier-hover);
+
+// Spacing variables
+$spacing-unit: 0.25rem;
+$spacing-small: $spacing-unit;
+$spacing-medium: $spacing-unit * 2;
+$spacing-large: $spacing-unit * 4;
+
+// Font sizes
+$font-size-base: var(--font-text-size, 1rem);
+$font-size-small: var(--font-small, 0.875rem);
+$font-size-large: var(--font-large, 1.25rem);
+
+// Border radius
+$border-radius: 0.25rem;
+$border-radius-large: 0.5rem;
+$border-radius-small: 0.125rem;
