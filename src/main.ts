@@ -1,6 +1,6 @@
 import "@/ui/styles/styles.scss";
 
-import { MarkdownView, Plugin } from "obsidian";
+import { MarkdownView, Notice, Plugin } from "obsidian";
 
 import registerCustomIcons from "@/assets/icons";
 import { EnhancedEditor } from "@/data/models/Settings";
@@ -21,17 +21,21 @@ export default class SlashCommanderPlugin extends Plugin {
     }
 
     public async onload(): Promise<void> {
-        // Initialize the Zustand state store
-        useSettingStore.getState().setPlugin(this);
-        await useSettingStore.getState().initialize();
+        try {
+            // Initialize the Zustand state store
+            useSettingStore.getState().setPlugin(this);
+            await useSettingStore.getState().initialize();
 
-        registerCustomIcons();
+            registerCustomIcons();
 
-        // Register settings tab
-        this.addSettingTab(new CommanderSettingTab(this));
+            // Register settings tab
+            this.addSettingTab(new CommanderSettingTab(this));
 
-        // Initialize plugin UI and commands
-        this.initializePlugin();
+            // Initialize plugin UI and commands
+            this.initializePlugin();
+        } catch (error) {
+            new Notice(`SlashCommander: ${error}`);
+        }
     }
 
     private initializePlugin(): void {
@@ -66,12 +70,14 @@ export default class SlashCommanderPlugin extends Plugin {
     }
 
     public onunload(): void {
-        document.head.querySelector("style#cmdr")?.remove();
-        this.menuSuggest?.close();
+        try {
+            document.head.querySelector("style#cmdr")?.remove();
+            this.menuSuggest?.close();
 
-        // Clean up Zustand store subscription
-        if (this.storeUnsubscribe) {
-            this.storeUnsubscribe();
+            // Clean up Zustand store subscription
+            this.storeUnsubscribe?.();
+        } catch (error) {
+            new Notice(`SlashCommander: ${error}`);
         }
     }
 }
