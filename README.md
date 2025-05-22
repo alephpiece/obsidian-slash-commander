@@ -1,6 +1,11 @@
 # Slash Commander
 
-[![Obsidian community plugin](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&query=%24%5B%22slash-commander%22%5D.downloads&logo=obsidian&label=downloads)](https://obsidian.md/plugins?id=slash-commander) [![GitHub all releases](https://img.shields.io/github/downloads/alephpiece/obsidian-slash-commander/total?logo=GitHub)](https://github.com/alephpiece/obsidian-slash-commander/releases) ![GitHub Repo stars](https://custom-icon-badges.demolab.com/github/stars/alephpiece/obsidian-slash-commander?logo=star)
+[![][plugin-downloads-badge]][plugin-downloads-link]
+[![][github-releases-badge]][github-releases-link]
+[![][github-test-badge]][github-test-link]
+![][coverage-lines-badge]
+![][coverage-total-badge]
+![][github-stars-badge]
 
 Customizable slash command list for [Obsidian](https://obsidian.md).
 
@@ -73,3 +78,14 @@ yarn build
   - idea: [FelipeRearden](https://github.com/FelipeRearden)
   - suggester: [Periodic Notes](https://github.com/liamcain/obsidian-periodic-notes) and [Admonitions](https://github.com/javalent/admonitions)
   - positioning: [Highlightr](https://github.com/chetachiezikeuzor/Highlightr-Plugin) and [Typing Assistant](https://github.com/Jambo2018/notion-assistant-plugin)
+
+<!-- badges and links -->
+[github-test-badge]: https://github.com/alephpiece/obsidian-slash-commander/actions/workflows/test.yml/badge.svg
+[github-test-link]: https://github.com/alephpiece/obsidian-slash-commander/actions
+[github-stars-badge]: https://custom-icon-badges.demolab.com/github/stars/alephpiece/obsidian-slash-commander?logo=star
+[github-releases-badge]: https://img.shields.io/github/downloads/alephpiece/obsidian-slash-commander/total?logo=GitHub
+[github-releases-link]: https://github.com/alephpiece/obsidian-slash-commander/releases
+[plugin-downloads-badge]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&query=%24%5B%22slash-commander%22%5D.downloads&logo=obsidian&label=downloads
+[plugin-downloads-link]: https://obsidian.md/plugins?id=slash-commander
+[coverage-lines-badge]: ./badges/coverage-lines.svg
+[coverage-total-badge]: ./badges/coverage-total.svg

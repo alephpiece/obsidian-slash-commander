@@ -1,0 +1,41 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Enable Corepack for Yarn
+        run: |
+          corepack enable
+          yarn set version 4.7.0
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Lint
+        run: yarn lint:check
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Test
+        run: yarn test:coverage
+
+      - name: Generate coverage badges
+        uses: jpb06/coverage-badges-action@latest
+        with:
+          branches: main
+          badges-icon: vitest
