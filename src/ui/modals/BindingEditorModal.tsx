@@ -13,10 +13,8 @@ import { getDeviceModeInfo, getTriggerModeInfo } from "@/services/utils";
  * Modal for creating and editing slash commands
  */
 export default class BindingEditorModal extends Modal {
-    private plugin: SlashCommanderPlugin;
     private commands: Command[];
     private filteredCommands: Command[] = [];
-    private commandSearchValue = "";
 
     private filteredIcons: string[] = [];
     private iconSearchValue = "";
@@ -25,19 +23,24 @@ export default class BindingEditorModal extends Modal {
     private name = "";
     private id = "";
     private generated_id = "";
-    private selectedCommand: Command | null = null;
+    private action: string | undefined = undefined;
     private selectedIcon = "";
     private triggerMode: TriggerMode = "anywhere";
     private deviceMode: DeviceMode = "any";
 
+    private originalId: string = "";
+
     private errors: { [key: string]: string } = {};
+
+    private existingCommand: SlashCommand | undefined = undefined;
 
     private resolve: ((value: SlashCommand | null) => void) | null = null;
     private reject: ((reason?: any) => void) | null = null;
 
     constructor(plugin: SlashCommanderPlugin, existingCommand?: SlashCommand) {
         super(plugin.app);
-        this.plugin = plugin;
+        this.existingCommand = existingCommand;
+
         this.commands = Object.values(plugin.app.commands.commands);
 
         this.generated_id = generateUniqueId();
@@ -45,17 +48,13 @@ export default class BindingEditorModal extends Modal {
         // If editing an existing command, initialize with its values
         if (existingCommand) {
             this.name = existingCommand.name;
+            this.originalId = existingCommand.id;
             this.id = existingCommand.id || this.generated_id;
+            this.action = existingCommand.action;
             this.selectedIcon = existingCommand.icon;
             this.triggerMode = existingCommand.triggerMode || "anywhere";
             this.deviceMode = existingCommand.mode || "any";
             this.isGroup = isCommandGroup(existingCommand);
-
-            // If editing an existing command, use its action to find the corresponding command
-            if (existingCommand.action) {
-                this.selectedCommand =
-                    this.commands.find((cmd) => cmd.id === existingCommand.action) || null;
-            }
         }
     }
 
@@ -72,8 +71,9 @@ export default class BindingEditorModal extends Modal {
         contentEl.empty();
         contentEl.addClass("cmdr-binding-editor-modal");
 
+        const isEditing = !!this.existingCommand;
+
         // Header - show different title based on whether we're editing or creating
-        const isEditing = !!this.selectedCommand;
         contentEl.createEl("h2", {
             text: isEditing ? t("modals.bind.title_edit") : t("modals.bind.title_add"),
         });
@@ -267,8 +267,8 @@ export default class BindingEditorModal extends Modal {
         });
 
         // Preset input value if editing
-        if (this.selectedCommand) {
-            input.value = this.selectedCommand.name;
+        if (this.action) {
+            input.value = this.action;
         }
 
         const suggestContainer = suggestWrapper.createDiv({ cls: "cmdr-suggest-container" });
@@ -276,8 +276,7 @@ export default class BindingEditorModal extends Modal {
 
         // Update suggestions when input changes
         input.addEventListener("input", (e) => {
-            this.commandSearchValue = (e.target as HTMLInputElement).value;
-            this.selectedCommand = null;
+            this.action = (e.target as HTMLInputElement).value;
             this.updateCommandSuggestions(suggestContainer);
             suggestContainer.style.display = "block";
             this.clearError("command", wrapper);
@@ -306,10 +305,13 @@ export default class BindingEditorModal extends Modal {
     private updateCommandSuggestions(container: HTMLElement) {
         container.empty();
 
-        if (this.commandSearchValue) {
+        if (this.action !== undefined) {
+            const lowerCaseAction = this.action.toLowerCase();
             this.filteredCommands = this.commands
-                .filter((cmd) =>
-                    cmd.name.toLowerCase().includes(this.commandSearchValue.toLowerCase())
+                .filter(
+                    (cmd) =>
+                        cmd.name.toLowerCase().includes(lowerCaseAction) ||
+                        cmd.id.toLowerCase().includes(lowerCaseAction)
                 )
                 .slice(0, 20);
         } else {
@@ -332,9 +334,9 @@ export default class BindingEditorModal extends Modal {
             }
 
             item.addEventListener("click", () => {
-                this.selectedCommand = command;
+                this.action = command.id;
                 (container.parentElement?.querySelector("input") as HTMLInputElement).value =
-                    command.name;
+                    command.id;
                 container.style.display = "none";
 
                 // If command has an icon, auto-select it
@@ -593,14 +595,14 @@ export default class BindingEditorModal extends Modal {
                 ".cmdr-setting-item"
             )[2] as HTMLElement;
             const settingStore = useSettingStore.getState();
-            if (!settingStore.isIdUnique(this.id)) {
+            if (this.id !== this.originalId && !settingStore.isIdUnique(this.id)) {
                 this.setError("id", t("modals.bind.id.not_unique"), idWrapper);
                 isValid = false;
             }
         }
 
         // Validate command (not required for command groups)
-        if (!this.isGroup && !this.selectedCommand) {
+        if (!this.isGroup && !this.action) {
             const commandWrapper = this.contentEl.querySelectorAll(
                 ".cmdr-setting-item"
             )[3] as HTMLElement;
@@ -626,13 +628,10 @@ export default class BindingEditorModal extends Modal {
             return;
         }
 
-        const name = this.name || (this.selectedCommand ? this.selectedCommand.name : "New Group");
+        const name = this.name || (this.action ?? "New Group");
 
         // Use action to store Obsidian command ID
-        let commandAction = "";
-        if (this.selectedCommand) {
-            commandAction = this.selectedCommand.id;
-        }
+        const commandAction = this.action ?? "";
 
         // Ensure there's a unique ID, use generated ID as fallback
         if (!this.id || this.id.trim() === "") {

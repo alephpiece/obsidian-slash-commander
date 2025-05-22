@@ -45,26 +45,30 @@ export function CommandComponent({
 }: CommandProps): ReactElement {
     const { t } = useTranslation();
     const cmd = getObsidianCommand(plugin, pair);
-    if (!isCommandGroup(pair) && !cmd) {
-        return <UnavailableCommandComponent pair={pair} handleRemove={handleRemove} />;
-    }
-
-    // const isChecked =
-    // 	cmd.hasOwnProperty("checkCallback") ||
-    // 	cmd.hasOwnProperty("editorCheckCallback");
+    const isUnavailable = !isCommandGroup(pair) && !cmd;
 
     const { deviceModeIcon, deviceModeName } = getDeviceModeInfo(pair.mode);
     const { triggerModeIcon, triggerModeName } = getTriggerModeInfo(pair.triggerMode);
 
     return (
         <div className="cmdr-setting-item">
-            <ObsidianIcon
-                icon={pair.icon}
-                size="var(--icon-l) + 4px"
-                aria-label={t("bindings.icon.change")}
-                onClick={handleNewIcon}
-                className="cmdr-icon clickable-icon"
-            />
+            {isUnavailable ? (
+                <ObsidianIcon
+                    icon="alert-triangle"
+                    size="var(--icon-l) + 4px"
+                    className="cmdr-icon mod-warning"
+                    style={{ color: "var(--text-error)" }}
+                    aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
+                />
+            ) : (
+                <ObsidianIcon
+                    icon={pair.icon}
+                    size="var(--icon-l) + 4px"
+                    aria-label={t("bindings.icon.change")}
+                    onClick={handleNewIcon}
+                    className="cmdr-icon clickable-icon"
+                />
+            )}
             <div className="cmdr-item-info">
                 <div className="cmdr-item-name">
                     <ChangeableText
@@ -75,23 +79,26 @@ export function CommandComponent({
                         value={pair.name}
                     />
                 </div>
-                {cmd && Platform.isDesktop && !isCommandGroup(pair) && (
-                    <div
-                        className="cmdr-item-description"
-                        aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
-                    >
-                        {t("bindings.source", {
-                            plugin_name: getCommandSourceName(plugin, cmd),
-                        })}
-                        {pair.name !== cmd.name ? ` "${cmd.name}"` : "."}
-                        {/* {" "} */}
-                        {/* {isChecked
-								? t(
-									"bindings.device_mode.warn"
-								)
-								: ""} */}
-                    </div>
-                )}
+                {Platform.isDesktop &&
+                    !isCommandGroup(pair) &&
+                    (cmd ? (
+                        <div
+                            className="cmdr-item-description"
+                            aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
+                        >
+                            {t("bindings.source", {
+                                plugin_name: getCommandSourceName(plugin, cmd),
+                            })}
+                            {pair.name !== cmd.name ? ` "${cmd.name}"` : "."}
+                        </div>
+                    ) : (
+                        <div
+                            className="cmdr-item-description"
+                            style={{ color: "var(--text-error)" }}
+                        >
+                            {t("bindings.device_mode.unavailable")}
+                        </div>
+                    ))}
             </div>
             <div className="cmdr-item-control">
                 {isCollapsed !== undefined && handleCollapse && (
@@ -112,99 +119,50 @@ export function CommandComponent({
                         aria-label={t("bindings.add_child")}
                     />
                 )}
-                {Platform.isMobile ? (
-                    <ObsidianIcon
-                        icon="pencil"
-                        className="clickable-icon"
-                        onClick={async (): Promise<void> => {
-                            if (plugin) {
-                                const updatedCommand = await new BindingEditorModal(
-                                    plugin,
-                                    pair
-                                ).awaitSelection();
-                                if (updatedCommand) {
-                                    // Apply updates to existing command
-                                    pair.name = updatedCommand.name;
-                                    pair.icon = updatedCommand.icon;
-                                    pair.mode = updatedCommand.mode;
-                                    pair.triggerMode = updatedCommand.triggerMode;
-                                    pair.action = updatedCommand.action;
-
-                                    // Sync changes
-                                    handleRename(updatedCommand.name);
-                                }
-                            }
-                        }}
-                        aria-label={t("bindings.edit")}
-                    />
-                ) : (
-                    !isCommandGroup(pair) && (
-                        <>
-                            <ObsidianIcon
-                                icon={triggerModeIcon}
-                                className="clickable-icon"
-                                onClick={(): void => handleTriggerModeChange()}
-                                aria-label={t("bindings.trigger_mode.change", {
-                                    current_mode: triggerModeName,
-                                })}
-                            />
-                            <ObsidianIcon
-                                icon={deviceModeIcon}
-                                className="clickable-icon"
-                                onClick={(): void => handleDeviceModeChange()}
-                                aria-label={t("bindings.device_mode.change", {
-                                    current_mode: deviceModeName,
-                                })}
-                            />
-                        </>
-                    )
+                {Platform.isDesktop && !isCommandGroup(pair) && (
+                    <>
+                        <ObsidianIcon
+                            icon={triggerModeIcon}
+                            className="clickable-icon"
+                            onClick={(): void => handleTriggerModeChange()}
+                            aria-label={t("bindings.trigger_mode.change", {
+                                current_mode: triggerModeName,
+                            })}
+                        />
+                        <ObsidianIcon
+                            icon={deviceModeIcon}
+                            className="clickable-icon"
+                            onClick={(): void => handleDeviceModeChange()}
+                            aria-label={t("bindings.device_mode.change", {
+                                current_mode: deviceModeName,
+                            })}
+                        />
+                    </>
                 )}
                 <ObsidianIcon
-                    icon="lucide-trash"
+                    icon="pencil"
                     className="clickable-icon"
-                    style={{ color: "var(--text-error)" }}
-                    onClick={handleRemove}
-                    aria-label={t("common.delete")}
-                />
-            </div>
-        </div>
-    );
-}
+                    onClick={async (): Promise<void> => {
+                        if (plugin) {
+                            const updatedCommand = await new BindingEditorModal(
+                                plugin,
+                                pair
+                            ).awaitSelection();
+                            if (updatedCommand) {
+                                // Apply updates to existing command
+                                pair.name = updatedCommand.name;
+                                pair.icon = updatedCommand.icon;
+                                pair.mode = updatedCommand.mode;
+                                pair.triggerMode = updatedCommand.triggerMode;
+                                pair.action = updatedCommand.action;
 
-/**
- * Component for displaying a command that is not available on the current device.
- * @param pair - The command to display.
- * @param handleRemove - The callback to remove the command.
- */
-function UnavailableCommandComponent({
-    pair,
-    handleRemove,
-}: {
-    pair: SlashCommand;
-    handleRemove: () => void;
-}): ReactElement {
-    const { t } = useTranslation();
-    return (
-        <div className="cmdr-setting-item">
-            <ObsidianIcon
-                icon="alert-triangle"
-                size="var(--icon-l) + 4px"
-                className="cmdr-icon mod-warning"
-                style={{ color: "var(--text-error)" }}
-                aria-label={`id: "${pair.id}"\naction: "${pair.action}"`}
-            />
-            <div className="cmdr-item-info">
-                <div className="cmdr-item-name">{pair.name}</div>
-                {Platform.isDesktop && (
-                    <div
-                        className="cmdr-item-description"
-                        style={{ color: "var(--text-error)" }}
-                    >
-                        {t("bindings.device_mode.unavailable")}
-                    </div>
-                )}
-            </div>
-            <div className="cmdr-item-control">
+                                // Sync changes
+                                handleRename(updatedCommand.name);
+                            }
+                        }
+                    }}
+                    aria-label={t("bindings.edit")}
+                />
                 <ObsidianIcon
                     icon="lucide-trash"
                     className="clickable-icon"

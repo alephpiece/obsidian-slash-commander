@@ -282,11 +282,6 @@ export async function migrateCommandData(
             if (!("isGroup" in cmd) || cmd.isGroup === undefined) {
                 // Determine if it's a command group by checking for child commands
                 cmd.isGroup = cmd.children && cmd.children.length > 0;
-
-                // Special handling for IDs with old group prefix format
-                if (cmd.id.startsWith("slash-commander:group-")) {
-                    cmd.isGroup = true;
-                }
             }
 
             // Only replace IDs that appear multiple times in the original data
