@@ -6,6 +6,7 @@ import type { CommanderSettings } from "@/data/models/Settings";
 import type { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 import * as CommandService from "@/services/command";
+import { migrateSettings } from "@/services/migrate";
 import { buildQueryPattern } from "@/services/search";
 
 interface SettingState {
@@ -112,22 +113,19 @@ export const useSettingStore = create<SettingState>()(
             const { plugin } = get();
             if (!plugin) return;
 
-            const loadedSettings = await plugin.loadData();
-            let settings = loadedSettings
-                ? { ...DEFAULT_SETTINGS, ...loadedSettings }
-                : { ...DEFAULT_SETTINGS };
+            const loadedData = await plugin.loadData();
 
+            // Use migration function to handle all configuration updates
+            // This ensures user data is never overwritten unnecessarily
+            const settings = await migrateSettings(loadedData, async (updatedSettings) => {
+                await plugin.saveData(updatedSettings);
+            });
+
+            // Rebuild query pattern since RegExp objects can't be serialized
             settings.queryPattern = buildQueryPattern(
                 settings.mainTrigger,
                 settings.extraTriggers,
                 settings.useExtraTriggers
-            );
-
-            settings = await CommandService.migrateCommandData(
-                settings,
-                async (updatedSettings) => {
-                    await plugin.saveData(updatedSettings);
-                }
             );
 
             set({ settings });

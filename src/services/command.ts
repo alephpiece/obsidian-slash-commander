@@ -1,8 +1,6 @@
 import { Command } from "obsidian";
 
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
-import { DATA_VERSION } from "@/data/constants/version";
-import { CommanderSettings } from "@/data/models/Settings";
 import { SlashCommand } from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 import SlashCommanderPlugin from "@/main";
@@ -227,93 +225,4 @@ export function findCommand(
         // Find at root level
         return commands.find((cmd) => cmd.id === id);
     }
-}
-
-/**
- * Migrate old SlashCommand data format to new format
- * Old format: id stores Obsidian command ID
- * New format: id is a unique identifier, action stores Obsidian command ID
- */
-export async function migrateCommandData(
-    data: CommanderSettings,
-    saveCallback: (settings: CommanderSettings) => Promise<void>
-): Promise<CommanderSettings> {
-    // Compatibility with old data
-    if (!data.version) data.version = 1;
-
-    // Already up to date
-    if (data.version >= DATA_VERSION) {
-        return data;
-    }
-
-    // No commands to migrate
-    if (!data.bindings || data.bindings.length === 0) return data;
-
-    // new Notice("SlashCommander: start migrating data to the new format");
-
-    if (data.version < 2) {
-        // First scan the entire command structure to identify duplicate IDs
-        const idUsageCount = new Map<string, number>();
-
-        const countIds = (commands: SlashCommand[]) => {
-            for (const cmd of commands) {
-                idUsageCount.set(cmd.id, (idUsageCount.get(cmd.id) || 0) + 1);
-
-                if (cmd.children && cmd.children.length > 0) {
-                    countIds(cmd.children);
-                }
-            }
-        };
-
-        // Count usage of all IDs in the original data
-        countIds(data.bindings);
-
-        // Track newly assigned IDs to prevent conflicts
-        const assignedIds = new Set<string>();
-
-        // Recursive migration function
-        const migrateCommand = (cmd: SlashCommand): SlashCommand => {
-            // If no action field, copy id to action
-            if (!("action" in cmd) || cmd.action === undefined) {
-                cmd.action = cmd.id;
-            }
-
-            // Set isGroup field
-            if (!("isGroup" in cmd) || cmd.isGroup === undefined) {
-                // Determine if it's a command group by checking for child commands
-                cmd.isGroup = cmd.children && cmd.children.length > 0;
-            }
-
-            // Only replace IDs that appear multiple times in the original data
-            if ((idUsageCount.get(cmd.id) || 0) > 1) {
-                // Generate a new ID that doesn't conflict with existing or already assigned IDs
-                let newId;
-                do {
-                    newId = generateUniqueId();
-                } while (idUsageCount.has(newId) || assignedIds.has(newId));
-
-                assignedIds.add(newId);
-                cmd.id = newId;
-            }
-
-            // Recursively process child commands
-            if (cmd.children && cmd.children.length > 0) {
-                cmd.children = cmd.children.map(migrateCommand);
-            }
-
-            return cmd;
-        };
-
-        // Migrate all root commands
-        data.bindings = data.bindings.map(migrateCommand);
-
-        data.version = 2;
-
-        // Save migrated data
-        await saveCallback(data);
-    }
-
-    // new Notice("SlashCommander: data migrated");
-
-    return data;
 }
