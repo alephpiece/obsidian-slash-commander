@@ -4,11 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 7
     target-branch: "main"
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps-dev)"
+      prefix: "chore"
       include: "scope"
     groups:
       production-dependencies:
@@ -65,14 +64,12 @@ updates:
     open-pull-requests-limit: 3
     target-branch: "main"
     commit-message:
-      prefix: "chore(ci)"
+      prefix: "ci"
       include: "scope"
     groups:
       github-actions:
         patterns:
           - "*"
-    ignore:
-      - dependency-name: "actions/checkout"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "actions/setup-node"
-        update-types: ["version-update:semver-major"]
+        update-types:
+          - minor
+          - patch
