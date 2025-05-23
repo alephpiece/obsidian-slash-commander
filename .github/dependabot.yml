@@ -1,0 +1,77 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+        patterns:
+          - "*"
+      build-tools:
+        dependency-type: "development"
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "typescript*"
+          - "tslib"
+          - "builtin-modules"
+      testing-tools:
+        dependency-type: "development"
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "jsdom"
+      linting-tools:
+        dependency-type: "development"
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "prettier"
+      react-types:
+        dependency-type: "development"
+        patterns:
+          - "@types/react*"
+          - "@types/node"
+      css-tools:
+        dependency-type: "development"
+        patterns:
+          - "tailwindcss*"
+          - "@tailwindcss/*"
+          - "sass"
+    ignore:
+      - dependency-name: "obsidian"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+    target-branch: "main"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "actions/checkout"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "actions/setup-node"
+        update-types: ["version-update:semver-major"]
