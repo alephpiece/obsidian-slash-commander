@@ -6,13 +6,6 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     target-branch: "main"
-    commit-message:
-      prefix: "deps"
-      prefix-development: "deps-dev"
-      include: "scope"
-    allow:
-      - dependency-type: "direct"
-      - dependency-type: "indirect"
     groups:
       production-dependencies:
         dependency-type: "production"
@@ -56,6 +49,10 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -63,9 +60,6 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 3
     target-branch: "main"
-    commit-message:
-      prefix: "ci"
-      include: "scope"
     groups:
       github-actions:
         patterns:
