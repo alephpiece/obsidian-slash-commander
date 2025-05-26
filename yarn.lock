@@ -3286,9 +3286,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:25.2.0":
-  version: 25.2.0
-  resolution: "i18next@npm:25.2.0"
+"i18next@npm:25.2.1":
+  version: 25.2.1
+  resolution: "i18next@npm:25.2.1"
   dependencies:
     "@babel/runtime": "npm:^7.27.1"
   peerDependencies:
@@ -3296,7 +3296,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/393d45b405c53edda3cb37e8882e1a8169d0b649578541e0bb6802d28ce9c260b503f49b5b08953ef4547dbccd5d8a9adcab51290dfad6844ca7390493e274eb
+  checksum: 10c0/9e8817bdb930c15467ba31edfd834dcfc0a8979bb04f089b8249547a5c50ded820c1cce224563fc1dfe0a6f51e67e0e2d5231fb80a50fd7bd95320f120dfd0ae
   languageName: node
   linkType: hard
 
@@ -5140,7 +5140,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-simple-import-sort: "npm:^12.1.1"
     eslint-plugin-unused-imports: "npm:^4.1.4"
-    i18next: "npm:25.2.0"
+    i18next: "npm:25.2.1"
     jsdom: "npm:^26.1.0"
     node-fetch: "npm:^3.3.2"
     obsidian: "npm:latest"
