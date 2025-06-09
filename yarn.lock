@@ -1774,9 +1774,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/coverage-v8@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@vitest/coverage-v8@npm:3.2.0"
+"@vitest/coverage-v8@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "@vitest/coverage-v8@npm:3.2.3"
   dependencies:
     "@ampproject/remapping": "npm:^2.3.0"
     "@bcoe/v8-coverage": "npm:^1.0.2"
@@ -1792,12 +1792,12 @@ __metadata:
     test-exclude: "npm:^7.0.1"
     tinyrainbow: "npm:^2.0.0"
   peerDependencies:
-    "@vitest/browser": 3.2.0
-    vitest: 3.2.0
+    "@vitest/browser": 3.2.3
+    vitest: 3.2.3
   peerDependenciesMeta:
     "@vitest/browser":
       optional: true
-  checksum: 10c0/900bc5862ebb2d4cd592b8bb6556d70de26d232e68f94f95b88166b019a869a115940496ee5fe23c58593eb642cdc41a6273dc636c85b5933be3e3244e360b62
+  checksum: 10c0/b0b3c90bab5cda8cbb7568aae9dec3a6440c40b9cdd03475f0ad5aa6089b4ce3dc25ac4cd1ca6d973a21aab1d8676005e2feb82a2d71ca8fb6d1c742dd031589
   languageName: node
   linkType: hard
 
@@ -5407,7 +5407,7 @@ __metadata:
     "@types/react": "npm:^19.1.6"
     "@types/react-dom": "npm:^19.1.5"
     "@vitejs/plugin-react": "npm:^4.5.0"
-    "@vitest/coverage-v8": "npm:^3.2.0"
+    "@vitest/coverage-v8": "npm:^3.2.3"
     builtin-modules: "npm:^5.0.0"
     eslint: "npm:^9.28.0"
     eslint-config-prettier: "npm:^10.1.5"
