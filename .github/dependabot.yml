@@ -3,8 +3,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 7
+      interval: "monthly"
+    open-pull-requests-limit: 5
     target-branch: "main"
     commit-message:
       prefix: "chore"
@@ -14,48 +14,16 @@ updates:
         dependency-type: "production"
         patterns:
           - "*"
-      build-tools:
+        update-types:
+          - minor
+          - patch
+      development-dependencies:
         dependency-type: "development"
         patterns:
-          - "vite*"
-          - "@vitejs/*"
-          - "typescript*"
-          - "tslib"
-          - "builtin-modules"
-      testing-tools:
-        dependency-type: "development"
-        patterns:
-          - "vitest*"
-          - "@vitest/*"
-          - "jsdom"
-      linting-tools:
-        dependency-type: "development"
-        patterns:
-          - "eslint*"
-          - "@eslint/*"
-          - "prettier"
-      react-types:
-        dependency-type: "development"
-        patterns:
-          - "@types/react*"
-          - "@types/node"
-      css-tools:
-        dependency-type: "development"
-        patterns:
-          - "tailwindcss*"
-          - "@tailwindcss/*"
-          - "sass"
-    ignore:
-      - dependency-name: "obsidian"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "react-dom"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@types/react"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@types/react-dom"
-        update-types: ["version-update:semver-major"]
+          - "*"
+        update-types:
+          - minor
+          - patch
 
   - package-ecosystem: "github-actions"
     directory: "/"
