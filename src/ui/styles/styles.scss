@@ -63,8 +63,9 @@
 }
 
 .cmdr-icon {
+    display: flex;
+    align-items: center;
     height: 28px;
-    align-self: center;
     color: var(--icon-color);
     opacity: var(--icon-opacity);
 }
@@ -817,7 +818,10 @@
         cursor: pointer;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         padding: 8px;
+        max-width: 100%;
+        margin: 0;
 
         &:hover {
             background-color: var(--background-modifier-hover);
@@ -830,7 +834,7 @@
     }
 
     .cmdr-suggest-item-icon {
-        margin-right: 8px;
+        margin: 0;
         display: flex;
         align-items: center;
         justify-content: center;

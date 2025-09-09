@@ -313,7 +313,7 @@ export default class BindingEditorModal extends Modal {
                         cmd.name.toLowerCase().includes(lowerCaseAction) ||
                         cmd.id.toLowerCase().includes(lowerCaseAction)
                 )
-                .slice(0, 20);
+                .slice(0, 100);
         } else {
             this.filteredCommands = this.commands.slice(0, 100);
         }
@@ -439,7 +439,7 @@ export default class BindingEditorModal extends Modal {
         if (this.iconSearchValue) {
             this.filteredIcons = ICON_LIST.filter((icon) =>
                 icon.toLowerCase().includes(this.iconSearchValue.toLowerCase())
-            ).slice(0, 20);
+            ).slice(0, 100);
         } else {
             this.filteredIcons = ICON_LIST.slice(0, 100);
         }
