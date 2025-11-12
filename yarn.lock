@@ -1622,21 +1622,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^24.6.2":
-  version: 24.6.2
-  resolution: "@types/node@npm:24.6.2"
+"@types/node@npm:^24.10.1":
+  version: 24.10.1
+  resolution: "@types/node@npm:24.10.1"
   dependencies:
-    undici-types: "npm:~7.13.0"
-  checksum: 10c0/d029757711be85ec468686f66cd8eca78f5996d7e2b1a5b818436e0299b19925b0fb4f7509a6b62750abdc72d66f5750ce22fb8b55559baca86df89a9c44722e
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/d6bca7a78f550fbb376f236f92b405d676003a8a09a1b411f55920ef34286ee3ee51f566203920e835478784df52662b5b2af89159d9d319352e9ea21801c002
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^19.2.2":
-  version: 19.2.2
-  resolution: "@types/react-dom@npm:19.2.2"
+"@types/react-dom@npm:^19.2.3":
+  version: 19.2.3
+  resolution: "@types/react-dom@npm:19.2.3"
   peerDependencies:
     "@types/react": ^19.2.0
-  checksum: 10c0/6154dfb8e7a638313d7fa15b2b16494f2235afda4c43be37d10f34e5c7a730f6b95117facb5e6eebc73b15cceea7f6da23be46cda5d2262fd00fd7e6069547e3
+  checksum: 10c0/b486ebe0f4e2fb35e2e108df1d8fc0927ca5d6002d5771e8a739de11239fe62d0e207c50886185253c99eb9dedfeeb956ea7429e5ba17f6693c7acb4c02f8cd1
   languageName: node
   linkType: hard
 
@@ -4659,15 +4659,15 @@ __metadata:
   linkType: hard
 
 "obsidian@npm:latest":
-  version: 1.10.0
-  resolution: "obsidian@npm:1.10.0"
+  version: 1.10.3
+  resolution: "obsidian@npm:1.10.3"
   dependencies:
     "@types/codemirror": "npm:5.60.8"
     moment: "npm:2.29.4"
   peerDependencies:
     "@codemirror/state": 6.5.0
-    "@codemirror/view": 6.38.1
-  checksum: 10c0/23979103d9e1be693030fd2e287ff2f1d4b3ce7bf65103e2fa2a5564dc1ca907b1d102e048be7832f7cc92fd92e197bae72c5c31d807af6b4bd7af493bc3bb82
+    "@codemirror/view": 6.38.6
+  checksum: 10c0/05cd7718e3498f87e07d1c56b67ab8a6001ae0ac2c4ed40bac69dd4690ec7c1dcef623a8adb1b5a5bab039de905dcd50c91197ba73895110c7678ffbd70d217b
   languageName: node
   linkType: hard
 
@@ -5380,9 +5380,9 @@ __metadata:
     "@tailwindcss/vite": "npm:^4.1.17"
     "@testing-library/jest-dom": "npm:^6.9.1"
     "@testing-library/react": "npm:^16.3.0"
-    "@types/node": "npm:^24.6.2"
+    "@types/node": "npm:^24.10.1"
     "@types/react": "npm:^19.2.3"
-    "@types/react-dom": "npm:^19.2.2"
+    "@types/react-dom": "npm:^19.2.3"
     "@vitejs/plugin-react": "npm:^5.1.0"
     "@vitest/coverage-v8": "npm:^4.0.8"
     builtin-modules: "npm:^5.0.0"
@@ -5854,10 +5854,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~7.13.0":
-  version: 7.13.0
-  resolution: "undici-types@npm:7.13.0"
-  checksum: 10c0/44bbb0935425291351bfd8039571f017295b5d6dc5727045d0a4fea8c6ffe73a6703b48ce010f9cb539b9041a75b463f8cfe1e7309cab7486452505fb0d66151
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10c0/3033e2f2b5c9f1504bdc5934646cb54e37ecaca0f9249c983f7b1fc2e87c6d18399ebb05dc7fd5419e02b2e915f734d872a65da2e3eeed1813951c427d33cc9a
   languageName: node
   linkType: hard
 
