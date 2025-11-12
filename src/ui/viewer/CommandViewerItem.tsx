@@ -100,6 +100,9 @@ export function CommandViewerItem({
                     const newMode = mode || modes[nextIndex];
                     await updateCommand(command.id, { triggerMode: newMode });
                 }}
+                handleUpdateCommand={async (updates): Promise<void> => {
+                    await updateCommand(command.id, updates);
+                }}
                 handleAddChild={async (): Promise<void> => {
                     // Only allow adding children to top-level commands
                     if (!isRootCommand(command)) return;

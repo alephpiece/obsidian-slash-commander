@@ -9,7 +9,7 @@ import { ConfirmDeleteComponent } from "@/ui/components/ConfirmDeleteComponent";
 
 export default class ConfirmDeleteModal extends Modal {
     private root: Root | null = null;
-    public remove: boolean;
+    public remove = false;
     private command: SlashCommand | undefined;
     private onRemove: (() => void) | undefined;
 
@@ -33,6 +33,10 @@ export default class ConfirmDeleteModal extends Modal {
                 command: this.command,
             })
         );
+    }
+
+    public setRemove(value: boolean): void {
+        this.remove = value;
     }
 
     public async didChooseRemove(): Promise<boolean> {

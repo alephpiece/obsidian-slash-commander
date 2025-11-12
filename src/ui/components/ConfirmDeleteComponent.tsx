@@ -38,7 +38,7 @@ export function ConfirmDeleteComponent({ modal, command }: ConfirmDeleteProps): 
                                 confirmDeletion: false,
                             });
 
-                            modal.remove = true;
+                            modal.setRemove(true);
                             modal.close();
                         }}
                     >
@@ -48,7 +48,7 @@ export function ConfirmDeleteComponent({ modal, command }: ConfirmDeleteProps): 
                 <button
                     className="mod-warning"
                     onClick={(): void => {
-                        modal.remove = true;
+                        modal.setRemove(true);
                         modal.close();
                     }}
                 >
@@ -56,7 +56,7 @@ export function ConfirmDeleteComponent({ modal, command }: ConfirmDeleteProps): 
                 </button>
                 <button
                     onClick={(): void => {
-                        modal.remove = false;
+                        modal.setRemove(false);
                         modal.close();
                     }}
                 >

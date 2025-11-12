@@ -23,6 +23,7 @@ export interface CommandProps {
     handleRename: (name: string) => void;
     handleDeviceModeChange: (mode?: string) => void;
     handleTriggerModeChange: (mode?: string) => void;
+    handleUpdateCommand: (updates: Partial<SlashCommand>) => Promise<void> | void;
     handleAddChild?: () => void;
     isCollapsed?: boolean;
     handleCollapse?: () => void;
@@ -39,6 +40,7 @@ export function CommandComponent({
     handleRename,
     handleDeviceModeChange,
     handleTriggerModeChange,
+    handleUpdateCommand,
     handleAddChild,
     isCollapsed,
     handleCollapse,
@@ -149,15 +151,13 @@ export function CommandComponent({
                                 pair
                             ).awaitSelection();
                             if (updatedCommand) {
-                                // Apply updates to existing command
-                                pair.name = updatedCommand.name;
-                                pair.icon = updatedCommand.icon;
-                                pair.mode = updatedCommand.mode;
-                                pair.triggerMode = updatedCommand.triggerMode;
-                                pair.action = updatedCommand.action;
-
-                                // Sync changes
-                                handleRename(updatedCommand.name);
+                                await handleUpdateCommand({
+                                    name: updatedCommand.name,
+                                    icon: updatedCommand.icon,
+                                    mode: updatedCommand.mode,
+                                    triggerMode: updatedCommand.triggerMode,
+                                    action: updatedCommand.action,
+                                });
                             }
                         }
                     }}

@@ -1,5 +1,4 @@
 import type { ChangeEvent, ReactElement } from "react";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SlashCommanderPlugin from "src/main";
 
@@ -16,18 +15,12 @@ export default function TriggerViewer({ children }: TriggerViewerProps): ReactEl
     const { t } = useTranslation();
     const settings = useSettings();
     const updateSettings = useUpdateSettings();
-    const [triggers, setTriggers] = useState(settings.extraTriggers);
-
-    // Update local state when global settings change
-    useEffect(() => {
-        setTriggers([...settings.extraTriggers]);
-    }, [settings.extraTriggers]);
+    const triggers = settings.extraTriggers;
 
     const handleTriggerChange = async (index: number, value: string): Promise<void> => {
         if (triggers[index] !== value) {
             const newTriggers = [...triggers];
             newTriggers[index] = value;
-            setTriggers(newTriggers);
 
             await updateSettings({
                 extraTriggers: newTriggers,
@@ -38,7 +31,6 @@ export default function TriggerViewer({ children }: TriggerViewerProps): ReactEl
     const handleTriggerDelete = async (index: number): Promise<void> => {
         const newTriggers = [...triggers];
         newTriggers.splice(index, 1);
-        setTriggers(newTriggers);
 
         await updateSettings({
             extraTriggers: newTriggers,
@@ -47,7 +39,6 @@ export default function TriggerViewer({ children }: TriggerViewerProps): ReactEl
 
     const handleAddTrigger = async (): Promise<void> => {
         const newTriggers = [...triggers, ""];
-        setTriggers(newTriggers);
 
         await updateSettings({
             extraTriggers: newTriggers,
