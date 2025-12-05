@@ -290,6 +290,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.28.4":
+  version: 7.28.4
+  resolution: "@babel/runtime@npm:7.28.4"
+  checksum: 10c0/792ce7af9750fb9b93879cc9d1db175701c4689da890e6ced242ea0207c9da411ccf16dc04e689cc01158b28d7898c40d75598f4559109f761c12ce01e959bf7
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.27.1, @babel/template@npm:^7.27.2":
   version: 7.27.2
   resolution: "@babel/template@npm:7.27.2"
@@ -3541,17 +3548,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:25.6.2":
-  version: 25.6.2
-  resolution: "i18next@npm:25.6.2"
+"i18next@npm:25.7.0":
+  version: 25.7.0
+  resolution: "i18next@npm:25.7.0"
   dependencies:
-    "@babel/runtime": "npm:^7.27.6"
+    "@babel/runtime": "npm:^7.28.4"
   peerDependencies:
     typescript: ^5
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/8e9ac1c4ea8efb04209733e595a4be86361466a2ea2ac7d244770cc73ffad80224da132b38de50aa7cb2b23d4061ce562f81e0e00abad8efd539d9a0c0e19ba2
+  checksum: 10c0/f985200473b3fb602c7aa4373249b0f4c83c51ddbb04dc5df59cb4e99e4178e2d76135ca5bdc6a123e3f7217c7cd012882bd33084bb5f103b69032dc98cb36bf
   languageName: node
   linkType: hard
 
@@ -4902,15 +4909,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^16.2.4":
-  version: 16.2.4
-  resolution: "react-i18next@npm:16.2.4"
+"react-i18next@npm:^16.3.5":
+  version: 16.3.5
+  resolution: "react-i18next@npm:16.3.5"
   dependencies:
     "@babel/runtime": "npm:^7.27.6"
     html-parse-stringify: "npm:^3.0.1"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
-    i18next: ">= 25.5.2"
+    i18next: ">= 25.6.2"
     react: ">= 16.8.0"
     typescript: ^5
   peerDependenciesMeta:
@@ -4920,7 +4927,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/8212fea51e0cd0b7236b9f009daf89f6dc37e152325ad848c02a1adaaa4f761c5036ecdbfda28c651b042b2734e34bdb2cb4cfb9f10ea09b52285f29bc4e05ba
+  checksum: 10c0/ceea27b62bd2e231d9ee260cd367e3af720e741df52d94d86bf6a7265d1b2f8aa95d050f5747dda1f687fa77e11f4f8fa0062a30eb6cb61d70dab7db6c7a71f4
   languageName: node
   linkType: hard
 
@@ -5392,14 +5399,14 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^7.0.1"
     eslint-plugin-simple-import-sort: "npm:^12.1.1"
     eslint-plugin-unused-imports: "npm:^4.3.0"
-    i18next: "npm:25.6.2"
+    i18next: "npm:25.7.0"
     jsdom: "npm:^27.1.0"
     node-fetch: "npm:^3.3.2"
     obsidian: "npm:latest"
     prettier: "npm:^3.6.2"
     react: "npm:^19.2.0"
     react-dom: "npm:^19.2.0"
-    react-i18next: "npm:^16.2.4"
+    react-i18next: "npm:^16.3.5"
     rimraf: "npm:^6.1.0"
     sass: "npm:^1.94.0"
     tailwindcss: "npm:4.1.17"
@@ -5408,7 +5415,7 @@ __metadata:
     typescript-eslint: "npm:^8.46.4"
     vite: "npm:7.2.2"
     vitest: "npm:^4.0.8"
-    zustand: "npm:^5.0.8"
+    zustand: "npm:^5.0.9"
   languageName: unknown
   linkType: soft
 
@@ -6278,9 +6285,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^5.0.8":
-  version: 5.0.8
-  resolution: "zustand@npm:5.0.8"
+"zustand@npm:^5.0.9":
+  version: 5.0.9
+  resolution: "zustand@npm:5.0.9"
   peerDependencies:
     "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
@@ -6295,6 +6302,6 @@ __metadata:
       optional: true
     use-sync-external-store:
       optional: true
-  checksum: 10c0/e865a6f7f1c0e03571701db5904151aaa7acefd6f85541a117085e129bf16e8f60b11f8cc82f277472de5c7ad5dcb201e1b0a89035ea0b40c9d9aab3cd24c8ad
+  checksum: 10c0/552849e4546c7760704d6509a5c412d57c62a1fa9e53169c939ba5e3d75f8cb3df50a64c3a22e6c3f1c8cc00de7543e4edd61ab5ae0c9169ba9a98e28303aba6
   languageName: node
   linkType: hard
