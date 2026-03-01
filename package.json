@@ -35,7 +35,7 @@
         "@vitejs/plugin-react": "^5.1.2",
         "@vitest/coverage-v8": "^4.0.18",
         "builtin-modules": "^5.0.0",
-        "eslint": "^9.39.2",
+        "eslint": "^10.0.2",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.0.1",
