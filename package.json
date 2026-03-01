@@ -41,7 +41,7 @@
         "eslint-plugin-react-hooks": "^7.0.1",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-unused-imports": "^4.3.0",
-        "jsdom": "^27.4.0",
+        "jsdom": "^28.1.0",
         "node-fetch": "^3.3.2",
         "obsidian": "latest",
         "prettier": "^3.8.1",
