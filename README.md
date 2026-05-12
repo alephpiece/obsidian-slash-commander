@@ -59,15 +59,21 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ## Development
 
+Requires Node.js 22.13 or newer. Corepack is recommended so the pinned pnpm
+version in `package.json` is used.
+
 ```shell
+# enable package manager
+corepack enable
+
 # install deps
-yarn
+pnpm install
 
 # dev
-yarn dev
+pnpm dev
 
 # build
-yarn build
+pnpm build
 ```
 
 ## Credits
