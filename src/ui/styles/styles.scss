@@ -92,14 +92,6 @@
     }
 }
 
-.cmdr-setting-content {
-    height: calc(100% - 10rem);
-
-    .setting-item:first {
-        border-top: none;
-    }
-}
-
 .cmdr-commands-empty {
     display: flex;
     place-items: center;
