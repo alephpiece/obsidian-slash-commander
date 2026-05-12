@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
@@ -79,7 +79,28 @@ export function CommandViewer({
     const { updateSettings } = useSettingStore();
 
     // Convert SlashCommand array to dndkit-compatible tree structure
-    const [items, setItems] = useState<CommandTreeItems>(() => commandsToTreeItems(commands));
+    const commandItems = useMemo(() => commandsToTreeItems(commands), [commands]);
+    const [itemsState, setItemsState] = useState(() => ({
+        commands,
+        items: commandItems,
+    }));
+
+    let items = itemsState.items;
+
+    if (itemsState.commands !== commands) {
+        items = commandItems;
+        setItemsState({ commands, items });
+    }
+
+    const setItems = useCallback(
+        (value: CommandTreeItems | ((currentItems: CommandTreeItems) => CommandTreeItems)) => {
+            setItemsState((current) => ({
+                ...current,
+                items: typeof value === "function" ? value(current.items) : value,
+            }));
+        },
+        []
+    );
 
     // Track active drag state
     const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
@@ -89,11 +110,6 @@ export function CommandViewer({
         parentId: UniqueIdentifier | null;
         overId: UniqueIdentifier;
     } | null>(null);
-
-    // Keep tree in sync with commands from store
-    useEffect(() => {
-        setItems(commandsToTreeItems(commands));
-    }, [commands]);
 
     // Create flattened version of tree for dndkit
     const flattenedItems = useMemo(() => {
