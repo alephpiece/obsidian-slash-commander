@@ -61,13 +61,13 @@ Customizable slash command list for [Obsidian](https://obsidian.md).
 
 ```shell
 # install deps
-yarn
+pnpm install
 
 # dev
-yarn dev
+pnpm dev
 
 # build
-yarn build
+pnpm build
 ```
 
 ## Credits

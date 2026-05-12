@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "vite build -w -m development",
         "build": "vite build -m production",
-        "build:check": "yarn test && yarn typecheck",
+        "build:check": "pnpm test && pnpm typecheck",
         "version:patch": "node scripts/version-bump.mjs patch && git add package.json manifest.json versions.json",
         "version:minor": "node scripts/version-bump.mjs minor && git add package.json manifest.json versions.json",
         "version:major": "node scripts/version-bump.mjs major && git add package.json manifest.json versions.json",
@@ -64,5 +64,5 @@
         "react-i18next": "^16.5.4",
         "zustand": "^5.0.12"
     },
-    "packageManager": "yarn@4.7.0"
+    "packageManager": "pnpm@11.1.1"
 }
