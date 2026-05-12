@@ -29,6 +29,7 @@
         "@tailwindcss/vite": "^4.2.4",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",
+        "@types/codemirror": "5.60.8",
         "@types/node": "^25.6.0",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
@@ -57,6 +58,7 @@
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
         "@dnd-kit/sortable": "^10.0.0",
+        "@dnd-kit/utilities": "^3.2.2",
         "@popperjs/core": "^2.11.8",
         "i18next": "25.8.13",
         "react": "^19.2.5",
@@ -64,5 +66,8 @@
         "react-i18next": "^16.5.4",
         "zustand": "^5.0.12"
     },
-    "packageManager": "pnpm@11.1.1"
+    "packageManager": "pnpm@11.1.1",
+    "engines": {
+        "node": ">=22.13"
+    }
 }
