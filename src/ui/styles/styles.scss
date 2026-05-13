@@ -546,34 +546,99 @@
     }
 }
 
+.cmdr-trigger-setting {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--size-2-2) var(--size-4-2);
+
+    > .setting-item-info {
+        width: auto;
+        margin-right: 0;
+    }
+
+    .setting-item-name {
+        color: var(--text-muted);
+        font-size: var(--font-ui-small);
+        font-weight: var(--font-normal);
+    }
+
+    .setting-item-description {
+        font-size: var(--font-smaller);
+    }
+
+    > .cmdr-trigger-add {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: center;
+    }
+
+    > .cmdr-triggers {
+        grid-column: 1 / -1;
+    }
+}
+
 .cmdr-triggers {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: var(--size-2-2);
     font-size: var(--font-ui-small);
-    padding: 0.5em var(--size-2-3);
     align-items: center;
 
     .cmdr-trigger-pill {
-        display: flex;
-        margin-left: 0.75em;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--background-modifier-border);
+        border-radius: var(--radius-s);
+        background-color: var(--background-primary);
+        min-height: 28px;
+        padding-inline: var(--size-2-1);
 
         .cmdr-icon {
             align-self: center;
-            padding: 0 0;
+            height: auto;
+            padding: 0;
         }
 
         input {
-            border: 1px solid var(--background-modifier-border-hover);
-            border-radius: var(--radius-s);
-            max-width: 6em;
-            padding-left: 6px;
-            padding-right: 6px;
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            font-family: var(--font-monospace);
+            max-width: 18em;
+            min-width: 8ch;
+            height: 24px;
+            padding: 0 var(--size-2-1);
+            text-align: left;
+        }
+
+        input:focus {
+            box-shadow: none;
+        }
+
+        .cmdr-trigger-delete {
+            --icon-color: var(--text-muted);
+
+            color: var(--text-muted);
+            opacity: 0.75;
+            border: none;
+            background: transparent;
+            padding: 0 var(--size-2-1);
+        }
+
+        .cmdr-trigger-delete:hover {
+            --icon-color: var(--text-error);
+
+            color: var(--text-error);
+            opacity: 1;
         }
     }
 
-    .cmdr-trigger-add {
-        margin-left: 1em;
-        vertical-align: bottom;
-    }
+}
+
+.cmdr-trigger-add {
+    margin: 0;
 }
 
 /* Command viewer styles */

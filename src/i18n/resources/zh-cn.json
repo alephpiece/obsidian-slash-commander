@@ -85,6 +85,8 @@
         "triggers.command.title": "命令触发符",
         "triggers.conflict.detail": "请修改触发符或禁用上述插件，然后重新加载此设置选项卡以消除此警告。",
         "triggers.conflict.title": "某个命令触发符与'Slash commands'插件冲突。",
+        "triggers.extra.detail": "管理额外的命令触发符。",
+        "triggers.extra.title": "额外触发符",
         "triggers.more.detail": "添加更多命令触发符。",
         "triggers.more.title": "更多触发符"
     }

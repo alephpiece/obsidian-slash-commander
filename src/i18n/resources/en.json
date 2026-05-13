@@ -85,6 +85,8 @@
         "triggers.command.title": "Command trigger",
         "triggers.conflict.detail": "Please modify your triggers or disable the above plugin, and then reload this setting tab to dismiss this warning.",
         "triggers.conflict.title": "One of the command triggers conflicts with the 'Slash commands' plugin.",
+        "triggers.extra.detail": "Manage additional command triggers.",
+        "triggers.extra.title": "Additional triggers",
         "triggers.more.detail": "Add more command triggers.",
         "triggers.more.title": "More triggers"
     }

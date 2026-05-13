@@ -85,6 +85,8 @@
         "triggers.command.title": "Триггер команд",
         "triggers.conflict.detail": "Измените триггеры или отключите плагин выше, затем перезагрузите вкладку настроек.",
         "triggers.conflict.title": "Один из триггеров конфликтует с плагином 'Slash commands'.",
+        "triggers.extra.detail": "Управление дополнительными триггерами команд.",
+        "triggers.extra.title": "Дополнительные триггеры",
         "triggers.more.detail": "Добавить дополнительные триггеры команд.",
         "triggers.more.title": "Дополнительные триггеры"
     }

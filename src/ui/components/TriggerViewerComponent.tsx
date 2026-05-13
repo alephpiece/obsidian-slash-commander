@@ -1,8 +1,8 @@
 import type { ChangeEvent, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import SlashCommanderPlugin from "src/main";
 
 import { useSettings, useUpdateSettings } from "@/data/stores/useSettingStore";
+import SlashCommanderPlugin from "@/main";
 
 import ObsidianIcon from "./obsidianIconComponent";
 
@@ -46,31 +46,47 @@ export default function TriggerViewer({ children }: TriggerViewerProps): ReactEl
     };
 
     return (
-        <div className="cmdr-triggers">
-            {triggers.map((trigger, index) => (
-                <div key={`trigger-${index}`} className="cmdr-trigger-pill">
-                    <input
-                        value={trigger}
-                        onChange={(e: ChangeEvent<HTMLInputElement>): void => {
-                            void handleTriggerChange(index, e.currentTarget.value);
-                        }}
-                    />
-                    <ObsidianIcon
-                        className="cmdr-icon clickable-icon"
-                        style={{ color: "var(--text-error)" }}
-                        icon="lucide-trash"
-                        size="var(--icon-s)"
-                        aria-label={t("common.delete")}
-                        onClick={(): void => {
-                            void handleTriggerDelete(index);
-                        }}
-                    />
-                </div>
-            ))}
-            <button className="cmdr-trigger-add" onClick={handleAddTrigger}>
+        <div className="setting-item cmdr-trigger-setting">
+            <div className="setting-item-info">
+                <div className="setting-item-name">{t("triggers.extra.title")}</div>
+                <div className="setting-item-description">{t("triggers.extra.detail")}</div>
+            </div>
+            <button
+                type="button"
+                className="cmdr-trigger-add"
+                aria-label={t("common.add")}
+                onClick={handleAddTrigger}
+            >
                 {t("common.add")}
             </button>
-            {children}
+            <div className="setting-item-control cmdr-triggers">
+                {triggers.map((trigger, index) => (
+                    <div key={`trigger-${index}`} className="cmdr-trigger-pill">
+                        <input
+                            value={trigger}
+                            style={{ width: `${Math.max(trigger.length + 2, 8)}ch` }}
+                            onChange={(e: ChangeEvent<HTMLInputElement>): void => {
+                                void handleTriggerChange(index, e.currentTarget.value);
+                            }}
+                        />
+                        <button
+                            type="button"
+                            className="cmdr-trigger-delete clickable-icon"
+                            aria-label={t("common.delete")}
+                            onClick={(): void => {
+                                void handleTriggerDelete(index);
+                            }}
+                        >
+                            <ObsidianIcon
+                                className="cmdr-icon"
+                                icon="lucide-x"
+                                size="var(--icon-xs)"
+                            />
+                        </button>
+                    </div>
+                ))}
+                {children}
+            </div>
         </div>
     );
 }

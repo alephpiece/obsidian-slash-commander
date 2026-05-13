@@ -85,6 +85,8 @@
         "triggers.command.title": "コマンドトリガー",
         "triggers.conflict.detail": "トリガーを変更するか該当プラグインを無効化し、設定タブを再読み込みしてください。",
         "triggers.conflict.title": "コマンドトリガーが 'Slash commands' プラグインと競合しています。",
+        "triggers.extra.detail": "追加のコマンドトリガーを管理します。",
+        "triggers.extra.title": "追加トリガー",
         "triggers.more.detail": "追加のコマンドトリガーを設定",
         "triggers.more.title": "追加トリガー"
     }
