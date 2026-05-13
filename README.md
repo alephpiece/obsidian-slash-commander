@@ -76,6 +76,25 @@ pnpm dev
 pnpm build
 ```
 
+## Release
+
+Version bumps use the package manager's version lifecycle. The command updates
+`package.json`, syncs `manifest.json`, updates `versions.json` only when the
+minimum Obsidian app version changes, then creates a local commit and tag.
+
+```shell
+pnpm version:patch
+pnpm version:minor
+pnpm version:major
+```
+
+Review the generated commit and tag, then push them manually when ready:
+
+```shell
+git push
+git push --tags
+```
+
 ## Credits
 
 - Idea & logic: [Better Slash Commands](https://github.com/SPiCaRiA/obsidian-better-slash-commands)
