@@ -16,10 +16,6 @@ export default class SlashCommanderPlugin extends Plugin {
     public menuSuggest?: MenuSuggest;
     private storeUnsubscribe?: () => void;
 
-    public get settings() {
-        return useSettingStore.getState().settings;
-    }
-
     public async onload(): Promise<void> {
         // Initialize the Zustand state store
         useSettingStore.getState().setPlugin(this);

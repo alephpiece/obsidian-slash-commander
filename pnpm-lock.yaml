@@ -94,8 +94,8 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       obsidian:
-        specifier: latest
-        version: 1.12.3(@codemirror/state@6.5.0)(@codemirror/view@6.38.6)
+        specifier: 1.13.0
+        version: 1.13.0(@codemirror/state@6.5.0)(@codemirror/view@6.38.6)
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
@@ -1866,8 +1866,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  obsidian@1.12.3:
-    resolution: {integrity: sha512-HxWqe763dOqzXjnNiHmAJTRERN8KILBSqxDSEqbeSr7W8R8Jxezzbca+nz1LiiqXnMpM8lV2jzAezw3CZ4xNUw==}
+  obsidian@1.13.0:
+    resolution: {integrity: sha512-PHw5+SAPlJ0S3leFvJ0wgFg63Z3DavxL6+d1ll+8toXR2ZlYKc1rMWqdUv9LgUbTwPQUyY6yfhOMMivampRRiQ==}
     peerDependencies:
       '@codemirror/state': 6.5.0
       '@codemirror/view': 6.38.6
@@ -4324,7 +4324,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  obsidian@1.12.3(@codemirror/state@6.5.0)(@codemirror/view@6.38.6):
+  obsidian@1.13.0(@codemirror/state@6.5.0)(@codemirror/view@6.38.6):
     dependencies:
       '@codemirror/state': 6.5.0
       '@codemirror/view': 6.38.6
