@@ -23,6 +23,9 @@ importers:
       i18next:
         specifier: 25.8.13
         version: 25.8.13(typescript@5.9.3)
+      minimatch:
+        specifier: ^10.2.5
+        version: 10.2.5
       react:
         specifier: ^19.2.7
         version: 19.2.7

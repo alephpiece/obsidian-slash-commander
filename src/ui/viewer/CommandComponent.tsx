@@ -7,6 +7,7 @@ import SlashCommanderPlugin from "@/main";
 import {
     getCommandSourceName,
     getObsidianCommand,
+    hasPathVisibilityRules,
     isCommandGroup,
     isRootCommand,
 } from "@/services/command";
@@ -48,6 +49,7 @@ export function CommandComponent({
     const { t } = useTranslation();
     const cmd = getObsidianCommand(plugin, pair);
     const isUnavailable = !isCommandGroup(pair) && !cmd;
+    const hasPathVisibility = hasPathVisibilityRules(pair);
 
     const { deviceModeIcon, deviceModeName } = getDeviceModeInfo(pair.mode);
     const { triggerModeIcon, triggerModeName } = getTriggerModeInfo(pair.triggerMode);
@@ -106,26 +108,25 @@ export function CommandComponent({
                 {isCollapsed !== undefined && handleCollapse && (
                     <ObsidianIcon
                         icon={isCollapsed ? "chevron-right" : "chevron-down"}
-                        className="cmdr-group-collapser-button clickable-icon"
+                        className="cmdr-command-control-icon clickable-icon"
                         onClick={handleCollapse}
                         aria-label={
                             isCollapsed ? t("bindings.group.expand") : t("bindings.group.collapse")
                         }
                     />
                 )}
-                {isRootCommand(pair) && handleAddChild && (
+                {hasPathVisibility && (
                     <ObsidianIcon
-                        icon="list-plus"
-                        className="clickable-icon"
-                        onClick={handleAddChild}
-                        aria-label={t("bindings.add_child")}
+                        icon="folder-search"
+                        className="cmdr-command-control-icon"
+                        aria-label={t("bindings.path_visibility.active")}
                     />
                 )}
                 {Platform.isDesktop && !isCommandGroup(pair) && (
                     <>
                         <ObsidianIcon
                             icon={triggerModeIcon}
-                            className="clickable-icon"
+                            className="cmdr-command-control-icon clickable-icon"
                             onClick={(): void => handleTriggerModeChange()}
                             aria-label={t("bindings.trigger_mode.change", {
                                 current_mode: triggerModeName,
@@ -133,7 +134,7 @@ export function CommandComponent({
                         />
                         <ObsidianIcon
                             icon={deviceModeIcon}
-                            className="clickable-icon"
+                            className="cmdr-command-control-icon clickable-icon"
                             onClick={(): void => handleDeviceModeChange()}
                             aria-label={t("bindings.device_mode.change", {
                                 current_mode: deviceModeName,
@@ -141,9 +142,17 @@ export function CommandComponent({
                         />
                     </>
                 )}
+                {isRootCommand(pair) && handleAddChild && (
+                    <ObsidianIcon
+                        icon="list-plus"
+                        className="cmdr-command-control-icon clickable-icon"
+                        onClick={handleAddChild}
+                        aria-label={t("bindings.add_child")}
+                    />
+                )}
                 <ObsidianIcon
                     icon="pencil"
-                    className="clickable-icon"
+                    className="cmdr-command-control-icon clickable-icon"
                     onClick={async (): Promise<void> => {
                         if (plugin) {
                             const updatedCommand = await new BindingEditorModal(
@@ -156,6 +165,7 @@ export function CommandComponent({
                                     icon: updatedCommand.icon,
                                     mode: updatedCommand.mode,
                                     triggerMode: updatedCommand.triggerMode,
+                                    visibility: updatedCommand.visibility,
                                     action: updatedCommand.action,
                                 });
                             }
@@ -165,7 +175,7 @@ export function CommandComponent({
                 />
                 <ObsidianIcon
                     icon="lucide-trash"
-                    className="clickable-icon"
+                    className="cmdr-command-control-icon clickable-icon"
                     style={{ color: "var(--text-error)" }}
                     onClick={handleRemove}
                     aria-label={t("common.delete")}

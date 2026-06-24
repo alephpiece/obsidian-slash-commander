@@ -8,6 +8,7 @@ import {
     FuzzyMatch,
     Notice,
     prepareFuzzySearch,
+    TFile,
 } from "obsidian";
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
@@ -23,13 +24,19 @@ import SuggestedGroup from "@/ui/suggest/SuggestedGroup";
 export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
     private plugin: SlashCommanderPlugin;
     private containerEl: HTMLElement;
+    private currentFilePath: string | null = null;
+    private currentRenderedItems: SlashCommand[] = [];
 
     public constructor(plugin: SlashCommanderPlugin) {
         super(plugin.app);
         this.plugin = plugin;
     }
 
-    public onTrigger(cursor: EditorPosition, editor: Editor): EditorSuggestTriggerInfo | null {
+    public onTrigger(
+        cursor: EditorPosition,
+        editor: Editor,
+        file: TFile | null
+    ): EditorSuggestTriggerInfo | null {
         const settings = useSettingStore.getState().settings;
         const queryPattern = settings.queryPattern;
         const currentLine = editor.getLine(cursor.line).slice(0, cursor.ch);
@@ -45,8 +52,11 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
         const matchRes = lastWord.match(queryPattern) as SlashCommandMatch | null;
 
         if (matchRes === null) {
+            this.currentFilePath = null;
             return null;
         }
+
+        this.currentFilePath = file?.path ?? null;
 
         return {
             start: {
@@ -63,7 +73,11 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
         let results: FuzzyMatch<SlashCommand>[];
 
         const search = prepareFuzzySearch(context.query);
-        const validCommands = useSettingStore.getState().getFlatValidCommands();
+        const onNewLine = context.start.ch == 0;
+        const validCommands = useSettingStore.getState().getFlatValidCommands({
+            filePath: context.file?.path ?? this.currentFilePath,
+            onNewLine,
+        });
 
         if (context.query == "") {
             // Return the full list
@@ -80,14 +94,8 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
                 .filter(({ item }) => !item.isGroup);
         }
 
-        // Filter by trigger mode
-        const onNewLine = context.start.ch == 0;
-
-        return results.filter(
-            ({ item }) =>
-                (onNewLine && item.triggerMode != "inline") ||
-                (!onNewLine && item.triggerMode != "newline")
-        );
+        this.currentRenderedItems = results.slice(0, this.limit).map(({ item }) => item);
+        return results;
     }
 
     public selectSuggestion(result: FuzzyMatch<SlashCommand>): void {
@@ -113,6 +121,7 @@ export class SlashSuggester extends EditorSuggest<FuzzyMatch<SlashCommand>> {
             createElement(isCommandGroup(result.item) ? SuggestedGroup : SuggestedCommand, {
                 plugin: this.plugin,
                 result: result,
+                renderedItems: this.currentRenderedItems,
             })
         );
     }

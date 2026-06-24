@@ -1,6 +1,13 @@
 export type DeviceMode = "any" | "desktop" | "mobile" | string;
 export type TriggerMode = "anywhere" | "newline" | "inline" | string;
 
+export interface SlashCommandVisibility {
+    pathPatterns?: {
+        include?: string[];
+        exclude?: string[];
+    };
+}
+
 export interface SlashCommand {
     name: string;
     icon: string;
@@ -8,6 +15,7 @@ export interface SlashCommand {
     action?: string;
     mode?: DeviceMode;
     triggerMode?: TriggerMode;
+    visibility?: SlashCommandVisibility;
     color?: string;
     isGroup?: boolean;
 

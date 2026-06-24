@@ -221,6 +221,7 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
     public items: SlashCommand[];
     public slashcmd: SlashCommand | undefined;
     public text: TextComponent;
+    private currentRenderedItems: SlashCommand[] = [];
     public constructor(
         public plugin: SlashCommanderPlugin,
         input: TextComponent,
@@ -239,6 +240,11 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
     }
     public getItem(): void {
         // Empty method
+    }
+    public getSuggestions(query: string): FuzzyMatch<SlashCommand>[] {
+        const suggestions = super.getSuggestions(query);
+        this.currentRenderedItems = suggestions.slice(0, this.limit).map(({ item }) => item);
+        return suggestions;
     }
     public getItemText(item: SlashCommand): string {
         return item.name;
@@ -269,6 +275,7 @@ export class MenuSuggestionModal extends SuggestionModal<SlashCommand> {
             createElement(isCommandGroup(result.item) ? SuggestedGroup : SuggestedCommand, {
                 plugin: this.plugin,
                 result,
+                renderedItems: this.currentRenderedItems,
             })
         );
     }
