@@ -8,10 +8,17 @@ import { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
 
 import {
+    findCommand,
+    getDefaultCommands,
+    getFlattenedCommands,
     getFlatValidCommands,
     hasPathVisibilityRules,
+    isCommandActive,
     isCommandNameUniqueInItems,
     isCommandPathVisible,
+    isDeviceValid,
+    isIdUnique,
+    validateCommandStructure,
 } from "../command";
 
 function createCommand(overrides: Partial<SlashCommand> = {}): SlashCommand {
@@ -24,9 +31,21 @@ function createCommand(overrides: Partial<SlashCommand> = {}): SlashCommand {
     };
 }
 
-function createPlugin(commands: SlashCommand[]): SlashCommanderPlugin {
+interface PluginOptions {
+    appId?: string;
+    isMobile?: boolean;
+    registeredActions?: string[];
+}
+
+function createPlugin(commands: SlashCommand[], options: PluginOptions = {}): SlashCommanderPlugin {
+    const registeredActions =
+        options.registeredActions ??
+        commands
+            .filter((command) => !command.isGroup && command.action)
+            .map((command) => command.action!);
     const commandEntries = commands
         .filter((command) => !command.isGroup && command.action)
+        .filter((command) => registeredActions.includes(command.action!))
         .map((command) => [
             command.action!,
             {
@@ -37,11 +56,11 @@ function createPlugin(commands: SlashCommand[]): SlashCommanderPlugin {
 
     return {
         app: {
-            appId: "desktop",
+            appId: options.appId ?? "desktop",
             commands: {
                 commands: Object.fromEntries(commandEntries),
             },
-            isMobile: false,
+            isMobile: options.isMobile ?? false,
         },
     } as SlashCommanderPlugin;
 }
@@ -192,9 +211,7 @@ describe("command visibility", () => {
         const plugin = createPlugin([child]);
 
         expect(
-            getFlatValidCommands(plugin, [group], { onNewLine: false }).map(
-                (command) => command.id
-            )
+            getFlatValidCommands(plugin, [group], { onNewLine: false }).map((command) => command.id)
         ).toEqual([]);
     });
 
@@ -246,5 +263,168 @@ describe("command visibility", () => {
 
         expect(isCommandNameUniqueInItems(first, [first, other])).toBe(true);
         expect(isCommandNameUniqueInItems(first, [first, second, other])).toBe(false);
+    });
+});
+
+describe("command availability", () => {
+    it("filters inactive device modes and unregistered command actions", () => {
+        const desktop = createCommand({
+            id: "test:desktop",
+            action: "test:desktop",
+            mode: "desktop",
+            name: "Desktop",
+        });
+        const mobile = createCommand({
+            id: "test:mobile",
+            action: "test:mobile",
+            mode: "mobile",
+            name: "Mobile",
+        });
+        const currentApp = createCommand({
+            id: "test:current-app",
+            action: "test:current-app",
+            mode: "custom-app",
+            name: "Current app",
+        });
+        const missingAction = createCommand({
+            id: "test:missing-action",
+            action: "test:missing-action",
+            name: "Missing action",
+        });
+        const commands = [desktop, mobile, currentApp, missingAction];
+        const plugin = createPlugin(commands, {
+            appId: "custom-app",
+            registeredActions: ["test:desktop", "test:mobile", "test:current-app"],
+        });
+
+        expect(getFlatValidCommands(plugin, commands).map((command) => command.id)).toEqual([
+            "test:desktop",
+            "test:current-app",
+        ]);
+    });
+
+    it("evaluates command device modes against the current app context", () => {
+        const desktopPlugin = createPlugin([], { appId: "desktop-app", isMobile: false });
+        const mobilePlugin = createPlugin([], { appId: "mobile-app", isMobile: true });
+
+        expect(isCommandActive(desktopPlugin, createCommand())).toBe(true);
+        expect(isCommandActive(desktopPlugin, createCommand({ mode: "any" }))).toBe(true);
+        expect(isCommandActive(desktopPlugin, createCommand({ mode: "desktop" }))).toBe(true);
+        expect(isCommandActive(desktopPlugin, createCommand({ mode: "desktop-app" }))).toBe(true);
+        expect(isCommandActive(desktopPlugin, createCommand({ mode: "mobile" }))).toBe(false);
+        expect(isCommandActive(mobilePlugin, createCommand({ mode: "mobile" }))).toBe(true);
+        expect(isCommandActive(mobilePlugin, createCommand({ mode: "desktop" }))).toBe(false);
+    });
+
+    it("accepts built-in device modes and the current app id", () => {
+        const plugin = createPlugin([], { appId: "custom-app" });
+
+        expect(isDeviceValid(plugin, "any")).toBe(true);
+        expect(isDeviceValid(plugin, "desktop")).toBe(true);
+        expect(isDeviceValid(plugin, "mobile")).toBe(true);
+        expect(isDeviceValid(plugin, "custom-app")).toBe(true);
+        expect(isDeviceValid(plugin, "other-app")).toBe(false);
+    });
+});
+
+describe("command tree helpers", () => {
+    it("flattens command groups while preserving parent-child order", () => {
+        const first = createCommand({ id: "test:first", name: "First" });
+        const child = createCommand({
+            id: "test:child",
+            action: "test:child",
+            name: "Child",
+            parentId: "test:group",
+        });
+        const group = createCommand({
+            id: "test:group",
+            action: undefined,
+            children: [child],
+            isGroup: true,
+            name: "Group",
+        });
+
+        expect(getFlattenedCommands([first, group]).map((command) => command.id)).toEqual([
+            "test:first",
+            "test:group",
+            "test:child",
+        ]);
+    });
+
+    it("validates duplicate root and sibling child ids", () => {
+        const root = createCommand({ id: "test:root" });
+        const child = createCommand({ id: "test:child" });
+        const group = createCommand({
+            id: "test:group",
+            action: undefined,
+            children: [child],
+            isGroup: true,
+        });
+
+        expect(() => validateCommandStructure([root, group])).not.toThrow();
+        expect(() =>
+            validateCommandStructure([
+                createCommand({ id: "test:duplicate" }),
+                createCommand({ id: "test:duplicate" }),
+            ])
+        ).toThrow("Duplicate root command ID: test:duplicate");
+        expect(() =>
+            validateCommandStructure([
+                createCommand({
+                    id: "test:group",
+                    action: undefined,
+                    children: [
+                        createCommand({ id: "test:duplicate-child" }),
+                        createCommand({ id: "test:duplicate-child" }),
+                    ],
+                    isGroup: true,
+                }),
+            ])
+        ).toThrow("Duplicate child command ID: test:duplicate-child in parent test:group");
+    });
+
+    it("checks id uniqueness across roots and direct children", () => {
+        const child = createCommand({ id: "test:child", parentId: "test:group" });
+        const commands = [
+            createCommand({ id: "test:root" }),
+            createCommand({
+                id: "test:group",
+                action: undefined,
+                children: [child],
+                isGroup: true,
+            }),
+        ];
+
+        expect(isIdUnique("test:root", commands)).toBe(false);
+        expect(isIdUnique("test:child", commands)).toBe(false);
+        expect(isIdUnique("test:new", commands)).toBe(true);
+    });
+
+    it("finds root commands and children within a parent context", () => {
+        const root = createCommand({ id: "test:root" });
+        const child = createCommand({ id: "test:child", parentId: "test:group" });
+        const group = createCommand({
+            id: "test:group",
+            action: undefined,
+            children: [child],
+            isGroup: true,
+        });
+        const commands = [root, group];
+
+        expect(findCommand(commands, "test:root")).toBe(root);
+        expect(findCommand(commands, "test:child", "test:group")).toBe(child);
+        expect(findCommand(commands, "test:child")).toBeUndefined();
+        expect(findCommand(commands, "test:child", "test:missing-group")).toBeUndefined();
+    });
+
+    it("creates default commands as root-level commands without children", () => {
+        const defaults = getDefaultCommands();
+
+        expect(defaults.length).toBeGreaterThan(0);
+        expect(
+            defaults.every(
+                (command) => command.parentId === undefined && command.children?.length === 0
+            )
+        ).toBe(true);
     });
 });
