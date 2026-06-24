@@ -83,6 +83,103 @@ describe("useSettingStore", () => {
         expect("/command".match(settings.queryPattern)).toBeNull();
     });
 
+    it("updates nested commands and saves changed bindings", async () => {
+        const child = createCommand({ id: "test:child", parentId: "test:group" });
+        const group = createCommand({
+            action: undefined,
+            children: [child],
+            id: "test:group",
+            isGroup: true,
+        });
+        const plugin = createPlugin();
+
+        resetStore([group]);
+        useSettingStore.getState().setPlugin(plugin);
+
+        await expect(
+            useSettingStore.getState().updateCommand("test:child", {
+                name: "Updated child",
+            })
+        ).resolves.toBe(true);
+
+        const commands = useSettingStore.getState().settings.bindings;
+
+        expect(commands[0].children?.[0].name).toBe("Updated child");
+        expect(plugin.saveData).toHaveBeenCalledWith(useSettingStore.getState().settings);
+    });
+
+    it("does not save when updating a missing command", async () => {
+        const plugin = createPlugin();
+
+        resetStore([createCommand({ id: "test:root" })]);
+        useSettingStore.getState().setPlugin(plugin);
+
+        await expect(
+            useSettingStore.getState().updateCommand("test:missing", {
+                name: "Missing",
+            })
+        ).resolves.toBe(false);
+
+        expect(plugin.saveData).not.toHaveBeenCalled();
+    });
+
+    it("finds root commands and children within a specific parent", () => {
+        const child = createCommand({ id: "test:child", parentId: "test:group" });
+        const group = createCommand({
+            action: undefined,
+            children: [child],
+            id: "test:group",
+            isGroup: true,
+        });
+
+        resetStore([group, createCommand({ id: "test:root" })]);
+
+        expect(useSettingStore.getState().findCommand("test:root")?.id).toBe("test:root");
+        expect(useSettingStore.getState().findCommand("test:child", "test:group")).toBe(child);
+        expect(useSettingStore.getState().findCommand("test:child")).toBeUndefined();
+        expect(useSettingStore.getState().findCommand("test:child", "test:missing")).toBeUndefined();
+    });
+
+    it("returns valid commands with plugin and visibility context", () => {
+        const visible = createCommand({
+            action: "test:visible",
+            id: "test:visible",
+            visibility: {
+                pathPatterns: {
+                    include: ["Projects/**"],
+                },
+            },
+        });
+        const plugin = createPlugin();
+
+        plugin.app.commands.commands = {
+            "test:visible": {
+                id: "test:visible",
+                name: "Visible command",
+            },
+        };
+        resetStore([visible]);
+
+        expect(
+            useSettingStore.getState().getFlatValidCommands({ filePath: "Projects/A.md" })
+        ).toEqual([]);
+
+        useSettingStore.getState().setPlugin(plugin);
+
+        expect(
+            useSettingStore
+                .getState()
+                .getFlatValidCommands({ filePath: "Projects/A.md" })
+                .map((command) => command.id)
+        ).toEqual(["test:visible"]);
+        expect(
+            useSettingStore
+                .getState()
+                .getFlatValidCommands({ filePath: "Archive/A.md" })
+                .map((command) => command.id)
+        ).toEqual([]);
+    });
+
     it("adds root commands and child commands", async () => {
         const group = createCommand({
             action: undefined,
