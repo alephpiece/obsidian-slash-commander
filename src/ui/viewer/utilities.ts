@@ -20,15 +20,20 @@ export function commandsToTreeItems(commands: SlashCommand[]): CommandTreeItems 
 /**
  * Convert CommandTreeItems back to SlashCommand array
  */
-export function treeItemsToCommands(items: CommandTreeItems): SlashCommand[] {
+export function treeItemsToCommands(
+    items: CommandTreeItems,
+    parentId: UniqueIdentifier | null = null
+): SlashCommand[] {
     return items.map((item) => {
         const command = { ...item.command };
 
-        if (item.children && item.children.length > 0) {
-            command.children = treeItemsToCommands(item.children);
+        if (parentId === null) {
+            delete command.parentId;
         } else {
-            command.children = [];
+            command.parentId = String(parentId);
         }
+
+        command.children = item.children ? treeItemsToCommands(item.children, item.id) : [];
 
         return command;
     });

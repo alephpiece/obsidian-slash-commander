@@ -89,6 +89,9 @@ export default defineConfig({
     },
     resolve: {
         alias: {
+            ...(process.env.VITEST
+                ? { obsidian: resolve(__dirname, "./src/test/mocks/obsidian.ts") }
+                : {}),
             src: resolve(__dirname, "./src"),
             "@": resolve(__dirname, "./src"),
             "@data": resolve(__dirname, "./src/data"),
@@ -120,6 +123,7 @@ export default defineConfig({
                 "**/*.config.{js,ts}",
                 "main.js",
                 "scripts/**",
+                "src/test/**",
                 "src/assets/**",
                 "src/data/{constants,models}/**",
             ],
