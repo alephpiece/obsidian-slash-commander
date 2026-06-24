@@ -1,0 +1,40 @@
+name: Coverage Badges
+
+on:
+  push:
+    tags:
+      - '[0-9]*.[0-9]*.[0-9]*'
+
+permissions:
+  contents: write
+
+jobs:
+  update-badges:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22.x"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test coverage
+        run: pnpm test:coverage
+
+      - name: Generate coverage badges
+        uses: jpb06/coverage-badges-action@6bebba3f008cb03c2be0ff9b148c663df30cde4b # v1.4.11
+        with:
+          branches: "*"
+          target-branch: main
+          badges-icon: vitest
+          commit-user: github-actions[bot]
+          commit-user-email: 41898282+github-actions[bot]@users.noreply.github.com
