@@ -7,10 +7,21 @@ import { useSettingStore } from "@/data/stores/useSettingStore";
 import SlashCommanderPlugin from "@/main";
 
 export interface CommandVisibilityContext {
+    /**
+     * Vault-relative file path for the editor context where suggestions are shown.
+     */
     filePath?: string | null;
+
+    /**
+     * Whether the trigger starts at the beginning of the current editor line.
+     * Undefined means trigger mode should not be considered.
+     */
     onNewLine?: boolean;
 }
 
+// Match Obsidian vault paths after normalizing separators to forward slashes.
+// Negation and comments are disabled because include/exclude lists model those
+// concerns explicitly.
 const PATH_PATTERN_OPTIONS = {
     dot: true,
     nocomment: true,
@@ -82,6 +93,9 @@ export function isValidSuggestItem(plugin: SlashCommanderPlugin, scmd: SlashComm
 
 /**
  * Check if a command is visible for the active file path.
+ *
+ * Commands with path rules require a file path. Exclude patterns take precedence
+ * over include patterns.
  */
 export function isCommandPathVisible(
     scmd: SlashCommand,
@@ -103,6 +117,8 @@ export function isCommandPathVisible(
 
 /**
  * Check if a command is visible for the current trigger position.
+ *
+ * When the caller does not provide trigger context, the command remains visible.
  */
 export function isCommandTriggerVisible(
     scmd: SlashCommand,
@@ -222,7 +238,10 @@ export function getFlattenedCommands(commands: SlashCommand[]): SlashCommand[] {
 
 /**
  * Returns a flattened array of valid SlashCommands
- * For group commands, their children will be placed right after them
+ * For group commands, their children will be placed right after them.
+ *
+ * Visibility is applied recursively. A group is returned only when the group
+ * itself is visible and at least one child remains visible.
  */
 export function getFlatValidCommands(
     plugin: SlashCommanderPlugin,
