@@ -222,7 +222,9 @@ describe("useSettingStore", () => {
 
         expect(commands.length).toBeGreaterThan(0);
         expect(commands.every((command) => command.parentId === undefined)).toBe(true);
-        expect(commands.every((command) => command.children?.length === 0)).toBe(true);
+        commands.forEach((command) => {
+            expect(command.children).toEqual([]);
+        });
         expect(plugin.saveData).toHaveBeenCalledWith(useSettingStore.getState().settings);
     });
 });

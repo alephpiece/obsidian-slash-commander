@@ -4,6 +4,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import type { CommanderSettings } from "@/data/models/Settings";
 import type { SlashCommand } from "@/data/models/SlashCommand";
+import { cloneSlashCommandTree } from "@/data/utils/slashCommand";
 import SlashCommanderPlugin from "@/main";
 import type { CommandVisibilityContext } from "@/services/command";
 import * as CommandService from "@/services/command";
@@ -44,13 +45,6 @@ interface SettingState {
     restoreDefault: () => Promise<void>;
     isIdUnique: (id: string) => boolean;
     initialize: () => Promise<void>;
-}
-
-function cloneCommandTree(commands: SlashCommand[]): SlashCommand[] {
-    return commands.map((command) => ({
-        ...command,
-        children: command.children ? cloneCommandTree(command.children) : command.children,
-    }));
 }
 
 export const useSettingStore = create<SettingState>()(
@@ -232,7 +226,7 @@ export const useSettingStore = create<SettingState>()(
         moveCommand: async (commandId, sourceParentId, targetParentId) => {
             if (sourceParentId === targetParentId) return;
 
-            const commands = cloneCommandTree(get().getCommands());
+            const commands = cloneSlashCommandTree(get().getCommands());
             let sourceCommand: SlashCommand | undefined;
             const targetParent = targetParentId
                 ? commands.find((c) => c.id === targetParentId)

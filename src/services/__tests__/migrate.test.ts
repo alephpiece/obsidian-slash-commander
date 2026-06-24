@@ -34,7 +34,9 @@ describe("ensureAllFieldsPresent", () => {
         expect(settings.showSourcesForDuplicates).toBe(DEFAULT_SETTINGS.showSourcesForDuplicates);
         expect(settings.mainTrigger).toBe(DEFAULT_SETTINGS.mainTrigger);
         expect(settings.extraTriggers).toEqual(DEFAULT_SETTINGS.extraTriggers);
-        expect(settings.bindings).toBe(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings).toEqual(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings).not.toBe(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings[0]).not.toBe(DEFAULT_SETTINGS.bindings[0]);
     });
 
     it("preserves existing user values", () => {
@@ -70,7 +72,9 @@ describe("ensureAllFieldsPresent", () => {
         });
 
         expect(settings.extraTriggers).toEqual(DEFAULT_SETTINGS.extraTriggers);
-        expect(settings.bindings).toBe(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings).toEqual(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings).not.toBe(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings[0]).not.toBe(DEFAULT_SETTINGS.bindings[0]);
     });
 });
 
@@ -92,7 +96,9 @@ describe("migrateSettings", () => {
 
         expect(settings.version).toBe(DATA_VERSION);
         expect(settings.mainTrigger).toBe("!");
-        expect(settings.bindings).toBe(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings).toEqual(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings).not.toBe(DEFAULT_SETTINGS.bindings);
+        expect(settings.bindings[0]).not.toBe(DEFAULT_SETTINGS.bindings[0]);
         expect(saveCallback).not.toHaveBeenCalled();
         expect(noticeMessages).toEqual([]);
     });

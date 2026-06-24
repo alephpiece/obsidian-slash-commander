@@ -3,7 +3,8 @@ import { Notice } from "obsidian";
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import { DATA_VERSION } from "@/data/constants/version";
 import { CommanderSettings } from "@/data/models/Settings";
-import { SlashCommand } from "@/data/models/SlashCommand";
+import type { SlashCommand } from "@/data/models/SlashCommand";
+import { cloneSlashCommandTree } from "@/data/utils/slashCommand";
 
 import { generateUniqueId } from "./command";
 
@@ -75,7 +76,9 @@ export function ensureAllFieldsPresent(data: any): CommanderSettings {
         triggerOnlyOnNewLine: data.triggerOnlyOnNewLine ?? DEFAULT_SETTINGS.triggerOnlyOnNewLine,
         // queryPattern will be rebuilt later, so use a placeholder
         queryPattern: DEFAULT_SETTINGS.queryPattern,
-        bindings: Array.isArray(data.bindings) ? data.bindings : DEFAULT_SETTINGS.bindings,
+        bindings: Array.isArray(data.bindings)
+            ? data.bindings
+            : cloneSlashCommandTree(DEFAULT_SETTINGS.bindings),
     };
 
     // Example of handling field renames (for future use)
