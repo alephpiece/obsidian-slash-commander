@@ -8,6 +8,7 @@ import { isCommandGroup } from "@/services/command";
 interface SuggestionProps {
     plugin: SlashCommanderPlugin;
     result: FuzzyMatch<SlashCommand>;
+    renderedItems: SlashCommand[];
 }
 
 /**

@@ -7,8 +7,8 @@ import SlashCommanderPlugin from "@/main";
 import {
     getCommandSourceName,
     getObsidianCommand,
-    isActiveCommandNameUnique,
     isCommandGroup,
+    isCommandNameUniqueInItems,
 } from "@/services/command";
 import ObsidianIcon from "@/ui/components/obsidianIconComponent";
 
@@ -17,6 +17,7 @@ import { highlightMatch } from "./highlightMatch";
 interface SuggestionProps {
     plugin: SlashCommanderPlugin;
     result: FuzzyMatch<SlashCommand>;
+    renderedItems: SlashCommand[];
 }
 
 /**
@@ -25,7 +26,11 @@ interface SuggestionProps {
  * @param result - The fuzzy match result.
  * @returns A React element representing the suggested command.
  */
-export default function SuggestedCommand({ plugin, result }: SuggestionProps): ReactElement | null {
+export default function SuggestedCommand({
+    plugin,
+    result,
+    renderedItems,
+}: SuggestionProps): ReactElement | null {
     const { item: scmd } = result;
     const cmd = getObsidianCommand(plugin, scmd);
     const settings = useSettings();
@@ -44,7 +49,7 @@ export default function SuggestedCommand({ plugin, result }: SuggestionProps): R
                 <div>
                     {highlightMatch(result)}
                     {settings.showSourcesForDuplicates &&
-                        !isActiveCommandNameUnique(plugin, scmd) && (
+                        !isCommandNameUniqueInItems(scmd, renderedItems) && (
                             <span className="cmdr-suggest-item-source">
                                 {` ${getCommandSourceName(plugin, cmd!)}`}
                             </span>

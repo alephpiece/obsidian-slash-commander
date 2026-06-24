@@ -1,9 +1,63 @@
+import { minimatch } from "minimatch";
 import { Command } from "obsidian";
 
 import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import { SlashCommand } from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 import SlashCommanderPlugin from "@/main";
+
+export interface CommandVisibilityContext {
+    /**
+     * Vault-relative file path for the editor context where suggestions are shown.
+     */
+    filePath?: string | null;
+
+    /**
+     * Whether the trigger starts at the beginning of the current editor line.
+     * Undefined means trigger mode should not be considered.
+     */
+    onNewLine?: boolean;
+}
+
+// Match Obsidian vault paths after normalizing separators to forward slashes.
+// Negation and comments are disabled because include/exclude lists model those
+// concerns explicitly.
+const PATH_PATTERN_OPTIONS = {
+    dot: true,
+    nocomment: true,
+    nonegate: true,
+    windowsPathsNoEscape: true,
+} as const;
+
+function normalizePathPattern(pattern: string): string {
+    return pattern.trim().replace(/\\/g, "/").replace(/^\/+/, "");
+}
+
+function normalizeFilePath(filePath?: string | null): string | null {
+    if (!filePath) return null;
+    const normalized = filePath.replace(/\\/g, "/").replace(/^\/+/, "");
+    return normalized || null;
+}
+
+function getPathPatterns(scmd: SlashCommand): { include: string[]; exclude: string[] } {
+    const pathPatterns = scmd.visibility?.pathPatterns;
+    return {
+        include: (pathPatterns?.include ?? []).map(normalizePathPattern).filter(Boolean),
+        exclude: (pathPatterns?.exclude ?? []).map(normalizePathPattern).filter(Boolean),
+    };
+}
+
+function matchesAnyPathPattern(filePath: string, patterns: string[]): boolean {
+    return patterns.some((pattern) => minimatch(filePath, pattern, PATH_PATTERN_OPTIONS));
+}
+
+/**
+ * Check if a command has path-based visibility rules.
+ */
+export function hasPathVisibilityRules(scmd: SlashCommand): boolean {
+    const { include, exclude } = getPathPatterns(scmd);
+    return include.length > 0 || exclude.length > 0;
+}
 
 /**
  * Get default SlashCommands
@@ -38,6 +92,62 @@ export function isValidSuggestItem(plugin: SlashCommanderPlugin, scmd: SlashComm
 }
 
 /**
+ * Check if a command is visible for the active file path.
+ *
+ * Commands with path rules require a file path. Exclude patterns take precedence
+ * over include patterns.
+ */
+export function isCommandPathVisible(
+    scmd: SlashCommand,
+    context: CommandVisibilityContext = {}
+): boolean {
+    const { include, exclude } = getPathPatterns(scmd);
+    const hasPathRules = include.length > 0 || exclude.length > 0;
+
+    if (!hasPathRules) return true;
+
+    const filePath = normalizeFilePath(context.filePath);
+    if (!filePath) return false;
+
+    if (matchesAnyPathPattern(filePath, exclude)) return false;
+    if (include.length > 0 && !matchesAnyPathPattern(filePath, include)) return false;
+
+    return true;
+}
+
+/**
+ * Check if a command is visible for the current trigger position.
+ *
+ * When the caller does not provide trigger context, the command remains visible.
+ */
+export function isCommandTriggerVisible(
+    scmd: SlashCommand,
+    context: CommandVisibilityContext = {}
+): boolean {
+    if (context.onNewLine === undefined) return true;
+
+    return (
+        (context.onNewLine && scmd.triggerMode != "inline") ||
+        (!context.onNewLine && scmd.triggerMode != "newline")
+    );
+}
+
+/**
+ * Check if a command is active on the current device and visible in the current context.
+ */
+export function isCommandVisible(
+    plugin: SlashCommanderPlugin,
+    scmd: SlashCommand,
+    context: CommandVisibilityContext = {}
+): boolean {
+    return (
+        isCommandActive(plugin, scmd) &&
+        isCommandPathVisible(scmd, context) &&
+        isCommandTriggerVisible(scmd, context)
+    );
+}
+
+/**
  * Check if a command is active on the current device
  */
 export function isCommandActive(plugin: SlashCommanderPlugin, scmd: SlashCommand): boolean {
@@ -68,36 +178,6 @@ export function getCommandSourceName(plugin: SlashCommanderPlugin, cmd: Command)
 }
 
 /**
- * Check if a SlashCommand has a unique name among active commands.
- * This is used to determine if the suggester should show the source name of a command.
- */
-export function isActiveCommandNameUnique(
-    plugin: SlashCommanderPlugin,
-    scmd: SlashCommand
-): boolean {
-    const settings = useSettingStore.getState().settings;
-    const commands = settings.bindings;
-
-    // Find all active commands with matching name
-    const matches: SlashCommand[] = [];
-
-    function findMatches(cmds: SlashCommand[]): void {
-        for (const cmd of cmds) {
-            if (isCommandActive(plugin, cmd) && cmd.name === scmd.name) {
-                matches.push(cmd);
-            }
-
-            if (cmd.children?.length) {
-                findMatches(cmd.children);
-            }
-        }
-    }
-
-    findMatches(commands);
-    return matches.length === 1;
-}
-
-/**
  * A SlashCommand without parent is a root command
  */
 export function isRootCommand(scmd: SlashCommand): boolean {
@@ -109,6 +189,13 @@ export function isRootCommand(scmd: SlashCommand): boolean {
  */
 export function isCommandGroup(scmd: SlashCommand): boolean {
     return scmd.isGroup === true;
+}
+
+/**
+ * Check if a command name is unique among the currently visible command suggestions.
+ */
+export function isCommandNameUniqueInItems(scmd: SlashCommand, items: SlashCommand[]): boolean {
+    return items.filter((item) => !isCommandGroup(item) && item.name === scmd.name).length === 1;
 }
 
 /**
@@ -151,16 +238,45 @@ export function getFlattenedCommands(commands: SlashCommand[]): SlashCommand[] {
 
 /**
  * Returns a flattened array of valid SlashCommands
- * For group commands, their children will be placed right after them
+ * For group commands, their children will be placed right after them.
+ *
+ * Visibility is applied recursively. A group is returned only when the group
+ * itself is visible and at least one child remains visible.
  */
 export function getFlatValidCommands(
     plugin: SlashCommanderPlugin,
-    commands: SlashCommand[]
+    commands: SlashCommand[],
+    context: CommandVisibilityContext = {}
 ): SlashCommand[] {
     if (!plugin) return [];
 
-    const flattenedCommands = getFlattenedCommands(commands);
-    return flattenedCommands.filter((cmd) => isValidSuggestItem(plugin, cmd));
+    const collectVisibleCommands = (cmds: SlashCommand[]): SlashCommand[] => {
+        const result: SlashCommand[] = [];
+
+        for (const cmd of cmds) {
+            if (!isCommandVisible(plugin, cmd, context)) {
+                continue;
+            }
+
+            if (isCommandGroup(cmd)) {
+                const visibleChildren = collectVisibleCommands(cmd.children ?? []);
+
+                if (visibleChildren.length > 0) {
+                    result.push(cmd, ...visibleChildren);
+                }
+
+                continue;
+            }
+
+            if (isValidSuggestItem(plugin, cmd)) {
+                result.push(cmd);
+            }
+        }
+
+        return result;
+    };
+
+    return collectVisibleCommands(commands);
 }
 
 /**

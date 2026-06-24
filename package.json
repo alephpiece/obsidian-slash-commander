@@ -63,6 +63,7 @@
         "@dnd-kit/utilities": "^3.2.2",
         "@popperjs/core": "^2.11.8",
         "i18next": "25.8.13",
+        "minimatch": "^10.2.5",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "react-i18next": "^16.5.4",

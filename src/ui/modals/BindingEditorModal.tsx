@@ -3,7 +3,12 @@ import { Modal, setIcon } from "obsidian";
 import { Command } from "obsidian";
 
 import { ICON_LIST } from "@/data/constants/icons";
-import { DeviceMode, SlashCommand, TriggerMode } from "@/data/models/SlashCommand";
+import {
+    DeviceMode,
+    SlashCommand,
+    SlashCommandVisibility,
+    TriggerMode,
+} from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 import SlashCommanderPlugin from "@/main";
 import { generateUniqueId, isCommandGroup } from "@/services/command";
@@ -27,6 +32,8 @@ export default class BindingEditorModal extends Modal {
     private selectedIcon = "";
     private triggerMode: TriggerMode = "anywhere";
     private deviceMode: DeviceMode = "any";
+    private includePathPatterns = "";
+    private excludePathPatterns = "";
 
     private originalId: string = "";
 
@@ -54,6 +61,10 @@ export default class BindingEditorModal extends Modal {
             this.selectedIcon = existingCommand.icon;
             this.triggerMode = existingCommand.triggerMode || "anywhere";
             this.deviceMode = existingCommand.mode || "any";
+            this.includePathPatterns =
+                existingCommand.visibility?.pathPatterns?.include?.join("\n") ?? "";
+            this.excludePathPatterns =
+                existingCommand.visibility?.pathPatterns?.exclude?.join("\n") ?? "";
             this.isGroup = isCommandGroup(existingCommand);
         }
     }
@@ -98,6 +109,9 @@ export default class BindingEditorModal extends Modal {
 
         // Device mode field
         this.createDeviceModeField(contentEl);
+
+        // Path visibility fields
+        this.createPathVisibilityFields(contentEl);
 
         // Buttons
         const buttonContainer = contentEl.createDiv({ cls: "cmdr-modal-button-container" });
@@ -553,6 +567,81 @@ export default class BindingEditorModal extends Modal {
         });
     }
 
+    private createPathVisibilityFields(container: HTMLElement) {
+        const wrapper = container.createDiv({
+            cls: "cmdr-setting-item cmdr-path-visibility-setting",
+        });
+        const titleContainer = wrapper.createDiv({ cls: "cmdr-setting-item-header" });
+        const titleWithIcon = titleContainer.createDiv({ cls: "cmdr-setting-title-with-icon" });
+        titleWithIcon.createDiv({
+            cls: "cmdr-setting-item-name",
+            text: t("modals.bind.path_visibility.field"),
+        });
+
+        const infoIcon = titleWithIcon.createDiv({ cls: "cmdr-icon" });
+        setIcon(infoIcon, "lucide-info");
+        infoIcon.setAttribute("aria-label", t("modals.bind.path_visibility.detail"));
+        infoIcon.addClass("has-tooltip");
+        infoIcon.style.paddingLeft = "4px";
+
+        wrapper.createDiv({
+            cls: "cmdr-path-visibility-label",
+            text: t("modals.bind.path_visibility.include.field"),
+        });
+        const includeInput = wrapper.createEl("textarea", {
+            cls: "cmdr-input",
+            placeholder: t("modals.bind.path_visibility.include.placeholder"),
+            attr: {
+                rows: "3",
+                spellcheck: "false",
+            },
+        });
+        includeInput.value = this.includePathPatterns;
+        includeInput.addEventListener("input", (e) => {
+            this.includePathPatterns = (e.target as HTMLTextAreaElement).value;
+        });
+
+        wrapper.createDiv({
+            cls: "cmdr-path-visibility-label",
+            text: t("modals.bind.path_visibility.exclude.field"),
+        });
+        const excludeInput = wrapper.createEl("textarea", {
+            cls: "cmdr-input",
+            placeholder: t("modals.bind.path_visibility.exclude.placeholder"),
+            attr: {
+                rows: "3",
+                spellcheck: "false",
+            },
+        });
+        excludeInput.value = this.excludePathPatterns;
+        excludeInput.addEventListener("input", (e) => {
+            this.excludePathPatterns = (e.target as HTMLTextAreaElement).value;
+        });
+    }
+
+    private parsePathPatternInput(value: string): string[] {
+        return value
+            .split(/\r?\n/)
+            .map((pattern) => pattern.trim())
+            .filter(Boolean);
+    }
+
+    private getVisibility(): SlashCommandVisibility | undefined {
+        const include = this.parsePathPatternInput(this.includePathPatterns);
+        const exclude = this.parsePathPatternInput(this.excludePathPatterns);
+
+        if (include.length === 0 && exclude.length === 0) {
+            return undefined;
+        }
+
+        return {
+            pathPatterns: {
+                include,
+                exclude,
+            },
+        };
+    }
+
     private setError(field: string, message: string, container: HTMLElement) {
         this.errors[field] = message;
         const errorEl = container.querySelector(".cmdr-setting-error") as HTMLElement;
@@ -645,6 +734,7 @@ export default class BindingEditorModal extends Modal {
             action: commandAction, // Store Obsidian command ID
             mode: this.deviceMode,
             triggerMode: this.triggerMode,
+            visibility: this.getVisibility(),
             isGroup: this.isGroup, // Use isGroup field to mark command group
             children: this.isGroup ? [] : undefined,
         };

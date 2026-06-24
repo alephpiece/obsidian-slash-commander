@@ -708,12 +708,28 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        gap: var(--size-2-2);
+        gap: var(--size-2-1);
     }
 
-    /* Group collapser button */
-    .cmdr-group-collapser-button {
-        margin-right: 4px;
+    .cmdr-command-control-icon {
+        box-sizing: border-box;
+        width: calc(
+            var(--clickable-icon-size) + var(--size-2-3) + var(--size-2-3)
+        );
+        height: calc(
+            var(--clickable-icon-size) + var(--size-2-2) + var(--size-2-2)
+        );
+        padding: var(--size-2-2) var(--size-2-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--icon-color);
+        opacity: var(--icon-opacity);
+        flex: 0 0
+            calc(var(--clickable-icon-size) + var(--size-2-3) + var(--size-2-3));
+    }
+
+    .cmdr-command-control-icon.clickable-icon {
         color: var(--text-muted);
 
         &:hover {
@@ -852,6 +868,27 @@
         border-radius: 4px;
         border: 1px solid var(--background-modifier-border);
         background-color: var(--background-primary);
+    }
+
+    .cmdr-setting-title-with-icon {
+        display: flex;
+        align-items: center;
+    }
+
+    .cmdr-path-visibility-setting {
+        gap: 6px;
+
+        .cmdr-setting-item-header {
+            margin-bottom: 4px;
+        }
+    }
+
+    .cmdr-path-visibility-label {
+        color: var(--text-muted);
+        font-size: var(--font-ui-small);
+        font-weight: 500;
+        line-height: 1.4;
+        margin-top: 2px;
     }
 
     .cmdr-suggest-wrapper {

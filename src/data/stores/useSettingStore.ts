@@ -5,6 +5,7 @@ import { DEFAULT_SETTINGS } from "@/data/constants/defaultSettings";
 import type { CommanderSettings } from "@/data/models/Settings";
 import type { SlashCommand } from "@/data/models/SlashCommand";
 import SlashCommanderPlugin from "@/main";
+import type { CommandVisibilityContext } from "@/services/command";
 import * as CommandService from "@/services/command";
 import { migrateSettings } from "@/services/migrate";
 import { buildQueryPattern } from "@/services/search";
@@ -26,7 +27,7 @@ interface SettingState {
     // Command getters
     getCommands: () => SlashCommand[];
     getFlattenedCommands: () => SlashCommand[];
-    getFlatValidCommands: () => SlashCommand[];
+    getFlatValidCommands: (context?: CommandVisibilityContext) => SlashCommand[];
     findCommand: (id: string, parentId?: string) => SlashCommand | undefined;
 
     // Command actions
@@ -146,10 +147,10 @@ export const useSettingStore = create<SettingState>()(
             return CommandService.getFlattenedCommands(get().getCommands());
         },
 
-        getFlatValidCommands: () => {
+        getFlatValidCommands: (context) => {
             const { plugin } = get();
             if (!plugin) return [];
-            return CommandService.getFlatValidCommands(plugin, get().getCommands());
+            return CommandService.getFlatValidCommands(plugin, get().getCommands(), context);
         },
 
         findCommand: (id, parentId) => {

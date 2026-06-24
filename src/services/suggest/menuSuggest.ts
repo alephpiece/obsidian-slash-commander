@@ -1,7 +1,6 @@
 import { TextComponent } from "obsidian";
 
 import { Coords, EnhancedEditor } from "@/data/models/Settings";
-import { SlashCommand } from "@/data/models/SlashCommand";
 import { useSettingStore } from "@/data/stores/useSettingStore";
 import SlashCommanderPlugin from "@/main";
 
@@ -42,17 +41,12 @@ export class MenuSuggest {
 
         // Filter suggestions and open the menu modal
         const onNewLine = cursor.ch == 0;
-        const validCommands = useSettingStore.getState().getFlatValidCommands();
+        const validCommands = useSettingStore.getState().getFlatValidCommands({
+            filePath: this.plugin.app.workspace.getActiveFile()?.path ?? null,
+            onNewLine,
+        });
 
-        const modal = new MenuSuggestionModal(
-            this.plugin,
-            this.search,
-            validCommands.filter(
-                (pair: SlashCommand) =>
-                    (onNewLine && pair.triggerMode != "inline") ||
-                    (!onNewLine && pair.triggerMode != "newline")
-            )
-        );
+        const modal = new MenuSuggestionModal(this.plugin, this.search, validCommands);
 
         modal.open();
 
