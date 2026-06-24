@@ -1,8 +1,8 @@
 // @ts-check
 
 import eslint from "@eslint/js";
+import eslintReact from "@eslint-react/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
-import reactPlugin from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unusedImports from "eslint-plugin-unused-imports";
@@ -11,8 +11,7 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
     eslint.configs.recommended,
     tseslint.configs.recommended,
-    reactPlugin.configs.flat.recommended,
-    reactPlugin.configs.flat["jsx-runtime"],
+    eslintReact.configs["recommended-typescript"],
     reactHooks.configs.flat.recommended,
     {
         plugins: {
@@ -24,7 +23,10 @@ export default tseslint.config(
             "simple-import-sort/imports": "error",
             "simple-import-sort/exports": "error",
             "unused-imports/no-unused-imports": "error",
-            "react/react-in-jsx-scope": "off",
+            "@eslint-react/naming-convention-ref-name": "off",
+            "@eslint-react/no-array-index-key": "off",
+            "@eslint-react/no-unnecessary-use-prefix": "off",
+            "@eslint-react/use-state": "off",
         },
         settings: {
             react: {

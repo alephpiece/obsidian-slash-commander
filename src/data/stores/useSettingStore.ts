@@ -84,7 +84,6 @@ export const useSettingStore = create<SettingState>()(
 
         updateCommand: async (commandId: string, updates: Partial<SlashCommand>) => {
             const commands = [...get().getCommands()];
-            let updated = false;
 
             const updateCommandInTree = (cmds: SlashCommand[]): boolean => {
                 for (let i = 0; i < cmds.length; i++) {
@@ -102,7 +101,7 @@ export const useSettingStore = create<SettingState>()(
                 return false;
             };
 
-            updated = updateCommandInTree(commands);
+            const updated = updateCommandInTree(commands);
 
             if (updated) {
                 await get().updateSettings({ bindings: commands });
