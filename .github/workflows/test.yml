@@ -32,6 +32,9 @@ jobs:
       - name: Test
         run: pnpm test:coverage
 
+      - name: Build
+        run: pnpm build
+
       - name: Generate coverage badges
         uses: jpb06/coverage-badges-action@latest
         with:

@@ -46,6 +46,13 @@ interface SettingState {
     initialize: () => Promise<void>;
 }
 
+function cloneCommandTree(commands: SlashCommand[]): SlashCommand[] {
+    return commands.map((command) => ({
+        ...command,
+        children: command.children ? cloneCommandTree(command.children) : command.children,
+    }));
+}
+
 export const useSettingStore = create<SettingState>()(
     subscribeWithSelector((set, get) => ({
         // Core state
@@ -223,8 +230,21 @@ export const useSettingStore = create<SettingState>()(
         },
 
         moveCommand: async (commandId, sourceParentId, targetParentId) => {
-            const commands = [...get().getCommands()];
+            if (sourceParentId === targetParentId) return;
+
+            const commands = cloneCommandTree(get().getCommands());
             let sourceCommand: SlashCommand | undefined;
+            const targetParent = targetParentId
+                ? commands.find((c) => c.id === targetParentId)
+                : undefined;
+
+            if (targetParentId && !targetParent) return;
+
+            if (targetParent?.children?.some((child) => child.id === commandId)) {
+                throw new Error(
+                    `Child command with ID ${commandId} already exists in target parent ${targetParentId}`
+                );
+            }
 
             // Find and remove source command
             if (sourceParentId) {
@@ -254,17 +274,9 @@ export const useSettingStore = create<SettingState>()(
             // Add to target location
             if (targetParentId) {
                 // Move to parent command
-                const targetParent = commands.find((c) => c.id === targetParentId);
                 if (targetParent) {
                     if (!targetParent.children) {
                         targetParent.children = [];
-                    }
-
-                    // Check for duplicate ID
-                    if (targetParent.children.some((child) => child.id === commandId)) {
-                        throw new Error(
-                            `Child command with ID ${commandId} already exists in target parent ${targetParentId}`
-                        );
                     }
 
                     targetParent.children.push(sourceCommand);

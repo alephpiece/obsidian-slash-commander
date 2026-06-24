@@ -129,7 +129,7 @@ export async function migrateDataToV2(data: any): Promise<any> {
             // Set isGroup field
             if (!("isGroup" in cmd) || cmd.isGroup === undefined) {
                 // Determine if it's a command group by checking for child commands
-                cmd.isGroup = cmd.children && cmd.children.length > 0;
+                cmd.isGroup = !!(cmd.children && cmd.children.length > 0);
             }
 
             // Only replace IDs that appear multiple times in the original data
