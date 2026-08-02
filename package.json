@@ -30,7 +30,7 @@
         "@eslint-react/eslint-plugin": "^5.18.0",
         "@eslint/js": "^10.0.1",
         "@tailwindcss/vite": "^4.3.3",
-        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/jest-dom": "^7.0.0",
         "@testing-library/react": "^16.3.2",
         "@types/codemirror": "5.60.17",
         "@types/node": "^26.1.2",
