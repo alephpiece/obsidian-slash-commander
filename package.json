@@ -62,12 +62,12 @@
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@popperjs/core": "^2.11.8",
-        "i18next": "26.4.2",
+        "i18next": "26.5.11",
         "minimatch": "^10.2.6",
-        "react": "^19.3.0",
-        "react-dom": "^19.3.0",
-        "react-i18next": "^17.0.15",
-        "zustand": "^5.0.15"
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
+        "react-i18next": "^17.1.9",
+        "zustand": "^5.0.16"
     },
     "packageManager": "pnpm@11.1.1",
     "engines": {
